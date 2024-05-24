@@ -1,7 +1,9 @@
 {
   "name": "aya-dance-web",
+  "description": "Web frontend for Aya Dance",
   "version": "0.1.0",
-  "private": true,
+  "license": "MIT",
+  "author": "Aya Dance Contributors",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
