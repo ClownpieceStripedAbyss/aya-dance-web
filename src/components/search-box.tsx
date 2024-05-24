@@ -29,8 +29,11 @@ const SearchBox: React.FC<SearchBoxProps> = ({
 
   let matching = searchTerm !== '' ? ` filtered by "${searchTerm}"` : '';
   let heading = itemsMatched === 0
-    ? `No matches found for "${searchTerm}"`
-    : itemsMatched === 1 ? `${itemsMatched} ${itemNounSingular}${matching}`
+    ? searchTerm === ''
+      ? ''
+      : `No matches found for "${searchTerm}"`
+    : itemsMatched === 1
+      ? `${itemsMatched} ${itemNounSingular}${matching}`
       : `${itemsMatched} ${itemNounPlural}${matching}`;
 
   return (

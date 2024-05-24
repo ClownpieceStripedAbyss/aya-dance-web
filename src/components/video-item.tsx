@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Video, videoThumbnailUrl, videoUrl } from '@/types/video';
+import { KEY_FAVOURITES, Video, videoThumbnailUrl, videoUrl } from '@/types/video';
 import Image from 'next/image';
 
 interface VideoItemProps {
@@ -24,10 +24,23 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
     if (savedData) {
       setFormData(JSON.parse(savedData));
     }
-  }, []);
+    const savedFavourites = localStorage.getItem(KEY_FAVOURITES);
+    if (savedFavourites) {
+      const favourites = JSON.parse(savedFavourites) as Video[];
+      setIsLiked(favourites.some((v: Video) => v.id === video.id));
+    }
+  }, [video]);
 
   const handleLike = () => {
     setIsLiked(!isLiked);
+    // update local storage
+    const savedData = localStorage.getItem(KEY_FAVOURITES);
+    const favourites = savedData ? JSON.parse(savedData) : [];
+    if (isLiked) {
+      localStorage.setItem(KEY_FAVOURITES, JSON.stringify(favourites.filter((v: Video) => v.id !== video.id)));
+    } else {
+      localStorage.setItem(KEY_FAVOURITES, JSON.stringify([...favourites, video]));
+    }
   };
 
   const handleOpenModal = () => {
@@ -90,7 +103,8 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
   const isSubmitDisabled = !formData.roomUrl || !formData.targetUser;
 
   return (
-    <div className="flex items-center justify-between p-4 mb-4 rounded-lg border-b border-gray-300 bg-white dark:bg-neutral-800">
+    <div
+      className="flex items-center justify-between p-4 mb-4 rounded-lg border-b border-gray-300 bg-white dark:bg-neutral-800">
       <div className="flex items-center">
         <div className="flex-shrink-0 w-32 h-24 mr-4 flex items-center justify-center">
           <Image
@@ -102,7 +116,8 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
           />
         </div>
         <div className="flex-grow">
-          <h2 className="text-base font-bold mb-1 outline-link dark:outline-link outline-offset-4 group flex flex-col flex-1 gap-0.5">
+          <h2
+            className="text-base font-bold mb-1 outline-link dark:outline-link outline-offset-4 group flex flex-col flex-1 gap-0.5">
             <a href={videoUrl(video)} target="_blank" className="group-hover:underline">{video.title}</a>
           </h2>
           <p className="text-sm text-gray-500 text-tertiary leading-snug">ID: {video.id}</p>
@@ -121,9 +136,9 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
         </button>
         <button
           onClick={handleLike}
-          className={`outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 ${isLiked ? 'text-red-500' : 'text-tertiary'}`}>
+          className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary}">
           <Image
-            src="/fav.svg"
+            src={isLiked ? '/fav-is.svg' : '/fav.svg'}
             alt="Favorite"
             width={24}
             height={24}

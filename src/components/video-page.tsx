@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import CategoryList from './category-list';
 import VideoList from './video-list';
 import SearchBox from './search-box';
-import { Category, Video, videoMatchesQuery } from '@/types/video';
+import { CAT_FAVOURITES, Category, KEY_FAVOURITES, Video, videoMatchesQuery } from '@/types/video';
 import '@/styles/scrollbar.css';
 
 interface VideoPageProps {
@@ -27,7 +27,9 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
   const [inputPage, setInputPage] = useState<string | null>(null);
 
   useEffect(() => {
-    const videos = categories.find(category => category.title === selectedCategory)?.entries || [];
+    const videos = selectedCategory === CAT_FAVOURITES
+      ? (JSON.parse(localStorage.getItem(KEY_FAVOURITES) ?? "[]") as Video[])
+      : categories.find(category => category.title === selectedCategory)?.entries || [];
     const filtered = videos.filter(video => {
       return videoMatchesQuery(video, searchTerm);
     });

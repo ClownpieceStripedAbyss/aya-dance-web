@@ -21,6 +21,9 @@ export interface Video {
   originalUrl: string[];
 }
 
+export const CAT_FAVOURITES = "喜欢的歌曲";
+export const KEY_FAVOURITES = "favourites";
+
 export const videoUrl = (video: Video) => `https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`;
 export const videoThumbnailUrl = (video: Video) => {
   if (video.originalUrl.length > 0) {

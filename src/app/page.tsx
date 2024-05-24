@@ -4,7 +4,7 @@ export const dynamic = "force-static";
 export const dynamicParams = false
 
 import React from "react";
-import { VideoIndex } from '@/types/video';
+import { CAT_FAVOURITES, Category, VideoIndex } from '@/types/video';
 import VideoPage from '../components/video-page';
 
 async function fetchIndex(): Promise<VideoIndex> {
@@ -20,7 +20,13 @@ async function fetchIndex(): Promise<VideoIndex> {
 
 const Home: React.FC = async () => {
   const index = await fetchIndex();
-  return <VideoPage initialCategories={index.categories}/>;
+  const cats = index.categories;
+  const favCat: Category = {
+    title: CAT_FAVOURITES,
+    entries: [],
+  };
+  const joined = [favCat, ...cats]
+  return <VideoPage initialCategories={joined}/>;
 };
 
 export default Home;
