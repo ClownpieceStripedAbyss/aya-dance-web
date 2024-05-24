@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Video } from '@/types/video';
+import { Video, videoThumbnailUrl, videoUrl } from '@/types/video';
 import Image from 'next/image';
 
 interface VideoItemProps {
@@ -95,16 +95,18 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
       <div className="flex items-center">
         <div className="w-32 mr-4 flex items-center justify-center">
           <Image
-            src={video.thumbnailUrl || '/unity-error.jpg'}
+            src={videoThumbnailUrl(video)}
             alt={video.title}
             width={128}
             height={96}
-            className="object-cover outline-link dark:outline-link outline-offset-2 aspect-video w-32 xs:w-36 select-none flex-col shadow-inner-border rounded-lg flex items-center overflow-hidden justify-center align-middle text-white/50 bg-cover bg-white bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] hover:opacity-95 transition-opacity"
+            className="object-cover outline-link dark:outline-link outline-offset-2 aspect-video w-32 xs:w-36 select-none flex-col shadow-inner-border rounded-lg flex items-center overflow-hidden justify-center align-middle text-white/50 bg-cover bg-white bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] hover:opacity-60 transition-opacity"
           />
         </div>
         <div>
           <h2
-            className="text-xl font-bold mb-1 outline-link dark:outline-link outline-offset-4 group flex flex-col flex-1 gap-0.5">{video.title}</h2>
+            className="text-xl font-bold mb-1 outline-link dark:outline-link outline-offset-4 group flex flex-col flex-1 gap-0.5">
+            <a href={videoUrl(video)} target="_blank" className="group-hover:underline">{video.title}</a>
+          </h2>
           <p className="text-sm text-gray-500 text-tertiary leading-snug">ID: {video.id}</p>
         </div>
       </div>
@@ -147,7 +149,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center">
                 <Image
-                  src={video.thumbnailUrl || '/unity-error.jpg'}
+                  src={videoThumbnailUrl(video)}
                   alt={video.title}
                   width={64}
                   height={48}
@@ -158,8 +160,8 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                   <p className="text-sm text-gray-500">ID: {video.id}</p>
                 </div>
               </div>
-              <a href={`https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`} target="_blank"
-                 className="text-blue-500 hover:underline">预览视频</a>
+              <a href={videoUrl(video)} target="_blank"
+                 className="w-24 text-blue-500 hover:underline">预览视频</a>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">

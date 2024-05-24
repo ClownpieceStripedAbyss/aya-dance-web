@@ -20,3 +20,6 @@ export interface Video {
   flip: boolean;
   thumbnailUrl: string;
 }
+
+export const videoUrl = (video: Video) => `https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`;
+export const videoThumbnailUrl = (video: Video) => video.thumbnailUrl || '/unity-error.jpg';
