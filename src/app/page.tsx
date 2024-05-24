@@ -39,7 +39,7 @@ async function fetchVideos(): Promise<Video[]> {
     start: 0,
     end: 10,
     flip: false,
-    thumbnailUrl: '/thumbnails/1.jpg',
+    thumbnailUrl: '/test.webp',
   }));
 }
 
