@@ -30,21 +30,21 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-12">
-      <div className="z-10 w-full max-w-7xl items-center justify-between font-mono text-sm lg:flex">
-        <div className="flex flex-row w-full">
-          <CategoryList
-            categories={categories}
-            selectedCategory={selectedCategory}
-            onSelectCategory={setSelectedCategory}
+      <div className="z-10 w-full max-w-7xl flex-1 flex flex-row justify-between font-mono text-sm lg:flex">
+        <CategoryList
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onSelectCategory={setSelectedCategory}
+        />
+        <div className="flex-1 flex flex-col py-0 px-4 h-full">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-2 mb-4 border border-gray-300 rounded"
           />
-          <div className="flex-1 py-0 px-4">
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full p-2 mb-4 border border-gray-300 rounded"
-            />
+          <div className="flex-1 overflow-y-auto">
             <VideoList videos={filteredVideos}/>
           </div>
         </div>

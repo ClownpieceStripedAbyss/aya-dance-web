@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface CategoryListProps {
   categories: string[];
   selectedCategory: string;
@@ -6,7 +8,7 @@ interface CategoryListProps {
 
 const CategoryList: React.FC<CategoryListProps> = ({ categories, selectedCategory, onSelectCategory }) => {
   return (
-    <div className="w-48 border-r border-gray-300 bg-white dark:bg-neutral-800">
+    <div className="w-48 border-r border-gray-300 bg-white dark:bg-neutral-800 flex-shrink-0">
       {categories.map(category => (
         <div
           key={category}
