@@ -21,7 +21,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
   const [filteredVideos, setFilteredVideos] = useState<Video[]>(initialVideos);
   const [categoryScrollPositions, setCategoryScrollPositions] = useState<CategoryScrollPositions>({});
   const videoListRef = useRef<HTMLDivElement>(null);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(50);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [inputPage, setInputPage] = useState<string | null>(null);
 
@@ -114,7 +114,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
           <div className="relative mb-4">
             <div
               className="absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none">
-              <img src={"/search.svg"} className="text-gray-30 w-4" />
+              <img src={"/search.svg"} className="text-gray-30 w-4"/>
             </div>
             <input
               type="text"
@@ -140,7 +140,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
             )}
           </div>
           <div className="flex-1 overflow-y-auto scrollbar-custom" ref={videoListRef} onScroll={handleScroll}>
-            <VideoList videos={paginatedVideos}/>
+            <VideoList videos={paginatedVideos} emptyHeading={`No matches for "${searchTerm}"`}/>
           </div>
           <div className="flex justify-end mt-4">
             <div>
@@ -149,7 +149,6 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
                 onChange={handleItemsPerPageChange}
                 className="border px-2 py-1 mr-2"
               >
-                <option value="20">20 per page</option>
                 <option value="50">50 per page</option>
                 <option value="100">100 per page</option>
                 <option value="300">300 per page</option>
