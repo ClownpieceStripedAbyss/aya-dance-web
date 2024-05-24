@@ -138,7 +138,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
           onClick={handleLike}
           className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary}">
           <Image
-            src={isLiked ? '/fav-is.svg' : '/fav.svg'}
+            src={isLiked ? '/heart-filled.svg' : '/heart.svg'}
             alt="Favorite"
             width={24}
             height={24}
