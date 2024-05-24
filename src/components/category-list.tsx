@@ -1,3 +1,4 @@
+// /src/components/CategoryList.tsx
 import React from 'react';
 
 interface CategoryListProps {

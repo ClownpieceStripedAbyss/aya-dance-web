@@ -1,3 +1,4 @@
+// /src/components/VideoPage.tsx
 'use client';
 
 import { useEffect, useState } from 'react';

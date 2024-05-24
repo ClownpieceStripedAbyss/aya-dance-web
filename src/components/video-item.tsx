@@ -1,3 +1,4 @@
+// /src/components/VideoItem.tsx
 import React from 'react';
 import { Video } from '@/types/video';
 import Image from 'next/image';

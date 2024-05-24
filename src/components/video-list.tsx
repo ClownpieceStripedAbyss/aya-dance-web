@@ -1,3 +1,4 @@
+// /src/components/VideoList.tsx
 import { Video } from '@/types/video';
 import VideoItem from './video-item';
 
