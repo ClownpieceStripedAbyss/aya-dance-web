@@ -1,4 +1,6 @@
+import React from 'react';
 import { Video } from '@/types/video';
+import Image from 'next/image';
 
 interface VideoItemProps {
   video: Video;
@@ -6,13 +8,21 @@ interface VideoItemProps {
 
 const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
   return (
-    <div className="flex items-center p-4 border-b border-gray-300 bg-white dark:bg-neutral-800">
-      <div className="w-30 h-20 mr-4 border border-gray-300 flex items-center justify-center">
-        <img src={video.thumbnailUrl} alt={video.title} className="max-w-full max-h-full" />
-      </div>
-      <div className="flex-1">
-        <div className="font-bold text-lg text-balance">{video.title}</div>
-        <div className="text-sm text-gray-500">Start: {video.start}, End: {video.end}, Volume: {video.volume}</div>
+    <div className="flex items-center justify-between p-4 mb-4 rounded-lg border-b border-gray-300 bg-white dark:bg-neutral-800">
+      <div className="flex items-center">
+        <div className="w-32 h-24 border mr-4 flex items-center justify-center bg-gray-100">
+          <Image
+            src={video.thumbnailUrl}
+            alt={video.title}
+            width={128}
+            height={96}
+            className="object-cover"
+          />
+        </div>
+        <div>
+          <h2 className="text-xl font-bold mb-1">{video.title}</h2>
+          <p className="text-sm text-gray-500">Start: {video.start}, End: {video.end}, Volume: {video.volume}</p>
+        </div>
       </div>
       <div className="flex items-center justify-center space-x-2">
         <button className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center">Play</button>
