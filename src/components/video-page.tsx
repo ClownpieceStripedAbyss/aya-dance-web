@@ -104,14 +104,14 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
   return (
     <main className="root-container flex min-h-screen flex-col items-center justify-between">
       <div className="z-10 w-full max-w-7xl flex-1 flex flex-row justify-between font-mono text-sm lg:flex">
-        <div className="category-list-container scrollbar-custom">
+        <div className="category-list-container overflow-y-auto scrollbar-custom">
           <CategoryList
             categories={categories}
             selectedCategory={selectedCategory}
             onSelectCategory={handleSelectCategory}
           />
         </div>
-        <div className="video-list-container flex-1 flex flex-col pb-24 px-4 h-full">
+        <div className="video-list-container flex-1 flex flex-col px-4 h-full">
           <div className="search-box-sticky">
             <SearchBox
               onSearchTermClear={handleClearSearch}
@@ -124,16 +124,16 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
           <div className="flex-1 overflow-y-auto scrollbar-custom" ref={videoListRef} onScroll={handleScroll}>
             <VideoList videos={paginatedVideos}/>
           </div>
-          <div className="paging-container-sticky flex justify-end mt-4">
+          <div className="paging-container-sticky flex justify-between mt-4">
             <div>
               <select
                 value={itemsPerPage}
                 onChange={handleItemsPerPageChange}
                 className="border px-2 py-1 mr-2"
               >
-                <option value="50">50 per page</option>
-                <option value="100">100 per page</option>
-                <option value="300">300 per page</option>
+                <option value="50">50 首/页</option>
+                <option value="100">100 首/页</option>
+                <option value="300">300 首/页</option>
               </select>
             </div>
             <div>
@@ -174,11 +174,12 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
           position: sticky;
           top: 0;
           height: calc(100vh - 24px); /* Adjust height to ensure it fits within the viewport */
-          overflow-y: auto;
           padding-top: 24px;
         }
         .video-list-container {
           width: 100%;
+          height: calc(100vh); /* Adjust height to ensure it fits within the viewport */
+          padding-bottom: 24px;
         }
         .search-box-sticky {
           position: sticky;
