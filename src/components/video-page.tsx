@@ -104,7 +104,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
   return (
     <main className="root-container flex min-h-screen flex-col items-center justify-between">
       <div className="z-10 w-full max-w-7xl flex-1 flex flex-row justify-between font-mono text-sm lg:flex">
-        <div className="category-list-container overflow-y-auto scrollbar-custom">
+        <div className="category-list-container scrollbar-custom">
           <CategoryList
             categories={categories}
             selectedCategory={selectedCategory}
@@ -167,45 +167,26 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
         </div>
       </div>
       <style jsx>{`
-        // @media (max-width: 1024px) {
-          .root-container {
-            padding: 0px;
-          }
-          .category-list-container, .video-list-container {
-            position: relative;
-          }
-          .category-list-container {
-            margin-bottom: 16px;
-            padding-top: 24px;
-          }
-          .search-box-sticky {
-            position: sticky;
-            top: 0px;
-            z-index: 10;
-            padding-top: 24px;
-            background-color: rgb(var(--background-start-rgb));
-          }
-        // }
-        // @media (min-width: 1025px) {
-        //   .root-container {
-        //     padding: 24px;
-        //   }
-        //   .category-list-container {
-        //     position: fixed;
-        //     inset-y: 12;
-        //     left: 20;
-        //     width: 25%;
-        //   }
-        //   .video-list-container {
-        //     position: fixed;
-        //     width: 60%;
-        //     left: 25%;
-        //     padding-left: 4%;
-        //   }
-        //   .search-box-sticky {
-        //     position: static;
-        //   }
-        // }
+        .root-container {
+          padding: 0px;
+        }
+        .category-list-container {
+          position: sticky;
+          top: 0;
+          height: calc(100vh - 24px); /* Adjust height to ensure it fits within the viewport */
+          overflow-y: auto;
+          padding-top: 24px;
+        }
+        .video-list-container {
+          width: 100%;
+        }
+        .search-box-sticky {
+          position: sticky;
+          top: 0px;
+          z-index: 10;
+          padding-top: 24px;
+          background-color: rgb(var(--background-start-rgb));
+        }
       `}</style>
     </main>
   );
