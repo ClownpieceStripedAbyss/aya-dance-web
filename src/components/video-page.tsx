@@ -20,6 +20,9 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
   const [filteredVideos, setFilteredVideos] = useState<Video[]>(initialVideos);
   const [categoryScrollPositions, setCategoryScrollPositions] = useState<CategoryScrollPositions>({});
   const videoListRef = useRef<HTMLDivElement>(null);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [inputPage, setInputPage] = useState<string>('');
 
   const ALL_CAT = 'All';
 
@@ -33,6 +36,10 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
     });
     setFilteredVideos(filtered);
   }, [selectedCategory, searchTerm, videos]);
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset to first page whenever filter changes
+  }, [filteredVideos]);
 
   const categories = Array.from(new Set(
     [ALL_CAT].concat(
@@ -48,10 +55,8 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
 
   const handleSelectCategory = (category: string) => {
     setSelectedCategory(category);
-    // Scroll the video list to the previous position for this category
-    if (videoListRef && videoListRef.current) {
-      let pos = categoryScrollPositions[category] ? categoryScrollPositions[category] : 0;
-      videoListRef.current.scrollTo(0, pos);
+    if (categoryScrollPositions[category] && videoListRef.current) {
+      videoListRef.current.scrollTo(0, categoryScrollPositions[category]);
     }
   };
 
@@ -65,6 +70,34 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
       }));
     }
   };
+
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(parseInt(e.target.value, 10));
+  };
+
+  const handleFirstPageClick = () => {
+    setCurrentPage(1);
+  };
+
+  const handleLastPageClick = () => {
+    const totalPages = Math.ceil(filteredVideos.length / itemsPerPage);
+    setCurrentPage(totalPages);
+  };
+
+  const handlePageChange = () => {
+    if (inputPage.trim() !== '') {
+      let page = parseInt(inputPage, 10);
+      const totalPages = Math.ceil(filteredVideos.length / itemsPerPage);
+      page = Math.min(Math.max(page, 1), totalPages);
+      setCurrentPage(page);
+      setInputPage('');
+    }
+  };
+
+  const totalPages = Math.ceil(filteredVideos.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, filteredVideos.length);
+  const paginatedVideos = filteredVideos.slice(startIndex, endIndex);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-12">
@@ -102,7 +135,36 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
             )}
           </div>
           <div className="flex-1 overflow-y-auto" ref={videoListRef} onScroll={handleScroll}>
-            <VideoList videos={filteredVideos}/>
+            <VideoList videos={paginatedVideos}/>
+          </div>
+          <div className="flex justify-between mt-4">
+            <div>
+              <select value={itemsPerPage} onChange={handleItemsPerPageChange} className="border px-2 py-1">
+                <option value="5">5 per page</option>
+                <option value="10">10 per page</option>
+                <option value="15">15 per page</option>
+                <option value="20">20 per page</option>
+              </select>
+            </div>
+            <div>
+              <button onClick={handleFirstPageClick} disabled={currentPage === 1} className="px-2 py-1 mr-2 border">First</button>
+              <button onClick={handleLastPageClick} disabled={currentPage === totalPages} className="px-2 py-1 mr-2 border">Last</button>
+              <button onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1} className="px-2 py-1 mr-2 border">Prev</button>
+              <button onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages} className="px-2 py-1 mr-2 border">Next</button>
+              <input
+                type="text"
+                value={inputPage}
+                onChange={(e) => setInputPage(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handlePageChange();
+                  }
+                }}
+                className="border px-2 py-1 mr-2"
+                style={{ width: '50px', textAlign: 'center' }}
+              />
+              <span>/ {totalPages}</span>
+            </div>
           </div>
         </div>
       </div>
