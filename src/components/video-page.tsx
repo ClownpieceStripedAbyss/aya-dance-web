@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import CategoryList from './category-list';
 import VideoList from './video-list';
 import { Video } from '@/types/video';
+import '@/styles/scrollbar.css';
 
 interface VideoPageProps {
   initialVideos: Video[];
@@ -102,7 +103,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-12">
       <div className="z-10 w-full max-w-7xl flex-1 flex flex-row justify-between font-mono text-sm lg:flex">
-        <div className="fixed w-1/4 inset-y-12 left-20 overflow-y-auto">
+        <div className="fixed inset-y-12 left-20 overflow-y-auto scrollbar-custom rounded-lg">
           <CategoryList
             categories={categories}
             selectedCategory={selectedCategory}
@@ -138,7 +139,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
               </button>
             )}
           </div>
-          <div className="flex-1 overflow-y-auto" ref={videoListRef} onScroll={handleScroll}>
+          <div className="flex-1 overflow-y-auto scrollbar-custom" ref={videoListRef} onScroll={handleScroll}>
             <VideoList videos={paginatedVideos}/>
           </div>
           <div className="flex justify-end mt-4">

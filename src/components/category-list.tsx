@@ -13,7 +13,7 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories, selectedCategor
       {categories.map(category => (
         <div
           key={category}
-          className={`p-4 cursor-pointer ${category === selectedCategory ? 'bg-gray-200 dark:bg-neutral-700' : 'bg-white dark:bg-neutral-800'}`}
+          className={`p-4 border-b border-gray-300 cursor-pointer ${category === selectedCategory ? 'bg-gray-200 dark:bg-neutral-700' : 'bg-white dark:bg-neutral-800'}`}
           onClick={() => onSelectCategory(category)}>
           {category}
         </div>
