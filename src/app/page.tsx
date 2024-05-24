@@ -31,7 +31,7 @@ import VideoPage from '../components/video-page';
 // }
 async function fetchVideos(): Promise<Video[]> {
   return [...Array(500)].map((_, i) => ({
-    id: 1,
+    id: i,
     title: 'Video ' + i,
     category: 1,
     categoryName: 'Category ' + (i % 10),

@@ -1,5 +1,4 @@
-// /src/components/VideoItem.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Video } from '@/types/video';
 import Image from 'next/image';
 
@@ -8,6 +7,44 @@ interface VideoItemProps {
 }
 
 const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
+  const [isLiked, setIsLiked] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    roomUrl: '',
+    targetUser: '',
+    singerName: '',
+    message: '',
+    privateMessage: ''
+  });
+
+  const handleLike = () => {
+    setIsLiked(!isLiked);
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Handle the submit logic here
+    console.log('Form submitted:', formData);
+    handleCloseModal();
+  };
+
+  const isSubmitDisabled = !formData.roomUrl || !formData.targetUser;
+
   return (
     <div
       className="flex items-center justify-between p-4 mb-4 rounded-lg border-b border-gray-300 bg-white dark:bg-neutral-800">
@@ -29,7 +66,9 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
         </div>
       </div>
       <div className="flex items-center justify-center space-x-2">
-        <button className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary">
+        <button
+          onClick={() => window.open(`https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`, '_blank')}
+          className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary">
           <Image
             src="/play.svg"
             alt="Play"
@@ -37,7 +76,9 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
             height={24}
           />
         </button>
-        <button className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary">
+        <button
+          onClick={handleLike}
+          className={`outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 ${isLiked ? 'text-red-500' : 'text-tertiary'}`}>
           <Image
             src="/fav.svg"
             alt="Favorite"
@@ -45,7 +86,9 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
             height={24}
           />
         </button>
-        <button className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary">
+        <button
+          onClick={handleOpenModal}
+          className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary">
           <Image
             src="/list.svg"
             alt="Add to Remote Receipt"
@@ -54,6 +97,91 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
           />
         </button>
       </div>
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg w-96">
+            <h3 className="text-lg font-bold mb-4">Request a Song</h3>
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Room URL</label>
+                <input
+                  type="text"
+                  name="roomUrl"
+                  value={formData.roomUrl}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Target User</label>
+                <input
+                  type="text"
+                  name="targetUser"
+                  value={formData.targetUser}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Song ID</label>
+                <input
+                  type="text"
+                  name="songId"
+                  value={video.id}
+                  className="w-full p-2 border rounded"
+                  readOnly
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Singer Name</label>
+                <input
+                  type="text"
+                  name="singerName"
+                  value={formData.singerName}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Message</label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded"
+                ></textarea>
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Private Message</label>
+                <textarea
+                  name="privateMessage"
+                  value={formData.privateMessage}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded"
+                ></textarea>
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="bg-gray-500 text-white p-2 rounded mr-2 hover:bg-gray-700 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={`bg-blue-500 text-white p-2 rounded hover:bg-blue-700 transition ${isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={isSubmitDisabled}
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
