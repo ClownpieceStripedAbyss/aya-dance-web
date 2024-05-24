@@ -161,7 +161,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                 </div>
               </div>
               <a href={videoUrl(video)} target="_blank"
-                 className="w-24 text-blue-500 hover:underline">预览视频</a>
+                 className="text-blue-500 hover:underline">预览视频</a>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
