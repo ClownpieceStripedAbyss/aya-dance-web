@@ -37,3 +37,7 @@ next-env.d.ts
 
 # Intellij IDEA
 .idea/
+
+# Yarn
+.yarn/
+.yarnrc*
