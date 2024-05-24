@@ -104,7 +104,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
         </div>
         <div>
           <h2
-            className="text-xl font-bold mb-1 outline-link dark:outline-link outline-offset-4 group flex flex-col flex-1 gap-0.5">
+            className="text-base font-bold mb-1 outline-link dark:outline-link outline-offset-4 group flex flex-col flex-1 gap-0.5">
             <a href={videoUrl(video)} target="_blank" className="group-hover:underline">{video.title}</a>
           </h2>
           <p className="text-sm text-gray-500 text-tertiary leading-snug">ID: {video.id}</p>
@@ -143,7 +143,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
         </button>
       </div>
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="z-20 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg w-full max-w-2xl">
             <h3 className="text-lg font-bold mb-4">为好友点歌！</h3>
             <div className="mb-4 flex items-center justify-between">
@@ -253,7 +253,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
         </div>
       )}
       {notification && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="z-20 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg w-full max-w-md">
             <h3 className="text-lg font-bold mb-4">{notification.success ? '好耶！' : '坏耶...'}</h3>
             <p>{notification.message}</p>
