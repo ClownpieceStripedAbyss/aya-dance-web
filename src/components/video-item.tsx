@@ -117,8 +117,24 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
       </div>
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-96">
+          <div className="bg-white p-6 rounded-lg w-full max-w-2xl">
             <h3 className="text-lg font-bold mb-4">为好友点歌！</h3>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center">
+                <Image
+                  src={video.thumbnailUrl}
+                  alt={video.title}
+                  width={64}
+                  height={48}
+                  className="object-cover rounded mr-4"
+                />
+                <div>
+                  <h4 className="font-bold">{video.title}</h4>
+                  <p className="text-sm text-gray-500">ID: {video.id}</p>
+                </div>
+              </div>
+              <a href={`https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`} target="_blank" className="text-blue-500 hover:underline">预览视频</a>
+            </div>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2">房间 URL</label>
@@ -131,36 +147,32 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                   required
                 />
               </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">想要为谁点歌？</label>
-                <input
-                  type="text"
-                  name="targetUser"
-                  value={formData.targetUser}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">歌曲 ID</label>
-                <input
-                  type="text"
-                  name="songId"
-                  value={video.id}
-                  className="w-full p-2 border rounded"
-                  readOnly
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">点歌人（可选）</label>
-                <input
-                  type="text"
-                  name="singerName"
-                  value={formData.singerName}
-                  onChange={handleChange}
-                  className="w-full p-2 border rounded"
-                />
+              <div className="mb-4 flex items-center space-x-4">
+                <div className="w-1/2">
+                  <label className="block text-gray-700 mb-2">点歌人（可选）</label>
+                  <input
+                    type="text"
+                    name="singerName"
+                    value={formData.singerName}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                  />
+                </div>
+                <div className="text-center">
+                  <label className="block text-gray-700 mb-2">&nbsp;</label>
+                  <span className="block text-gray-700">→</span>
+                </div>
+                <div className="w-1/2">
+                  <label className="block text-gray-700 mb-2">想要为谁点歌？</label>
+                  <input
+                    type="text"
+                    name="targetUser"
+                    value={formData.targetUser}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                    required
+                  />
+                </div>
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2">公开附言（可选）</label>
@@ -170,6 +182,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                   onChange={handleChange}
                   className="w-full p-2 border rounded"
                 ></textarea>
+                <p className="text-xs text-gray-500">公开附言会公开展示给房间内所有人</p>
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2">私密附言（可选）</label>
@@ -179,6 +192,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                   onChange={handleChange}
                   className="w-full p-2 border rounded"
                 ></textarea>
+                <p className="text-xs text-gray-500">这是悄悄话哦~</p>
               </div>
               <div className="flex justify-end">
                 <button
@@ -186,14 +200,14 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                   onClick={handleCloseModal}
                   className="bg-gray-500 text-white p-2 rounded mr-2 hover:bg-gray-700 transition"
                 >
-                  Cancel
+                  取消
                 </button>
                 <button
                   type="submit"
                   className={`bg-blue-500 text-white p-2 rounded hover:bg-blue-700 transition ${isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                   disabled={isSubmitDisabled}
                 >
-                  Submit
+                  提交点歌请求
                 </button>
               </div>
             </form>
