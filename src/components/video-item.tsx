@@ -95,7 +95,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
       <div className="flex items-center">
         <div className="w-32 mr-4 flex items-center justify-center">
           <Image
-            src={video.thumbnailUrl}
+            src={video.thumbnailUrl || '/unity-error.jpg'}
             alt={video.title}
             width={128}
             height={96}
@@ -148,7 +148,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center">
                 <Image
-                  src={video.thumbnailUrl}
+                  src={video.thumbnailUrl || '/unity-error.jpg'}
                   alt={video.title}
                   width={64}
                   height={48}
