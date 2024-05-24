@@ -9,13 +9,15 @@ interface VideoItemProps {
 const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     roomUrl: 'https://aya-dance-cf.kiva.moe/r/ad-',
     targetUser: '',
-    singerName: '',
+    senderName: '',
     message: '',
-    privateMessage: ''
+    whisper: '',
   });
+  const [notification, setNotification] = useState<{ message: string; success: boolean } | null>(null);
 
   useEffect(() => {
     const savedData = localStorage.getItem('requestFormData');
@@ -35,7 +37,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
     } else {
       setFormData({
         ...formData,
-        roomUrl: 'https://aya-dance-cf.kiva.moe/r/ad-'
+        roomUrl: 'https://aya-dance-cf.kiva.moe/r/ad-',
       });
     }
     setIsModalOpen(true);
@@ -48,17 +50,41 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const newFormData = {
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     };
     setFormData(newFormData);
     localStorage.setItem('requestFormData', JSON.stringify(newFormData));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle the submit logic here
-    console.log('Form submitted:', formData);
-    handleCloseModal();
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(formData.roomUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-cache',
+        body: JSON.stringify({
+          target: formData.targetUser,
+          sender: formData.senderName,
+          id: video.id,
+          message: formData.message,
+          whisper: formData.whisper,
+        }),
+      });
+      const result: { message: string } = await response.json();
+      if (result.message === 'ok') {
+        setNotification({ message: '点歌成功，待好友确认后就会加入队列中啦', success: true });
+      } else {
+        setNotification({ message: result.message, success: false });
+      }
+    } catch (error: any) {
+      setNotification({ message: error.toString(), success: false });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const isSubmitDisabled = !formData.roomUrl || !formData.targetUser;
@@ -133,7 +159,8 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                   <p className="text-sm text-gray-500">ID: {video.id}</p>
                 </div>
               </div>
-              <a href={`https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`} target="_blank" className="text-blue-500 hover:underline">预览视频</a>
+              <a href={`https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`} target="_blank"
+                 className="text-blue-500 hover:underline">预览视频</a>
             </div>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
@@ -152,8 +179,8 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                   <label className="block text-gray-700 mb-2">点歌人（可选）</label>
                   <input
                     type="text"
-                    name="singerName"
-                    value={formData.singerName}
+                    name="senderName"
+                    value={formData.senderName}
                     onChange={handleChange}
                     className="w-full p-2 border rounded"
                   />
@@ -187,8 +214,8 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2">私密附言（可选）</label>
                 <textarea
-                  name="privateMessage"
-                  value={formData.privateMessage}
+                  name="whisper"
+                  value={formData.whisper}
                   onChange={handleChange}
                   className="w-full p-2 border rounded"
                 ></textarea>
@@ -207,10 +234,40 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                   className={`bg-blue-500 text-white p-2 rounded hover:bg-blue-700 transition ${isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                   disabled={isSubmitDisabled}
                 >
-                  提交点歌请求
+                  {isSubmitting ? (
+                    <Image
+                      src="./sync.svg"
+                      alt="Sending"
+                      width={12}
+                      height={12}
+                      className="animate-spin ml-5 mr-5 h-5 w-8 text-white fill-white"
+                    />
+                  ) : (
+                    '提交点歌请求'
+                  )}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {notification && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg w-full max-w-md">
+            <h3 className="text-lg font-bold mb-4">{notification.success ? 'Success' : 'Error'}</h3>
+            <p>{notification.message}</p>
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  setNotification(null)
+                  if (notification?.success)
+                    handleCloseModal();
+                }}
+                className="bg-blue-500 text-white p-2 rounded mt-4 hover:bg-blue-700 transition"
+              >
+                确认
+              </button>
+            </div>
           </div>
         </div>
       )}
