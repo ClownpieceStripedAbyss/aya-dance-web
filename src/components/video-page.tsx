@@ -4,24 +4,22 @@ import React, { useEffect, useRef, useState } from 'react';
 import CategoryList from './category-list';
 import VideoList from './video-list';
 import SearchBox from './search-box';
-import { Video } from '@/types/video';
+import { Category, Video } from '@/types/video';
 import '@/styles/scrollbar.css';
 
 interface VideoPageProps {
-  initialVideos: Video[];
+  initialCategories: Category[];
 }
 
 interface CategoryScrollPositions {
   [category: string]: number;
 }
 
-const CATEGORY_ALL = 'All';
-
-const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
-  const [videos, setVideos] = useState<Video[]>(initialVideos);
-  const [selectedCategory, setSelectedCategory] = useState<string>(CATEGORY_ALL);
+const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
+  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]?.title || '');
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [filteredVideos, setFilteredVideos] = useState<Video[]>(videos);
+  const [filteredVideos, setFilteredVideos] = useState<Video[]>(categories[0]?.entries || []);
   const [categoryScrollPositions, setCategoryScrollPositions] = useState<CategoryScrollPositions>({});
   const videoListRef = useRef<HTMLDivElement>(null);
   const [itemsPerPage, setItemsPerPage] = useState<number>(50);
@@ -29,24 +27,17 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
   const [inputPage, setInputPage] = useState<string | null>(null);
 
   useEffect(() => {
+    const videos = categories.find(category => category.title === selectedCategory)?.entries || [];
     const filtered = videos.filter(video => {
-      return (
-        (selectedCategory && selectedCategory !== CATEGORY_ALL ? video.categoryName === selectedCategory : true) &&
-        (video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          video.titleSpell.toLowerCase().includes(searchTerm.toLowerCase()))
-      );
+      return video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        video.titleSpell.toLowerCase().includes(searchTerm.toLowerCase());
     });
     setFilteredVideos(filtered);
-  }, [selectedCategory, searchTerm, videos]);
+  }, [selectedCategory, searchTerm]);
 
   useEffect(() => {
     setCurrentPage(1); // Reset to first page whenever filter changes
   }, [filteredVideos]);
-
-  const categories = Array.from(new Set(
-    [CATEGORY_ALL].concat(
-      videos.map(video => video.categoryName),
-    )));
 
   const handleClearSearch = () => {
     if (videoListRef && videoListRef.current) {
