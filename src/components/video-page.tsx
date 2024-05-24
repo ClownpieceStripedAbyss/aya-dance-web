@@ -140,10 +140,10 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
           <div className="flex justify-between mt-4">
             <div>
               <select value={itemsPerPage} onChange={handleItemsPerPageChange} className="border px-2 py-1">
-                <option value="5">5 per page</option>
-                <option value="10">10 per page</option>
-                <option value="15">15 per page</option>
                 <option value="20">20 per page</option>
+                <option value="50">50 per page</option>
+                <option value="100">100 per page</option>
+                <option value="300">300 per page</option>
               </select>
             </div>
             <div>
