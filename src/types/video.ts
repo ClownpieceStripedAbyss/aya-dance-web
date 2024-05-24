@@ -38,28 +38,40 @@ export const videoMatchesQuery = (video: Video, query: string) => {
 }
 
 const VaguelyMatches = (kw: string[], titleSpell: string) => {
-  if (!kw || kw.length === 0) return false;
+  if (kw.length === 0) return false;
 
   const spell = titleSpell.split(' ');
   if (kw.length > spell.length) return false;
 
-  for (let i = 0; i < spell.length - kw.length + 1; i++) {
-    let matches = true;
-    for (let j = 0; j < kw.length; j++) {
-      if (!spell[i + j].toLowerCase().startsWith(kw[j].toLowerCase())) {
-        matches = false;
-        break;
-      }
-    }
-    if (matches) return true;
-  }
+  return spell.some((_, i) =>
+    kw.every((keyword, j) => spell[i + j]?.toLowerCase().startsWith(keyword.toLowerCase())),
+  );
 
-  return false;
+  // Equivalent UdonSharp code:
+  // if (!kw || kw.length === 0) return false;
+  //
+  // const spell = titleSpell.split(' ');
+  // if (kw.length > spell.length) return false;
+  //
+  // for (let i = 0; i < spell.length - kw.length + 1; i++) {
+  //   let matches = true;
+  //   for (let j = 0; j < kw.length; j++) {
+  //     if (!spell[i + j].toLowerCase().startsWith(kw[j].toLowerCase())) {
+  //       matches = false;
+  //       break;
+  //     }
+  //   }
+  //   if (matches) return true;
+  // }
+  //
+  // return false;
 }
 
 const WordMatches = (kw: string[], text: string) => {
-  for (const k of kw)
-    if (text.toLowerCase().includes(k.toLowerCase()))
-      return true;
-  return false;
+  return kw.some(keyword => text.toLowerCase().includes(keyword.toLowerCase()));
+  // Equivalent UdonSharp code:
+  // for (const k of kw)
+  //   if (text.toLowerCase().includes(k.toLowerCase()))
+  //     return true;
+  // return false;
 }
