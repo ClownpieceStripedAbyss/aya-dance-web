@@ -56,8 +56,9 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
 
   const handleSelectCategory = (category: string) => {
     setSelectedCategory(category);
-    if (categoryScrollPositions[category] && videoListRef.current) {
-      videoListRef.current.scrollTo(0, categoryScrollPositions[category]);
+    if (videoListRef.current) {
+      let pos = categoryScrollPositions[category];
+      videoListRef.current.scrollTo(0, pos || 0);
     }
   };
 

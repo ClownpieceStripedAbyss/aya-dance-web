@@ -254,7 +254,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
       {notification && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg w-full max-w-md">
-            <h3 className="text-lg font-bold mb-4">{notification.success ? 'Success' : 'Error'}</h3>
+            <h3 className="text-lg font-bold mb-4">{notification.success ? '好耶！' : '坏耶...'}</h3>
             <p>{notification.message}</p>
             <div className="flex justify-end">
               <button
