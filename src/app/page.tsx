@@ -1,35 +1,46 @@
 import { Video } from '@/types/video';
 import VideoPage from '../components/video-page';
 
+// async function fetchVideos(): Promise<Video[]> {
+//   const response = await fetch('https://aya-dance-cf.kiva.moe/aya-api/v1/songs');
+//   if (!response.ok) {
+//     throw new Error('Failed to fetch videos');
+//   }
+//
+//   const data = await response.json() as VideoIndex; // 解析为 VideoIndex 类型
+//   const videos: Video[] = [];
+//
+//   var category = data.categories[0];
+//   category.entries.forEach((video) => {
+//     videos.push({
+//       id: video.id,
+//       title: video.title,
+//       category: video.category,
+//       categoryName: video.categoryName,
+//       titleSpell: video.titleSpell,
+//       volume: video.volume,
+//       start: video.start,
+//       end: video.end,
+//       flip: video.flip,
+//       thumbnailUrl: video.thumbnailUrl,
+//     });
+//   });
+//
+//   return videos;
+// }
 async function fetchVideos(): Promise<Video[]> {
-  // Replace with your data fetching logic
-  return [
-    {
-      id: 1,
-      title: 'Video 1',
-      category: 1,
-      categoryName: 'Category 1',
-      titleSpell: 'video1',
-      volume: 1,
-      start: 0,
-      end: 10,
-      flip: false,
-      thumbnailUrl: '/thumbnails/1.jpg',
-    },
-    {
-      id: 2,
-      title: 'Video 2',
-      category: 2,
-      categoryName: 'Category 2',
-      titleSpell: 'video2',
-      volume: 2,
-      start: 10,
-      end: 20,
-      flip: false,
-      thumbnailUrl: '/thumbnails/2.jpg',
-    },
-    // more videos...
-  ];
+  return [...Array(500)].map((_, i) => ({
+    id: 1,
+    title: 'Video ' + i,
+    category: 1,
+    categoryName: 'Category ' + (i % 10),
+    titleSpell: 'video1',
+    volume: 1,
+    start: 0,
+    end: 10,
+    flip: false,
+    thumbnailUrl: '/thumbnails/1.jpg',
+  }));
 }
 
 const Home: React.FC = async () => {

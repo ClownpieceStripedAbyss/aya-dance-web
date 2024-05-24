@@ -1,3 +1,13 @@
+export interface VideoIndex {
+  updated_at: number,
+  categories: Category[],
+}
+
+export interface Category {
+  title: string,
+  entries: Video[],
+}
+
 export interface Video {
   id: number;
   title: string;
