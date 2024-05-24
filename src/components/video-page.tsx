@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import CategoryList from './category-list';
 import VideoList from './video-list';
 import SearchBox from './search-box';
-import { Category, Video } from '@/types/video';
+import { Category, Video, videoMatchesQuery } from '@/types/video';
 import '@/styles/scrollbar.css';
 
 interface VideoPageProps {
@@ -29,11 +29,10 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
   useEffect(() => {
     const videos = categories.find(category => category.title === selectedCategory)?.entries || [];
     const filtered = videos.filter(video => {
-      return video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        video.titleSpell.toLowerCase().includes(searchTerm.toLowerCase());
+      return videoMatchesQuery(video, searchTerm);
     });
     setFilteredVideos(filtered);
-  }, [selectedCategory, searchTerm]);
+  }, [selectedCategory, searchTerm, categories]);
 
   useEffect(() => {
     setCurrentPage(1); // Reset to first page whenever filter changes
