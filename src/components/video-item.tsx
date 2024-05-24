@@ -101,14 +101,14 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
             className="object-cover outline-link dark:outline-link outline-offset-2 aspect-video w-full h-full select-none flex-col shadow-inner-border rounded-lg flex items-center overflow-hidden justify-center align-middle text-white/50 bg-cover bg-white bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] hover:opacity-60 transition-opacity"
           />
         </div>
-        <div>
+        <div className="flex-grow">
           <h2 className="text-base font-bold mb-1 outline-link dark:outline-link outline-offset-4 group flex flex-col flex-1 gap-0.5">
             <a href={videoUrl(video)} target="_blank" className="group-hover:underline">{video.title}</a>
           </h2>
           <p className="text-sm text-gray-500 text-tertiary leading-snug">ID: {video.id}</p>
         </div>
       </div>
-      <div className="flex items-center justify-center space-x-2">
+      <div className="flex items-center justify-center space-x-2 flex-shrink-0">
         <button
           onClick={() => window.open(`https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`, '_blank')}
           className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary">
