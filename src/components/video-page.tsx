@@ -103,14 +103,14 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-12">
       <div className="z-10 w-full max-w-7xl flex-1 flex flex-row justify-between font-mono text-sm lg:flex">
-        <div className="fixed inset-y-12 left-20 overflow-y-auto scrollbar-custom rounded-lg">
+        <div className="fixed inset-y-12 left-20 overflow-y-auto scrollbar-custom">
           <CategoryList
             categories={categories}
             selectedCategory={selectedCategory}
             onSelectCategory={handleSelectCategory}
           />
         </div>
-        <div className="fixed w-3/4 flex-1 flex flex-col pb-24 px-4 h-full">
+        <div className="fixed w-3/4 flex-1 flex flex-col pb-24 px-4 h-full ml-1/4">
           <div className="relative mb-4">
             <div
               className="absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none">
@@ -173,7 +173,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
                 }}
                 className="border px-2 py-1 mr-2 w-12 text-center"
               />
-              <span className="px-2 py-1 mr-2 w-12">/ {totalPages}</span>
+              <span className="px-2 py-1 mr-2 w-12 text-base">/ {totalPages}</span>
               <button onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                       disabled={currentPage === totalPages}
                       className="px-2 py-1 mr-2 border">→
