@@ -23,6 +23,13 @@ export interface Video {
 
 export const videoUrl = (video: Video) => `https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`;
 export const videoThumbnailUrl = (video: Video) => {
+  if (video.originalUrl.length > 0) {
+    const youtube = video.originalUrl.find(url => url.includes('youtube.com'));
+    if (youtube) {
+      const videoId = youtube.split('v=')[1];
+      return `https://img.youtube.com/vi/${videoId}/0.jpg`;
+    }
+  }
   return "/unity-error.jpg";
 }
 
