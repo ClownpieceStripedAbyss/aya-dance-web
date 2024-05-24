@@ -105,8 +105,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
         <div>
           <h2
             className="text-xl font-bold mb-1 outline-link dark:outline-link outline-offset-4 group flex flex-col flex-1 gap-0.5">{video.title}</h2>
-          <p className="text-sm text-gray-500 text-tertiary leading-snug">Start: {video.start}, End: {video.end},
-            Volume: {video.volume}</p>
+          <p className="text-sm text-gray-500 text-tertiary leading-snug">ID: {video.id}</p>
         </div>
       </div>
       <div className="flex items-center justify-center space-x-2">
