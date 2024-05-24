@@ -39,17 +39,13 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
   }, [filteredVideos]);
 
   const handleClearSearch = () => {
-    if (videoListRef && videoListRef.current) {
-      videoListRef.current.scrollTo(0, 0);
-    }
+    videoListRef?.current?.scrollTo(0, 0);
   };
 
   const handleSelectCategory = (category: string) => {
     setSelectedCategory(category);
-    if (videoListRef.current) {
-      let pos = categoryScrollPositions[category];
-      videoListRef.current.scrollTo(0, pos || 0);
-    }
+    let pos = categoryScrollPositions[category];
+    videoListRef?.current?.scrollTo(0, pos || 0);
   };
 
   const handleScroll = () => {
@@ -69,12 +65,25 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
 
   const handleFirstPageClick = () => {
     setCurrentPage(1);
+    videoListRef?.current?.scrollTo(0, 0);
   };
 
   const handleLastPageClick = () => {
     const totalPages = Math.ceil(filteredVideos.length / itemsPerPage);
     setCurrentPage(totalPages);
+    videoListRef?.current?.scrollTo(0, 0);
   };
+
+  const handleNextPageClick = () => {
+    const totalPages = Math.ceil(filteredVideos.length / itemsPerPage);
+    setCurrentPage(Math.min(totalPages, currentPage + 1));
+    videoListRef?.current?.scrollTo(0, 0);
+  }
+
+  const handlePreviousPageClick = () => {
+    setCurrentPage(Math.max(1, currentPage - 1));
+    videoListRef?.current?.scrollTo(0, 0);
+  }
 
   const handlePageChange = () => {
     if (inputPage && inputPage.trim() !== '') {
@@ -83,6 +92,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
       page = Math.min(Math.max(page, 1), totalPages);
       setCurrentPage(page);
       setInputPage(null);
+      videoListRef?.current?.scrollTo(0, 0);
     }
   };
 
@@ -92,27 +102,29 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
   const paginatedVideos = filteredVideos.slice(startIndex, endIndex);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-12">
+    <main className="root-container flex min-h-screen flex-col items-center justify-between">
       <div className="z-10 w-full max-w-7xl flex-1 flex flex-row justify-between font-mono text-sm lg:flex">
-        <div className="fixed inset-y-12 left-20 overflow-y-auto scrollbar-custom">
+        <div className="category-list-container overflow-y-auto scrollbar-custom">
           <CategoryList
             categories={categories}
             selectedCategory={selectedCategory}
             onSelectCategory={handleSelectCategory}
           />
         </div>
-        <div className="fixed w-3/4 flex-1 flex flex-col pb-24 px-4 h-full ml-1/4">
-          <SearchBox
-            onSearchTermClear={handleClearSearch}
-            onSearchTermChange={(e) => setSearchTerm(e)}
-            itemsMatched={filteredVideos.length}
-            itemNounSingular={`Video in ${selectedCategory}`}
-            itemNounPlural={`Videos in ${selectedCategory}`}
-          />
+        <div className="video-list-container flex-1 flex flex-col pb-24 px-4 h-full">
+          <div className="search-box-sticky">
+            <SearchBox
+              onSearchTermClear={handleClearSearch}
+              onSearchTermChange={(e) => setSearchTerm(e)}
+              itemsMatched={filteredVideos.length}
+              itemNounSingular={`Video in ${selectedCategory}`}
+              itemNounPlural={`Videos in ${selectedCategory}`}
+            />
+          </div>
           <div className="flex-1 overflow-y-auto scrollbar-custom" ref={videoListRef} onScroll={handleScroll}>
             <VideoList videos={paginatedVideos}/>
           </div>
-          <div className="flex justify-end mt-4">
+          <div className="paging-container-sticky flex justify-end mt-4">
             <div>
               <select
                 value={itemsPerPage}
@@ -128,7 +140,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
               <button onClick={handleFirstPageClick} disabled={currentPage === 1}
                       className="px-2 py-1 mr-2 border">⇤
               </button>
-              <button onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}
+              <button onClick={handlePreviousPageClick} disabled={currentPage === 1}
                       className="px-2 py-1 mr-2 border">←
               </button>
               <input
@@ -143,7 +155,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
                 className="border px-2 py-1 mr-2 w-12 text-center"
               />
               <span className="px-2 py-1 mr-2 w-12 text-base">/ {totalPages}</span>
-              <button onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              <button onClick={handleNextPageClick}
                       disabled={currentPage === totalPages}
                       className="px-2 py-1 mr-2 border">→
               </button>
@@ -154,6 +166,47 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
           </div>
         </div>
       </div>
+      <style jsx>{`
+        // @media (max-width: 1024px) {
+          .root-container {
+            padding: 0px;
+          }
+          .category-list-container, .video-list-container {
+            position: relative;
+          }
+          .category-list-container {
+            margin-bottom: 16px;
+            padding-top: 24px;
+          }
+          .search-box-sticky {
+            position: sticky;
+            top: 0px;
+            z-index: 10;
+            padding-top: 24px;
+            background-color: rgb(var(--background-start-rgb));
+          }
+        // }
+        // @media (min-width: 1025px) {
+        //   .root-container {
+        //     padding: 24px;
+        //   }
+        //   .category-list-container {
+        //     position: fixed;
+        //     inset-y: 12;
+        //     left: 20;
+        //     width: 25%;
+        //   }
+        //   .video-list-container {
+        //     position: fixed;
+        //     width: 60%;
+        //     left: 25%;
+        //     padding-left: 4%;
+        //   }
+        //   .search-box-sticky {
+        //     position: static;
+        //   }
+        // }
+      `}</style>
     </main>
   );
 };
