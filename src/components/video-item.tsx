@@ -90,21 +90,19 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
   const isSubmitDisabled = !formData.roomUrl || !formData.targetUser;
 
   return (
-    <div
-      className="flex items-center justify-between p-4 mb-4 rounded-lg border-b border-gray-300 bg-white dark:bg-neutral-800">
+    <div className="flex items-center justify-between p-4 mb-4 rounded-lg border-b border-gray-300 bg-white dark:bg-neutral-800">
       <div className="flex items-center">
-        <div className="w-32 mr-4 flex items-center justify-center">
+        <div className="flex-shrink-0 w-32 h-24 mr-4 flex items-center justify-center">
           <Image
             src={videoThumbnailUrl(video)}
             alt={video.title}
             width={128}
             height={96}
-            className="object-cover outline-link dark:outline-link outline-offset-2 aspect-video w-32 xs:w-36 select-none flex-col shadow-inner-border rounded-lg flex items-center overflow-hidden justify-center align-middle text-white/50 bg-cover bg-white bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] hover:opacity-60 transition-opacity"
+            className="object-cover outline-link dark:outline-link outline-offset-2 aspect-video w-full h-full select-none flex-col shadow-inner-border rounded-lg flex items-center overflow-hidden justify-center align-middle text-white/50 bg-cover bg-white bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] hover:opacity-60 transition-opacity"
           />
         </div>
         <div>
-          <h2
-            className="text-base font-bold mb-1 outline-link dark:outline-link outline-offset-4 group flex flex-col flex-1 gap-0.5">
+          <h2 className="text-base font-bold mb-1 outline-link dark:outline-link outline-offset-4 group flex flex-col flex-1 gap-0.5">
             <a href={videoUrl(video)} target="_blank" className="group-hover:underline">{video.title}</a>
           </h2>
           <p className="text-sm text-gray-500 text-tertiary leading-snug">ID: {video.id}</p>
