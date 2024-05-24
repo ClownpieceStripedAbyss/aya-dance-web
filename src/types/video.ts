@@ -18,11 +18,13 @@ export interface Video {
   start: number;
   end: number;
   flip: boolean;
-  thumbnailUrl: string;
+  originalUrl: string[];
 }
 
 export const videoUrl = (video: Video) => `https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`;
-export const videoThumbnailUrl = (video: Video) => video.thumbnailUrl || '/unity-error.jpg';
+export const videoThumbnailUrl = (video: Video) => {
+  return "/unity-error.jpg";
+}
 
 export const videoMatchesQuery = (video: Video, query: string) => {
   const lowerQuery = query.toLowerCase();
