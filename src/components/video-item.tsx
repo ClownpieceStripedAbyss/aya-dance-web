@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Video } from '@/types/video';
 import Image from 'next/image';
 
@@ -10,18 +10,34 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    roomUrl: '',
+    roomUrl: 'https://aya-dance-cf.kiva.moe/r/ad-',
     targetUser: '',
     singerName: '',
     message: '',
     privateMessage: ''
   });
 
+  useEffect(() => {
+    const savedData = localStorage.getItem('requestFormData');
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    }
+  }, []);
+
   const handleLike = () => {
     setIsLiked(!isLiked);
   };
 
   const handleOpenModal = () => {
+    const savedData = localStorage.getItem('requestFormData');
+    if (savedData) {
+      setFormData(JSON.parse(savedData));
+    } else {
+      setFormData({
+        ...formData,
+        roomUrl: 'https://aya-dance-cf.kiva.moe/r/ad-'
+      });
+    }
     setIsModalOpen(true);
   };
 
@@ -30,10 +46,12 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
+    const newFormData = {
       ...formData,
       [e.target.name]: e.target.value
-    });
+    };
+    setFormData(newFormData);
+    localStorage.setItem('requestFormData', JSON.stringify(newFormData));
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -100,10 +118,10 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-6 rounded-lg w-96">
-            <h3 className="text-lg font-bold mb-4">Request a Song</h3>
+            <h3 className="text-lg font-bold mb-4">为好友点歌！</h3>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Room URL</label>
+                <label className="block text-gray-700 mb-2">房间 URL</label>
                 <input
                   type="text"
                   name="roomUrl"
@@ -114,7 +132,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Target User</label>
+                <label className="block text-gray-700 mb-2">想要为谁点歌？</label>
                 <input
                   type="text"
                   name="targetUser"
@@ -125,7 +143,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Song ID</label>
+                <label className="block text-gray-700 mb-2">歌曲 ID</label>
                 <input
                   type="text"
                   name="songId"
@@ -135,7 +153,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Singer Name</label>
+                <label className="block text-gray-700 mb-2">点歌人（可选）</label>
                 <input
                   type="text"
                   name="singerName"
@@ -145,7 +163,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Message</label>
+                <label className="block text-gray-700 mb-2">公开附言（可选）</label>
                 <textarea
                   name="message"
                   value={formData.message}
@@ -154,7 +172,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
                 ></textarea>
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Private Message</label>
+                <label className="block text-gray-700 mb-2">私密附言（可选）</label>
                 <textarea
                   name="privateMessage"
                   value={formData.privateMessage}
