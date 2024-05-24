@@ -29,7 +29,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
         </div>
       </div>
       <div className="flex items-center justify-center space-x-2">
-        <button className="w-10 h-10 bg-green-400 text-white rounded-full flex items-center justify-center">
+        <button className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary">
           <Image
             src="/play.svg"
             alt="Play"
@@ -37,7 +37,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
             height={24}
           />
         </button>
-        <button className="w-10 h-10 bg-gray-400 text-white rounded-full flex items-center justify-center">
+        <button className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary">
           <Image
             src="/fav.svg"
             alt="Favorite"
@@ -45,7 +45,13 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
             height={24}
           />
         </button>
-        <button className="w-10 h-10 bg-yellow-400 text-white rounded-full flex items-center justify-center">Req
+        <button className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary">
+          <Image
+            src="/list.svg"
+            alt="Add to Remote Receipt"
+            width={24}
+            height={24}
+          />
         </button>
       </div>
     </div>
