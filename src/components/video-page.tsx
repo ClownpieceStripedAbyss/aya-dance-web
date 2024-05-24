@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import CategoryList from './category-list';
 import VideoList from './video-list';
+import SearchBox from './search-box';
 import { Video } from '@/types/video';
 import '@/styles/scrollbar.css';
 
@@ -14,23 +15,23 @@ interface CategoryScrollPositions {
   [category: string]: number;
 }
 
+const CATEGORY_ALL = 'All';
+
 const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
   const [videos, setVideos] = useState<Video[]>(initialVideos);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>(CATEGORY_ALL);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [filteredVideos, setFilteredVideos] = useState<Video[]>(initialVideos);
+  const [filteredVideos, setFilteredVideos] = useState<Video[]>(videos);
   const [categoryScrollPositions, setCategoryScrollPositions] = useState<CategoryScrollPositions>({});
   const videoListRef = useRef<HTMLDivElement>(null);
   const [itemsPerPage, setItemsPerPage] = useState<number>(50);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [inputPage, setInputPage] = useState<string | null>(null);
 
-  const ALL_CAT = 'All';
-
   useEffect(() => {
     const filtered = videos.filter(video => {
       return (
-        (selectedCategory && selectedCategory !== ALL_CAT ? video.categoryName === selectedCategory : true) &&
+        (selectedCategory && selectedCategory !== CATEGORY_ALL ? video.categoryName === selectedCategory : true) &&
         (video.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           video.titleSpell.toLowerCase().includes(searchTerm.toLowerCase()))
       );
@@ -43,12 +44,11 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
   }, [filteredVideos]);
 
   const categories = Array.from(new Set(
-    [ALL_CAT].concat(
+    [CATEGORY_ALL].concat(
       videos.map(video => video.categoryName),
     )));
 
   const handleClearSearch = () => {
-    setSearchTerm('');
     if (videoListRef && videoListRef.current) {
       videoListRef.current.scrollTo(0, 0);
     }
@@ -111,36 +111,15 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
           />
         </div>
         <div className="fixed w-3/4 flex-1 flex flex-col pb-24 px-4 h-full ml-1/4">
-          <div className="relative mb-4">
-            <div
-              className="absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none">
-              <img src={"/search.svg"} className="text-gray-30 w-4"/>
-            </div>
-            <input
-              type="text"
-              placeholder="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full p-2 border border-gray-300 flex ps-11 py-4 h-10 text-start bg-secondary-button outline-none betterhover:hover:bg-opacity-80 pointer items-center text-primary rounded-full align-middle text-base"
-            />
-            {searchTerm && (
-              <button
-                onClick={handleClearSearch}
-                className="w-4 absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full"
-                style={{
-                  width: '24px',
-                  height: '24px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                &times;
-              </button>
-            )}
-          </div>
+          <SearchBox
+            onSearchTermClear={handleClearSearch}
+            onSearchTermChange={(e) => setSearchTerm(e)}
+            itemsMatched={filteredVideos.length}
+            itemNounSingular={`Video in ${selectedCategory}`}
+            itemNounPlural={`Videos in ${selectedCategory}`}
+          />
           <div className="flex-1 overflow-y-auto scrollbar-custom" ref={videoListRef} onScroll={handleScroll}>
-            <VideoList videos={paginatedVideos} emptyHeading={`No matches for "${searchTerm}"`}/>
+            <VideoList videos={paginatedVideos}/>
           </div>
           <div className="flex justify-end mt-4">
             <div>

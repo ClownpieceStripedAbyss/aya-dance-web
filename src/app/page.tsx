@@ -1,3 +1,4 @@
+import React from "react";
 import { Video } from '@/types/video';
 import VideoPage from '../components/video-page';
 
