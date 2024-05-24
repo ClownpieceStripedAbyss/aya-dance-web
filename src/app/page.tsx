@@ -1,3 +1,8 @@
+// Cloudflare Pages
+export const runtime = "nodejs";
+export const dynamic = "force-static";
+export const dynamicParams = false
+
 import React from "react";
 import { VideoIndex } from '@/types/video';
 import VideoPage from '../components/video-page';
