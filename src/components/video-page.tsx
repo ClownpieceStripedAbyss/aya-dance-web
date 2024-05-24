@@ -36,12 +36,14 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialVideos }) => {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-12">
       <div className="z-10 w-full max-w-7xl flex-1 flex flex-row justify-between font-mono text-sm lg:flex">
-        <CategoryList
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-        />
-        <div className="flex-1 flex flex-col py-0 px-4 h-full">
+        <div className="fixed w-1/4 inset-y-12 left-20 overflow-y-auto">
+          <CategoryList
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+          />
+        </div>
+        <div className="fixed w-3/4 flex-1 flex flex-col pb-36 px-4 h-full">
           <div className="relative mb-4">
             <input
               type="text"
