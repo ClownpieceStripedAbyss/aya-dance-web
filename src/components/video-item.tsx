@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { KEY_FAVOURITES, Video, videoThumbnailUrl, videoUrl } from '@/types/video';
 import Image from 'next/image';
 import ReceiptDialog from "@/components/receipt-dialog";
+import { Heart, HeartFilled, List, Play } from "@/assets/icon";
 
 interface VideoItemProps {
   video: Video;
@@ -61,32 +62,21 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
         <button
           onClick={() => window.open(`https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`, '_blank')}
           className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary">
-          <Image
-            src="/play.svg"
-            alt="Play"
-            width={24}
-            height={24}
-          />
+          <Play className="w-6 h-6 text-black dark:text-white"/>
         </button>
         <button
           onClick={handleLike}
           className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary}">
-          <Image
-            src={isLiked ? '/heart-filled.svg' : '/heart.svg'}
-            alt="Favorite"
-            width={24}
-            height={24}
-          />
+          {
+            isLiked
+            ? <HeartFilled className="w-6 h-6 text-red-600 dark:text-red-700"/>
+            : <Heart className="w-6 h-6 text-black dark:text-white"/>
+          }
         </button>
         <button
           onClick={handleOpenModal}
           className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary">
-          <Image
-            src="/list.svg"
-            alt="Add to Remote Receipt"
-            width={24}
-            height={24}
-          />
+          <List className="w-6 h-6 text-black dark:text-white"/>
         </button>
       </div>
       {isModalOpen && (
