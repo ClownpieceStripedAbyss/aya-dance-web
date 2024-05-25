@@ -5,6 +5,7 @@ interface SearchBoxButtonProps {
   image: string;
   alt: string;
   onClick: () => void;
+  className?: string;
 }
 
 interface SearchBoxProps {
@@ -80,8 +81,8 @@ const SearchBox: React.FC<SearchBoxProps> = ({
           <div className="relative flex justify-end items-center">
             {
               navigateButtons?.map((button, index) => (
-                <button key={index} onClick={button.onClick} className="ml-4">
-                  <Image width={24} height={24} src={button.image} alt={button.alt}/>
+                <button key={index} onClick={button.onClick} className={`ml-4 ${button.className}`}>
+                  <Image width={24} height={24} src={button.image} alt={button.alt} />
                 </button>
               ))
             }

@@ -133,6 +133,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
                 {
                   image: '/github-mark.svg',
                   alt: 'GitHub',
+                  className: 'animate-spin',
                   onClick: () => {
                     window.open('https://github.com/ClownpieceStripedAbyss/aya-dance-server');
                   },
