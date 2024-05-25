@@ -48,7 +48,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   return (
     <section>
       <div className="flex justify-normal mb-4">
-        <div className={`relative ${navigateButtons ? 'w-4/5 mr-4' : 'w-full'}`}>
+        <div className="relative w-full">
           <div
             className="absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none">
             <img src={"/search.svg"} className="text-gray-30 w-4"/>
@@ -77,10 +77,10 @@ const SearchBox: React.FC<SearchBoxProps> = ({
           )}
         </div>
         {navigateButtons && (
-          <div className="w-1/5 relative flex justify-end items-center">
+          <div className="relative flex justify-end items-center">
             {
               navigateButtons?.map((button, index) => (
-                <button key={index} onClick={button.onClick} className={index !== navigateButtons?.length - 1 ? 'mr-4' : ''}>
+                <button key={index} onClick={button.onClick} className="ml-4">
                   <Image width={24} height={24} src={button.image} alt={button.alt}/>
                 </button>
               ))
