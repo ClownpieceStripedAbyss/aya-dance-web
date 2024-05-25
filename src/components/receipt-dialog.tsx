@@ -3,7 +3,7 @@ import { Video, videoThumbnailUrl, videoUrl } from "@/types/video";
 import React, { useEffect, useState } from "react";
 import InfoDialog from "@/components/info-dialog";
 
-export interface ModelFormData {
+interface ModelFormData {
   roomUrl: string;
   targetUser: string;
   senderName: string;

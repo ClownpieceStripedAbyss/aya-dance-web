@@ -129,6 +129,15 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
               itemsMatched={filteredVideos.length}
               itemNounSingular={`Video in ${selectedCategory}`}
               itemNounPlural={`Videos in ${selectedCategory}`}
+              navigateButtons={[
+                {
+                  image: '/github-mark.svg',
+                  alt: 'GitHub',
+                  onClick: () => {
+                    window.open('https://github.com/ClownpieceStripedAbyss/aya-dance-server');
+                  },
+                },
+              ]}
             />
           </div>
           <div className="flex-1 overflow-y-auto scrollbar-custom" ref={videoListRef} onScroll={handleScroll}>

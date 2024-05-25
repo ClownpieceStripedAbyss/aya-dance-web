@@ -1,6 +1,6 @@
 import React from "react";
 
-export interface InfoDialogProps {
+interface InfoDialogProps {
   title: string;
   message: string;
   onOkClick?: () => void;
