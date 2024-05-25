@@ -49,6 +49,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
   }
 
   const handleClearSearch = () => {
+    setSearchTerm('');
     setCurrentScrollPosition(0);
   };
 
