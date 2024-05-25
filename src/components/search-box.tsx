@@ -59,7 +59,8 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             placeholder="搜索：ID、全名、关键字、拼音首字母..."
             value={searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="text-tertiary w-full p-2 border border-gray-300 flex ps-11 py-4 h-10 text-start bg-secondary-button outline-none betterhover:hover:bg-opacity-80 pointer items-center text-primary rounded-full align-middle text-base"
+            className="text-gray-900 dark:text-gray-100 bg-gray-50 border-gray-300 placeholder-gray-600 focus:ring-blue-500 focus:border-blue-500 text-tertiary w-full p-2 border flex ps-11 py-4 h-10 text-start bg-secondary-button outline-none betterhover:hover:bg-opacity-80 pointer items-center text-primary rounded-full align-middle text-base
+              dark:bg-gray-950 dark:border-gray-700 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
           />
           {searchTerm && (
             <button

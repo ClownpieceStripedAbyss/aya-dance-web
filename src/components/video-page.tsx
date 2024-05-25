@@ -158,10 +158,10 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
             </div>
             <div>
               <button onClick={handleFirstPageClick} disabled={currentPage === 1}
-                      className="px-2 py-1 mr-2 border">⇤
+                      className="px-2 py-1 mr-2 border border-gray-300 dark:border-gray-700">⇤
               </button>
               <button onClick={handlePreviousPageClick} disabled={currentPage === 1}
-                      className="px-2 py-1 mr-2 border">←
+                      className="px-2 py-1 mr-2 border border-gray-300 dark:border-gray-700">←
               </button>
               <input
                 type="text"
@@ -177,10 +177,10 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
               <span className="px-2 py-1 mr-2 w-12 text-base">/ {totalPages}</span>
               <button onClick={handleNextPageClick}
                       disabled={currentPage === totalPages}
-                      className="px-2 py-1 mr-2 border">→
+                      className="px-2 py-1 mr-2 border border-gray-300 dark:border-gray-700">→
               </button>
               <button onClick={handleLastPageClick} disabled={currentPage === totalPages}
-                      className="px-2 py-1 mr-2 border">⇥
+                      className="px-2 py-1 mr-2 border border-gray-300 dark:border-gray-700">⇥
               </button>
             </div>
           </div>

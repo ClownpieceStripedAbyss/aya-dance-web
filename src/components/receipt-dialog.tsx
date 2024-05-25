@@ -86,7 +86,7 @@ const ReceiptDialog: React.FC<ReceiptDialogProps> = ({ video, setIsModalOpen, in
   return (
     <div
       className="z-20 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center overflow-y-auto scrollbar-custom">
-      <div className="bg-white p-6 rounded-lg w-full max-w-2xl">
+      <div className="bg-gray-50 dark:bg-gray-950 p-6 rounded-lg w-full max-w-2xl">
         <h3 className="text-lg font-bold mb-4">为好友点歌！</h3>
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center">
@@ -108,25 +108,25 @@ const ReceiptDialog: React.FC<ReceiptDialogProps> = ({ video, setIsModalOpen, in
         </div>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">房间 URL</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-2">房间 URL</label>
             <input
               type="text"
               name="roomUrl"
               value={formData.roomUrl}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 text-sm text-gray-900 dark:text-gray-100 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-950 dark:border-gray-700 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
               required
             />
           </div>
           <div className="mb-4 flex items-center space-x-4">
             <div className="w-1/2">
-              <label className="block text-gray-700 mb-2">点歌人（可选）</label>
+              <label className="block text-gray-700 dark:text-gray-300 mb-2">点歌人（可选）</label>
               <input
                 type="text"
                 name="senderName"
                 value={formData.senderName}
                 onChange={handleChange}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 text-sm text-gray-900 dark:text-gray-100 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-950 dark:border-gray-700 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
               />
             </div>
             <div className="text-center">
@@ -134,36 +134,36 @@ const ReceiptDialog: React.FC<ReceiptDialogProps> = ({ video, setIsModalOpen, in
               <span className="block text-gray-700">→</span>
             </div>
             <div className="w-1/2">
-              <label className="block text-gray-700 mb-2">想要为谁点歌？</label>
+              <label className="block text-gray-700 dark:text-gray-300 mb-2">想要为谁点歌？</label>
               <input
                 type="text"
                 name="targetUser"
                 value={formData.targetUser}
                 onChange={handleChange}
-                className="w-full p-2 border rounded"
+                className="w-full p-2 text-sm text-gray-900 dark:text-gray-100 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-950 dark:border-gray-700 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 required
               />
             </div>
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">公开附言（可选）</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-2">公开附言（可选）</label>
             <textarea
               name="message"
               value={formData.message}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 text-sm text-gray-900 dark:text-gray-100 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-950 dark:border-gray-700 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
             ></textarea>
-            <p className="text-xs text-gray-500">公开附言会公开展示给房间内所有人</p>
+            <p className="text-xs text-gray-500 dark:text-gray-500">公开附言会公开展示给房间内所有人</p>
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">私密附言（可选）</label>
+            <label className="block text-gray-700 dark:text-gray-300 mb-2">私密附言（可选）</label>
             <textarea
               name="whisper"
               value={formData.whisper}
               onChange={handleChange}
-              className="w-full p-2 border rounded"
+              className="w-full p-2 text-sm text-gray-900 dark:text-gray-100 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-950 dark:border-gray-700 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
             ></textarea>
-            <p className="text-xs text-gray-500">这是悄悄话哦~</p>
+            <p className="text-xs text-gray-500 dark:text-gray-500">这是悄悄话哦~</p>
           </div>
           <div className="flex justify-end">
             <button

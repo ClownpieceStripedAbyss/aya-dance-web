@@ -37,7 +37,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
 
   return (
     <div
-      className="flex items-center justify-between p-4 mb-4 rounded-lg border-b border-gray-300 bg-white dark:bg-neutral-800">
+      className="flex items-center justify-between p-4 mb-4 rounded-lg bg-white dark:bg-neutral-800">
       <div className="flex items-center">
         <div className="flex-shrink-0 w-32 h-24 mr-4 flex items-center justify-center">
           <Image
