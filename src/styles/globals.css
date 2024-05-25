@@ -9,7 +9,7 @@
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb:   255, 255, 255;
 
-  --scroll-bar-background-track: #f1f1f1;
+  --scroll-bar-background-track: rgb(var(--background-start-rgb));
   --scroll-bar-background-thumb: #888;
   --scroll-bar-background-thumb-hover: #555;
 }
@@ -19,10 +19,6 @@
     --foreground-rgb:       255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb:   0, 0, 0;
-
-    --scroll-bar-background-track: #0d0d0d;
-    --scroll-bar-background-thumb: #888D;
-    --scroll-bar-background-thumb-hover: #555;
   }
 }
 
