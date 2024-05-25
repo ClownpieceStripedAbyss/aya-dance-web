@@ -46,7 +46,12 @@ export const videoMatchesQuery = (video: Video, query: string) => {
     : null;
 
   return (kwVague && VaguelyMatches(kwVague, video.titleSpell.toLowerCase()))
-    || WordMatches(kw, video.title.toLowerCase());
+    || WordMatches(kw, video.title.toLowerCase())
+    || IdMatches(lowerQuery, video.id);
+}
+
+const IdMatches = (query: string, id: number) => {
+  return query === id.toString() || id.toString().includes(query);
 }
 
 // invariant: kw and titleSpell are always lowercase
