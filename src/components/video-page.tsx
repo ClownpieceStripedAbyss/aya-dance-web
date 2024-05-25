@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import CategoryList from './category-list';
-import VideoList from './video-list';
 import SearchBox from './search-box';
+import VideoItem from "./video-item";
 import { CAT_FAVOURITES, Category, KEY_FAVOURITES, Video, videoMatchesQuery } from '@/types/video';
 import '@/styles/scrollbar.css';
 
@@ -142,9 +142,13 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
             />
           </div>
           <div className="flex-1 overflow-y-auto scrollbar-custom" ref={videoListRef} onScroll={handleScroll}>
-            <VideoList videos={paginatedVideos}/>
+            {
+              paginatedVideos.map(video => (
+                <VideoItem key={video.id} video={video}/>
+              ))
+            }
           </div>
-          <div className="paging-container-sticky flex justify-between mt-4">
+          <div className="flex justify-between mt-4">
             <div>
               <select
                 value={itemsPerPage}
