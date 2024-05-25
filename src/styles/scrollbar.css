@@ -4,18 +4,18 @@
 }
 
 .scrollbar-custom::-webkit-scrollbar-track {
-  background:   #f1f1f1; /* Background of the scrollbar track */
+  background:   var(--scroll-bar-background-track); /* Background of the scrollbar track */
   padding-left: 4px;
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb {
-  background-color: #888; /* Color of the scrollbar thumb */
+  background-color: var(--scroll-bar-background-thumb); /* Color of the scrollbar thumb */
   border-radius:    10px; /* Roundness of the scrollbar thumb */
-  border:           3px solid #f1f1f1; /* Space around the thumb */
+  border:           3px solid var(--scroll-bar-background-track); /* Space around the thumb */
   padding-left:     4px;
 }
 
 .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-  background:   #555; /* Color of the scrollbar thumb on hover */
+  background:   var(--scroll-bar-background-thumb-hover); /* Color of the scrollbar thumb on hover */
   padding-left: 4px;
 }
