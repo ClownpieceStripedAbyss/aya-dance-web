@@ -40,8 +40,16 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
     setCurrentPage(1); // Reset to first page whenever filter changes
   }, [filteredVideos]);
 
+  const setCurrentScrollPosition = (position: number) => {
+    videoListRef?.current?.scrollTo(0, position);
+    setCategoryScrollPositions(prevPositions => ({
+      ...prevPositions,
+      [selectedCategory]: position,
+    }));
+  }
+
   const handleClearSearch = () => {
-    videoListRef?.current?.scrollTo(0, 0);
+    setCurrentScrollPosition(0);
   };
 
   const handleSelectCategory = (category: string) => {
@@ -67,24 +75,24 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
 
   const handleFirstPageClick = () => {
     setCurrentPage(1);
-    videoListRef?.current?.scrollTo(0, 0);
+    setCurrentScrollPosition(0);
   };
 
   const handleLastPageClick = () => {
     const totalPages = Math.ceil(filteredVideos.length / itemsPerPage);
     setCurrentPage(totalPages);
-    videoListRef?.current?.scrollTo(0, 0);
+    setCurrentScrollPosition(0);
   };
 
   const handleNextPageClick = () => {
     const totalPages = Math.ceil(filteredVideos.length / itemsPerPage);
     setCurrentPage(Math.min(totalPages, currentPage + 1));
-    videoListRef?.current?.scrollTo(0, 0);
+    setCurrentScrollPosition(0);
   }
 
   const handlePreviousPageClick = () => {
     setCurrentPage(Math.max(1, currentPage - 1));
-    videoListRef?.current?.scrollTo(0, 0);
+    setCurrentScrollPosition(0);
   }
 
   const handlePageChange = () => {
@@ -94,7 +102,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
       page = Math.min(Math.max(page, 1), totalPages);
       setCurrentPage(page);
       setInputPage(null);
-      videoListRef?.current?.scrollTo(0, 0);
+      setCurrentScrollPosition(0);
     }
   };
 
