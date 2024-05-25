@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { KEY_FAVOURITES, Video, videoThumbnailUrl, videoUrl } from '@/types/video';
 import Image from 'next/image';
 import ReceiptDialog from "@/components/receipt-dialog";
-import { Heart, HeartFilled, List, Play } from "@/assets/icon";
+import { CirclePlay, Heart, HeartFilled, List, Play } from "@/assets/icon";
 
 interface VideoItemProps {
   video: Video;
@@ -41,14 +41,20 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
       className="flex items-center justify-between p-4 mb-4 rounded-lg bg-white dark:bg-neutral-800">
       <div className="flex items-center">
         <div className="flex-shrink-0 w-32 h-24 mr-4 flex items-center justify-center">
-          <Image
-            src={isThumbnailError ? "/unity-error.jpg" : videoThumbnailUrl(video)}
-            alt={video.title}
-            onError={(_) => setIsThumbnailError(true)}
-            width={128}
-            height={96}
-            className="object-cover outline-link dark:outline-link outline-offset-2 aspect-video w-full h-full select-none flex-col shadow-inner-border rounded-lg flex items-center overflow-hidden justify-center align-middle text-white/50 bg-cover bg-white bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] hover:opacity-60 transition-opacity"
-          />
+          <div className="group relative overflow-hidden flex items-center justify-center flex-col">
+            <Image
+              src={isThumbnailError ? "/unity-error.jpg" : videoThumbnailUrl(video)}
+              alt={video.title}
+              onError={(_) => setIsThumbnailError(true)}
+              width={128}
+              height={96}
+              className="object-cover outline-link dark:outline-link outline-offset-2 aspect-video w-full h-full select-none flex-col shadow-inner-border rounded-lg flex items-center overflow-hidden justify-center align-middle text-white/50 bg-cover bg-white bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] group-hover:opacity-40 transition-opacity duration-200"
+            />
+            <a className="absolute w-full h-full top-0 bottom-0 left-0 right-0 flex items-center justify-center"
+               href={videoUrl(video)} target="_blank">
+              <CirclePlay className="w-12 h-12 text-gray-500 group-hover:block hidden"/>
+            </a>
+          </div>
         </div>
         <div className="flex-grow">
           <h2
@@ -69,8 +75,8 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
           className="outline-none focus:bg-red-50/5 focus:text-red-50 relative flex items-center justify-center w-10 h-10 cursor-pointer rounded-full hover:bg-card active:scale-95 active:bg-red-50/5 active:text-red-50 text-tertiary}">
           {
             isLiked
-            ? <HeartFilled className="w-6 h-6 text-red-600 dark:text-red-700"/>
-            : <Heart className="w-6 h-6 text-black dark:text-white"/>
+              ? <HeartFilled className="w-6 h-6 text-red-600 dark:text-red-700"/>
+              : <Heart className="w-6 h-6 text-black dark:text-white"/>
           }
         </button>
         <button
