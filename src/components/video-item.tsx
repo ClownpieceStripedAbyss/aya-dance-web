@@ -158,7 +158,7 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
         </button>
       </div>
       {isModalOpen && (
-        <div className="z-20 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="z-20 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center overflow-y-auto scrollbar-custom">
           <div className="bg-white p-6 rounded-lg w-full max-w-2xl">
             <h3 className="text-lg font-bold mb-4">为好友点歌！</h3>
             <div className="mb-4 flex items-center justify-between">
