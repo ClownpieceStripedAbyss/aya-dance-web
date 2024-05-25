@@ -38,17 +38,18 @@ export const videoThumbnailUrl = (video: Video) => {
 
 export const videoMatchesQuery = (video: Video, query: string) => {
   const lowerQuery = query.toLowerCase();
-  let kw = lowerQuery.split(' '); // Split the search query by spaces
-  let kwVague: string[] | null = null;
-  if (lowerQuery.indexOf(' ') === -1) {
-    // Convert each character into an element of an array
-    kwVague = Array.from(lowerQuery);
-  }
 
-  return (kwVague && VaguelyMatches(kwVague, video.titleSpell))
-    || WordMatches(kw, video.title);
+  let kw = lowerQuery.split(' ');
+  // vague search: if the query has no spaces
+  let kwVague = lowerQuery.indexOf(' ') === -1
+    ? Array.from(lowerQuery) // to array of characters
+    : null;
+
+  return (kwVague && VaguelyMatches(kwVague, video.titleSpell.toLowerCase()))
+    || WordMatches(kw, video.title.toLowerCase());
 }
 
+// invariant: kw and titleSpell are always lowercase
 const VaguelyMatches = (kw: string[], titleSpell: string) => {
   if (kw.length === 0) return false;
 
@@ -56,7 +57,8 @@ const VaguelyMatches = (kw: string[], titleSpell: string) => {
   if (kw.length > spell.length) return false;
 
   return spell.some((_, i) =>
-    kw.every((keyword, j) => spell[i + j]?.toLowerCase().startsWith(keyword.toLowerCase())),
+    kw.every((keyword, j) =>
+      spell[i + j]?.startsWith(keyword)),
   );
 
   // Equivalent UdonSharp code:
@@ -79,8 +81,9 @@ const VaguelyMatches = (kw: string[], titleSpell: string) => {
   // return false;
 }
 
+// invariant: kw and text are always lowercase
 const WordMatches = (kw: string[], text: string) => {
-  return kw.some(keyword => text.toLowerCase().includes(keyword.toLowerCase()));
+  return kw.some(keyword => text.includes(keyword));
   // Equivalent UdonSharp code:
   // for (const k of kw)
   //   if (text.toLowerCase().includes(k.toLowerCase()))

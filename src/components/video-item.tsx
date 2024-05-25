@@ -8,6 +8,7 @@ interface VideoItemProps {
 
 const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
   const [isLiked, setIsLiked] = useState(false);
+  const [isThumbnailError, setIsThumbnailError] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
@@ -108,8 +109,9 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
       <div className="flex items-center">
         <div className="flex-shrink-0 w-32 h-24 mr-4 flex items-center justify-center">
           <Image
-            src={videoThumbnailUrl(video)}
+            src={isThumbnailError ? "/unity-error.jpg" : videoThumbnailUrl(video)}
             alt={video.title}
+            onError={(_) => setIsThumbnailError(true)}
             width={128}
             height={96}
             className="object-cover outline-link dark:outline-link outline-offset-2 aspect-video w-full h-full select-none flex-col shadow-inner-border rounded-lg flex items-center overflow-hidden justify-center align-middle text-white/50 bg-cover bg-white bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] hover:opacity-60 transition-opacity"
@@ -162,8 +164,9 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center">
                 <Image
-                  src={videoThumbnailUrl(video)}
+                  src={isThumbnailError ? "/unity-error.jpg" : videoThumbnailUrl(video)}
                   alt={video.title}
+                  onError={(_) => setIsThumbnailError(true)}
                   width={64}
                   height={48}
                   className="object-cover rounded mr-4"
