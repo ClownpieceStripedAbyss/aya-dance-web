@@ -1,3 +1,5 @@
+import React from "react";
+
 interface ProcessingProps {
   className?: string;
 }
@@ -20,3 +22,19 @@ export const Processing: React.FC<ProcessingProps> = ({ className }) => {
     </svg>
   );
 }
+
+interface SearchProps {
+  className?: string;
+}
+
+export const Search: React.FC<SearchProps> = ({ className }) => {
+  return (
+    <svg className={className}
+         viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M696.533333 635.690667l229.546667 229.546666a43.008 43.008 0 0 1-60.885333 60.842667l-229.546667-229.546667a341.333333 341.333333 0 1 1 60.842667-60.842666zM426.666667 682.666667a256 256 0 1 0 0-512 256 256 0 0 0 0 512z"
+        fill="currentColor"/>
+    </svg>
+  );
+}
+

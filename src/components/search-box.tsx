@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import { Search } from "@/assets/icon";
 
 interface SearchBoxButtonProps {
   image: string;
@@ -52,7 +53,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
         <div className="relative w-full">
           <div
             className="absolute inset-y-0 start-0 flex items-center ps-4 pointer-events-none">
-            <img src={"/search.svg"} className="text-gray-30 w-4"/>
+            <Search className="text-gray-30 dark:text-gray-970 w-4"/>
           </div>
           <input
             type="text"
@@ -65,7 +66,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
           {searchTerm && (
             <button
               onClick={handleClearSearch}
-              className="w-4 absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full"
+              className="w-4 absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 rounded-full"
               style={{
                 width: '24px',
                 height: '24px',
@@ -83,7 +84,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
             {
               navigateButtons?.map((button, index) => (
                 <button key={index} onClick={button.onClick} className={`ml-4 ${button.className}`}>
-                  <Image width={24} height={24} src={button.image} alt={button.alt} />
+                  <Image width={24} height={24} src={button.image} alt={button.alt}/>
                 </button>
               ))
             }
