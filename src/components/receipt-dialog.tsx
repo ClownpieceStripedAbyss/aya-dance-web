@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Video, videoThumbnailUrl, videoUrl } from "@/types/video";
 import React, { useEffect, useState } from "react";
 import InfoDialog from "@/components/info-dialog";
+import { Processing } from "@/assets/icon";
 
 interface ModelFormData {
   roomUrl: string;
@@ -177,14 +178,8 @@ const ReceiptDialog: React.FC<ReceiptDialogProps> = ({ video, setIsModalOpen, in
               className={`bg-blue-500 text-white p-2 rounded hover:bg-blue-700 transition ${isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
               disabled={isSubmitDisabled}
             >
-              {isSubmitting ? (
-                <Image
-                  src="./sync.svg"
-                  alt="Sending"
-                  width={12}
-                  height={12}
-                  className="animate-spin ml-5 mr-5 h-5 w-8 text-white fill-white"
-                />
+              { isSubmitting ? (
+                <Processing className="ml-5 mr-5 h-5 w-8 text-white" />
               ) : (
                 '提交点歌请求'
               )}
