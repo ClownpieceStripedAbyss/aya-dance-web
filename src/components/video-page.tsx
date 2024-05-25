@@ -149,7 +149,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
               <select
                 value={itemsPerPage}
                 onChange={handleItemsPerPageChange}
-                className="border px-2 py-1 mr-2"
+                className="border px-2 py-1 mr-2 text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-950 border-gray-300 dark:border-gray-700"
               >
                 <option value="50">50 首/页</option>
                 <option value="100">100 首/页</option>
@@ -172,7 +172,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
                     handlePageChange();
                   }
                 }}
-                className="border px-2 py-1 mr-2 w-12 text-center"
+                className="border px-2 py-1 mr-2 w-12 text-center text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-950 border-gray-300 dark:border-gray-700"
               />
               <span className="px-2 py-1 mr-2 w-12 text-base">/ {totalPages}</span>
               <button onClick={handleNextPageClick}
