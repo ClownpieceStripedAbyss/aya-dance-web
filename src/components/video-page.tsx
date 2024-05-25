@@ -22,7 +22,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
   const [filteredVideos, setFilteredVideos] = useState<Video[]>(categories[0]?.entries || []);
   const [categoryScrollPositions, setCategoryScrollPositions] = useState<CategoryScrollPositions>({});
   const videoListRef = useRef<HTMLDivElement>(null);
-  const [itemsPerPage, setItemsPerPage] = useState<number>(50);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(20);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [inputPage, setInputPage] = useState<string | null>(null);
 
@@ -151,6 +151,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
                 onChange={handleItemsPerPageChange}
                 className="border px-2 py-1 mr-2 text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-950 border-gray-300 dark:border-gray-700"
               >
+                <option value="20">20 首/页</option>
                 <option value="50">50 首/页</option>
                 <option value="100">100 首/页</option>
                 <option value="300">300 首/页</option>
