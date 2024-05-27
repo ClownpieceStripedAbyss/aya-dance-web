@@ -46,7 +46,7 @@ export const videoMatchesQuery = (video: Video, query: string) => {
     : null;
 
   return (kwVague && VaguelyMatches(kwVague, video.titleSpell.toLowerCase()))
-    || VaguelyMatches(kw, video.titleSpell.toLowerCase())
+    || VaguelyMatches(kw, video.titleSpell.toLowerCase() || video.title)
     || IdMatches(lowerQuery, video.id);
 }
 
