@@ -46,7 +46,7 @@ export const videoMatchesQuery = (video: Video, query: string) => {
     : null;
 
   return (kwVague && VaguelyMatches(kwVague, video.titleSpell.toLowerCase()))
-    || WordMatches(kw, video.title.toLowerCase())
+    || VaguelyMatches(kw, video.title.toLowerCase())
     || IdMatches(lowerQuery, video.id);
 }
 
@@ -83,15 +83,5 @@ const VaguelyMatches = (kw: string[], titleSpell: string) => {
   //   if (matches) return true;
   // }
   //
-  // return false;
-}
-
-// invariant: kw and text are always lowercase
-const WordMatches = (kw: string[], text: string) => {
-  return kw.some(keyword => text.includes(keyword));
-  // Equivalent UdonSharp code:
-  // for (const k of kw)
-  //   if (text.toLowerCase().includes(k.toLowerCase()))
-  //     return true;
   // return false;
 }
