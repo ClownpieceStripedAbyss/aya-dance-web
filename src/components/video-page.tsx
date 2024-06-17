@@ -4,7 +4,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import CategoryList from './category-list';
 import SearchBox from './search-box';
 import VideoItem from "./video-item";
-import { CAT_FAVOURITES, Category, KEY_FAVOURITES, Video, videoMatchesQuery } from '@/types/video';
+import {
+  CAT_FAVOURITES,
+  Category,
+  KEY_FAVOURITES,
+  KEY_SELECTED_CATEGORY,
+  Video,
+  videoMatchesQuery,
+} from '@/types/video';
 import '@/styles/scrollbar.css';
 
 interface VideoPageProps {
@@ -17,14 +24,19 @@ interface CategoryScrollPositions {
 
 const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
   const [categories, setCategories] = useState<Category[]>(initialCategories);
-  const [selectedCategory, setSelectedCategory] = useState<string>(categories[1]?.title || '');
+  const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]?.title || '');
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [filteredVideos, setFilteredVideos] = useState<Video[]>(categories[1]?.entries || []);
+  const [filteredVideos, setFilteredVideos] = useState<Video[]>(categories[0]?.entries || []);
   const [categoryScrollPositions, setCategoryScrollPositions] = useState<CategoryScrollPositions>({});
   const videoListRef = useRef<HTMLDivElement>(null);
   const [itemsPerPage, setItemsPerPage] = useState<number>(20);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [inputPage, setInputPage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const selected = localStorage.getItem(KEY_SELECTED_CATEGORY);
+    setSelectedCategory(selected || categories[1]?.title || '');
+  }, [categories]);
 
   useEffect(() => {
     const videos = selectedCategory === CAT_FAVOURITES
@@ -55,6 +67,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
 
   const handleSelectCategory = (category: string) => {
     setSelectedCategory(category);
+    localStorage.setItem(KEY_SELECTED_CATEGORY, category);
     let pos = categoryScrollPositions[category];
     videoListRef?.current?.scrollTo(0, pos || 0);
   };
