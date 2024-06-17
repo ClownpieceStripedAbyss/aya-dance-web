@@ -17,9 +17,9 @@ interface CategoryScrollPositions {
 
 const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
   const [categories, setCategories] = useState<Category[]>(initialCategories);
-  const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]?.title || '');
+  const [selectedCategory, setSelectedCategory] = useState<string>(categories[1]?.title || '');
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [filteredVideos, setFilteredVideos] = useState<Video[]>(categories[0]?.entries || []);
+  const [filteredVideos, setFilteredVideos] = useState<Video[]>(categories[1]?.entries || []);
   const [categoryScrollPositions, setCategoryScrollPositions] = useState<CategoryScrollPositions>({});
   const videoListRef = useRef<HTMLDivElement>(null);
   const [itemsPerPage, setItemsPerPage] = useState<number>(20);
