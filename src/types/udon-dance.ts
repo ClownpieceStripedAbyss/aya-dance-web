@@ -50,9 +50,26 @@ function convertToAyaIndex(udonIndex: UdonDanceVideoIndex): VideoIndex {
     } as Category;
   });
 
+  // join all and distinct by id
+  let allEntries = categories
+  .flatMap(category => category.entries)
+  .reduce((acc: Video[], entry) => {
+    if (!acc.find(e => e.id === entry.id)) {
+      acc.push(entry);
+    }
+    return acc;
+  }, [])
+  .sort((a, b) => a.title.localeCompare(b.title));
+
   return {
     updated_at: 114514,
-    categories: categories
+    categories: [
+      {
+        title: 'All Songs',
+        entries: allEntries,
+      } as Category,
+      ...categories
+    ]
   };
 }
 
