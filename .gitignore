@@ -41,3 +41,5 @@ next-env.d.ts
 # Yarn
 .yarn/
 .yarnrc*
+
+.env*
