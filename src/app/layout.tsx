@@ -6,8 +6,8 @@ import "@/styles/globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Aya Dance",
-  description: "Yet another dance world with fancy features",
+  title: process.env.SITE_TITLE ?? "Aya Dance",
+  description: process.env.SITE_DESC ?? "Yet another dance world with fancy features",
 };
 
 export default function RootLayout({
