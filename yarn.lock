@@ -708,6 +708,7 @@ __metadata:
     eslint: "npm:^8"
     eslint-config-next: "npm:14.2.3"
     next: "npm:14.2.3"
+    pinyin-pro: "npm:^3.24.1"
     postcss: "npm:^8"
     react: "npm:^18"
     react-dom: "npm:^18"
@@ -3016,6 +3017,13 @@ __metadata:
   version: 2.3.0
   resolution: "pify@npm:2.3.0"
   checksum: 10c0/551ff8ab830b1052633f59cb8adc9ae8407a436e06b4a9718bcb27dc5844b83d535c3a8512b388b6062af65a98c49bdc0dd523d8b2617b188f7c8fee457158dc
+  languageName: node
+  linkType: hard
+
+"pinyin-pro@npm:^3.24.1":
+  version: 3.24.1
+  resolution: "pinyin-pro@npm:3.24.1"
+  checksum: 10c0/89df65bd75b765c665d0274aebd5399b9fa76dddafabbfb94557bdc3abe6ba7ea9e5a9203ca12fddf11dd81aeb1de1ddf3e4d99804e43497aac10750bbc04023
   languageName: node
   linkType: hard
 

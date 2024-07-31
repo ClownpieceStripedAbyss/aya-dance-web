@@ -1,4 +1,5 @@
 import { Category, SortBy, Video, VideoIndex } from "@/types/video";
+import { pinyin } from 'pinyin-pro';
 
 interface UdonDanceVideoIndex {
   time: string;
@@ -35,7 +36,7 @@ function convertToAyaIndex(udonIndex: UdonDanceVideoIndex): VideoIndex {
         title: song.name,
         category: 0,
         categoryName: group.groupName,
-        titleSpell: song.name,
+        titleSpell: pinyin(song.name, { pattern: 'first' }),
         volume: song.volume,
         start: song.start,
         end: song.end,
