@@ -19,13 +19,28 @@ export interface Video {
   end: number;
   flip: boolean;
   originalUrl: string[];
+  _fromUdon: boolean | undefined;
 }
 
 export const CAT_FAVOURITES = "喜欢的歌曲";
 export const KEY_FAVOURITES = "favourites";
 export const KEY_SELECTED_CATEGORY = "selectedCategory";
 
-export const videoUrl = (video: Video) => `https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`;
+export async function fetchAyaVideoIndex(): Promise<VideoIndex> {
+  const response = await fetch('https://aya-dance-cf.kiva.moe/aya-api/v1/songs', {
+    cache: 'no-cache',
+  });
+  if (!response.ok) {
+    throw new Error('Failed to fetch videos');
+  }
+
+  return await response.json() as VideoIndex;
+}
+
+export const videoUrl = (video: Video) => video._fromUdon
+  ? `https://api.udon.dance/Api/Songs/play?id=${video.id}`
+  : `https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`;
+
 export const videoThumbnailUrl = (video: Video) => {
   if (video.originalUrl.length > 0) {
     const youtube = video.originalUrl.find(url => url.includes('youtube.com'));

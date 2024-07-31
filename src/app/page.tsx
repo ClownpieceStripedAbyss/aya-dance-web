@@ -1,21 +1,14 @@
 // Cloudflare Pages
+import React from "react";
+import { CAT_FAVOURITES, Category, fetchAyaVideoIndex, VideoIndex } from '@/types/video';
+import VideoPage from '../components/video-page';
+
 export const runtime = "nodejs";
 export const dynamic = "force-static";
 export const dynamicParams = false
 
-import React from "react";
-import { CAT_FAVOURITES, Category, VideoIndex } from '@/types/video';
-import VideoPage from '../components/video-page';
-
 async function fetchIndex(): Promise<VideoIndex> {
-  const response = await fetch('https://aya-dance-cf.kiva.moe/aya-api/v1/songs', {
-    cache: 'no-cache',
-  });
-  if (!response.ok) {
-    throw new Error('Failed to fetch videos');
-  }
-
-  return await response.json() as VideoIndex;
+  return await fetchAyaVideoIndex();
 }
 
 const Home: React.FC = async () => {
