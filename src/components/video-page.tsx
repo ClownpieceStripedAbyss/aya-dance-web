@@ -9,6 +9,7 @@ import {
   Category,
   KEY_FAVOURITES,
   KEY_SELECTED_CATEGORY,
+  SortBy,
   Video,
   videoMatchesQuery,
 } from '@/types/video';
@@ -16,13 +17,14 @@ import '@/styles/scrollbar.css';
 
 interface VideoPageProps {
   initialCategories: Category[];
+  defaultSortBy: SortBy,
 }
 
 interface CategoryScrollPositions {
   [category: string]: number;
 }
 
-const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
+const VideoPage: React.FC<VideoPageProps> = ({ initialCategories, defaultSortBy }) => {
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [selectedCategory, setSelectedCategory] = useState<string>(categories[0]?.title || '');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -30,6 +32,7 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
   const [categoryScrollPositions, setCategoryScrollPositions] = useState<CategoryScrollPositions>({});
   const videoListRef = useRef<HTMLDivElement>(null);
   const [itemsPerPage, setItemsPerPage] = useState<number>(20);
+  const [sortBy, setSortBy] = useState<SortBy>(defaultSortBy);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [inputPage, setInputPage] = useState<string | null>(null);
 
@@ -45,8 +48,22 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
     const filtered = videos.filter(video => {
       return videoMatchesQuery(video, searchTerm);
     });
-    setFilteredVideos(filtered);
-  }, [selectedCategory, searchTerm, categories]);
+    const sorted = filtered.sort((a, b) => {
+      switch (sortBy) {
+        case SortBy.ID_ASC:
+          return a.id - b.id;
+        case SortBy.ID_DESC:
+          return b.id - a.id;
+        case SortBy.TITLE_ASC:
+          return a.title.localeCompare(b.title);
+        case SortBy.TITLE_DESC:
+          return b.title.localeCompare(a.title);
+        default:
+          return 0; // should never happen
+      }
+    });
+    setFilteredVideos(sorted);
+  }, [selectedCategory, searchTerm, sortBy, categories]);
 
   useEffect(() => {
     setCurrentPage(1); // Reset to first page whenever filter changes
@@ -85,6 +102,10 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
 
   const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setItemsPerPage(parseInt(e.target.value, 10));
+  };
+
+  const handleSortByChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortBy(parseInt(e.target.value, 10) as SortBy);
   };
 
   const handleFirstPageClick = () => {
@@ -173,6 +194,16 @@ const VideoPage: React.FC<VideoPageProps> = ({ initialCategories }) => {
                 <option value="50">50 首/页</option>
                 <option value="100">100 首/页</option>
                 <option value="300">300 首/页</option>
+              </select>
+              <select
+                value={sortBy}
+                onChange={handleSortByChange}
+                className="border px-2 py-1 mr-2 text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-950 border-gray-300 dark:border-gray-700"
+              >
+                <option value={SortBy.ID_ASC}>按 ID 升序</option>
+                <option value={SortBy.ID_DESC}>按 ID 降序</option>
+                <option value={SortBy.TITLE_ASC}>按标题升序</option>
+                <option value={SortBy.TITLE_DESC}>按标题降序</option>
               </select>
             </div>
             <div>

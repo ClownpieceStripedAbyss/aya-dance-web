@@ -1,6 +1,7 @@
 export interface VideoIndex {
   updated_at: number,
   categories: Category[],
+  defaultSortBy: SortBy,
 }
 
 export interface Category {
@@ -22,6 +23,13 @@ export interface Video {
   _fromUdon: boolean | undefined;
 }
 
+export enum SortBy {
+  ID_ASC,
+  ID_DESC,
+  TITLE_ASC,
+  TITLE_DESC,
+}
+
 export const CAT_FAVOURITES = "喜欢的歌曲";
 export const KEY_FAVOURITES = "favourites";
 export const KEY_SELECTED_CATEGORY = "selectedCategory";
@@ -34,7 +42,11 @@ export async function fetchAyaVideoIndex(): Promise<VideoIndex> {
     throw new Error('Failed to fetch videos');
   }
 
-  return await response.json() as VideoIndex;
+  let index = await response.json() as VideoIndex;
+  return {
+    ...index,
+    defaultSortBy: SortBy.ID_ASC,
+  } as VideoIndex;
 }
 
 export const videoUrl = (video: Video) => video._fromUdon

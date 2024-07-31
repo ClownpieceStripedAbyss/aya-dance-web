@@ -1,4 +1,4 @@
-import { Category, Video, VideoIndex } from "@/types/video";
+import { Category, SortBy, Video, VideoIndex } from "@/types/video";
 
 interface UdonDanceVideoIndex {
   time: string;
@@ -69,7 +69,8 @@ function convertToAyaIndex(udonIndex: UdonDanceVideoIndex): VideoIndex {
         entries: allEntries,
       } as Category,
       ...categories
-    ]
+    ],
+    defaultSortBy: SortBy.TITLE_ASC,
   };
 }
 

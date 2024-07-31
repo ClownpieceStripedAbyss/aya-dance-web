@@ -23,7 +23,7 @@ const Home: React.FC = async () => {
     entries: [],
   };
   const joined = [favCat, ...cats]
-  return <VideoPage initialCategories={joined}/>;
+  return <VideoPage initialCategories={joined} defaultSortBy={index.defaultSortBy}/>;
 };
 
 export default Home;
