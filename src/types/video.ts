@@ -20,7 +20,9 @@ export interface Video {
   end: number;
   flip: boolean;
   originalUrl: string[];
-  _fromUdon: boolean | undefined;
+  checksum: string | null;
+  _fromUdon: boolean | null;
+  _matchingAya: Video | null;
 }
 
 export enum SortBy {
