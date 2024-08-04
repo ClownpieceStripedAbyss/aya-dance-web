@@ -1,3 +1,5 @@
+import { UdonDanceSongInfo } from "@/types/udon-dance";
+
 export interface VideoIndex {
   updated_at: number,
   categories: Category[],
@@ -21,7 +23,7 @@ export interface Video {
   flip: boolean;
   originalUrl: string[];
   checksum: string | null;
-  _fromUdon: boolean | null;
+  _fromUdon: UdonDanceSongInfo | null;
   _matchingAya: Video | null;
 }
 
@@ -55,7 +57,7 @@ export const videoUrl = (video: Video) => video._fromUdon
   ? `https://api.udon.dance/Api/Songs/play?id=${video.id}`
   : `https://aya-dance-cf.kiva.moe/api/v1/videos/${video.id}.mp4`;
 
-export const videoThumbnailUrl = (video: Video) => {
+export const videoThumbnailUrl = (video: Video) : string => {
   if (video.originalUrl.length > 0) {
     const youtube = video.originalUrl.find(url => url.includes('youtube.com'));
     if (youtube) {
@@ -64,6 +66,14 @@ export const videoThumbnailUrl = (video: Video) => {
     }
   }
   return "/unity-error.jpg";
+}
+
+export const formatVideoTitle = (video: Video) : string => {
+  return video._fromUdon ? `${video.title} - ${video._fromUdon.artist} | ${video._fromUdon.dancer}` : video.title;
+}
+
+export const formatVideoDesc = (video: Video) : string => {
+  return video._fromUdon ? `ID: ${video.id} ${video._matchingAya ? `(PyPy ID: ${video._matchingAya.id})` : ""}` : `ID: ${video.id}`;
 }
 
 export const videoMatchesQuery = (video: Video, query: string) => {
@@ -78,7 +88,13 @@ export const videoMatchesQuery = (video: Video, query: string) => {
   return (kwVague && VaguelyMatches(kwVague, video.titleSpell.toLowerCase()))
     || VaguelyMatches(kw, video.titleSpell.toLowerCase() || video.title)
     || IdMatches(lowerQuery, video.id)
-    || (video._fromUdon && video.title.toLowerCase().includes(lowerQuery));
+    || (video._fromUdon && MatchesUdon(video, video._fromUdon, lowerQuery));
+}
+
+const MatchesUdon = (video: Video, udon: UdonDanceSongInfo, query: string) => {
+  const key = [udon.name, udon.artist, udon.dancer].map(s => s.toLowerCase());
+  return key.some(s => s.includes(query))
+    || (video._matchingAya && IdMatches(query, video._matchingAya.id));
 }
 
 const IdMatches = (query: string, id: number) => {

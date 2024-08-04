@@ -15,7 +15,7 @@ interface UdonDanceContent {
   songInfos: UdonDanceSongInfo[] | null;
 }
 
-interface UdonDanceSongInfo {
+export interface UdonDanceSongInfo {
   id: number;
   danceid: number;
   name: string;
@@ -72,7 +72,7 @@ async function convertToAyaIndex(udonIndex: UdonDanceVideoIndex): Promise<VideoI
         originalUrl: ayaSong?.originalUrl ?? [],
         checksum: ayaSong?.checksum ?? null,
         _matchingAya: ayaSong,
-        _fromUdon: true,
+        _fromUdon: song,
       } as Video;
     }) || [];
     return {

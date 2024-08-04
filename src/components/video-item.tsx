@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { KEY_FAVOURITES, Video, videoThumbnailUrl, videoUrl } from '@/types/video';
+import { formatVideoDesc, formatVideoTitle, KEY_FAVOURITES, Video, videoThumbnailUrl, videoUrl } from '@/types/video';
 import Image from 'next/image';
 import ReceiptDialog from "@/components/receipt-dialog";
 import { CirclePlay, Heart, HeartFilled, List, Play } from "@/assets/icon";
@@ -59,9 +59,9 @@ const VideoItem: React.FC<VideoItemProps> = ({ video }) => {
         <div className="flex-grow">
           <h2
             className="text-base font-bold mb-1 outline-link dark:outline-link outline-offset-4 group flex flex-col flex-1 gap-0.5">
-            <a href={videoUrl(video)} target="_blank" className="group-hover:underline">{video.title}</a>
+            <a href={videoUrl(video)} target="_blank" className="group-hover:underline">{formatVideoTitle(video)}</a>
           </h2>
-          <p className="text-sm text-gray-500 text-tertiary leading-snug">ID: {video.id}</p>
+          <p className="text-sm text-gray-500 text-tertiary leading-snug">{formatVideoDesc(video)}</p>
         </div>
       </div>
       <div className="flex items-center justify-center space-x-2 flex-shrink-0">
