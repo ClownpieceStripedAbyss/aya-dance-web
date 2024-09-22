@@ -54,61 +54,59 @@ export default function SongTable({
   ];
 
   return (
-    !!targetData &&
-    targetData.length > 0 && (
-      <div className={styles.table}>
-        <div className="font-bold text-l text-primary mb-4 leading-snug">{`${targetData.length} Videos in ${targetKey}`}</div>
-        <ScrollShadow hideScrollBar className="w-full h-[680px]">
-          {items.map((item, index) => (
-            <TableItem key={index} song={item} />
-          ))}
-        </ScrollShadow>
-        <div className={styles.bottom}>
-          <div className={styles.paginationControl}>
-            <Autocomplete
-              aria-label="change rows per page"
-              className="w-[130px]"
-              defaultItems={pageOptions}
-              isClearable={false}
-              selectedKey={rowsPerPage}
-              onSelectionChange={setRowsPerPage as (key: Key | null) => void}
-            >
-              {pageOptions.map((option) => (
-                <AutocompleteItem key={option.value} value={option.value}>
-                  {option.label}
-                </AutocompleteItem>
-              ))}
-            </Autocomplete>
-            <Autocomplete
-              aria-label="change rows per slot"
-              className="w-[130px] ml-4"
-              defaultItems={sortOptions}
-              isClearable={false}
-              selectedKey={`${SortByValue}`}
-              onSelectionChange={(key) => {
-                if (key !== null) {
-                  dispatch(setSortBy(Number(key) as SortBy));
-                }
-              }}
-            >
-              {sortOptions.map((option) => (
-                <AutocompleteItem key={option.value} value={option.value}>
-                  {option.label}
-                </AutocompleteItem>
-              ))}
-            </Autocomplete>
-          </div>
-          <Pagination
-            isCompact
-            showControls
-            showShadow
-            color="primary"
-            page={page}
-            total={pages}
-            onChange={(page) => setPage(page)}
-          />
+    <div className={styles.table}>
+      <div
+        className="font-bold text-l text-primary mb-4 leading-snug">{`${targetData.length} Videos in ${targetKey}`}</div>
+      <ScrollShadow hideScrollBar className="w-full h-[680px]">
+        {items.map((item, index) => (
+          <TableItem key={index} song={item} />
+        ))}
+      </ScrollShadow>
+      <div className={styles.bottom}>
+        <div className={styles.paginationControl}>
+          <Autocomplete
+            aria-label="change rows per page"
+            className="w-[130px]"
+            defaultItems={pageOptions}
+            isClearable={false}
+            selectedKey={rowsPerPage}
+            onSelectionChange={setRowsPerPage as (key: Key | null) => void}
+          >
+            {pageOptions.map((option) => (
+              <AutocompleteItem key={option.value} value={option.value}>
+                {option.label}
+              </AutocompleteItem>
+            ))}
+          </Autocomplete>
+          <Autocomplete
+            aria-label="change rows per slot"
+            className="w-[130px] ml-4"
+            defaultItems={sortOptions}
+            isClearable={false}
+            selectedKey={`${SortByValue}`}
+            onSelectionChange={(key) => {
+              if (key !== null) {
+                dispatch(setSortBy(Number(key) as SortBy));
+              }
+            }}
+          >
+            {sortOptions.map((option) => (
+              <AutocompleteItem key={option.value} value={option.value}>
+                {option.label}
+              </AutocompleteItem>
+            ))}
+          </Autocomplete>
         </div>
+        <Pagination
+          isCompact
+          showControls
+          showShadow
+          color="primary"
+          page={page}
+          total={pages}
+          onChange={(page) => setPage(page)}
+        />
       </div>
-    )
+    </div>
   );
 }
