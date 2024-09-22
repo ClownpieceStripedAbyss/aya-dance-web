@@ -1,22 +1,23 @@
 type RequestOptions = {
-  method?: string
-  headers?: HeadersInit
-  body?: any
-  params?: Record<string, string>
-  cache?: RequestCache
-}
+  method?: string;
+  headers?: HeadersInit;
+  body?: any;
+  params?: Record<string, string>;
+  cache?: RequestCache;
+};
 
 async function fetchWithDefaults(
   url: string,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<any> {
   const defaultHeaders = {
     "Content-Type": "application/json",
-  }
+  };
 
   if (options.params) {
-    const queryString = new URLSearchParams(options.params).toString()
-    url += `?${queryString}`
+    const queryString = new URLSearchParams(options.params).toString();
+
+    url += `?${queryString}`;
   }
 
   const config: RequestInit = {
@@ -27,24 +28,25 @@ async function fetchWithDefaults(
     },
     body: options.body ? JSON.stringify(options.body) : null,
     cache: options.cache || "no-cache",
-  }
+  };
 
   try {
-    const response = await fetch(url, config)
+    const response = await fetch(url, config);
 
     if (!response.ok) {
-      const errorText = await response.text()
+      const errorText = await response.text();
+
       throw new Error(
-        `HTTP error! status: ${response.status}, message: ${errorText}`
-      )
+        `HTTP error! status: ${response.status}, message: ${errorText}`,
+      );
     }
 
-    return await response.json()
+    return await response.json();
   } catch (error) {
     if (error instanceof Error) {
-      console.error(`Fetch error: ${error.message}`)
+      console.error(`Fetch error: ${error.message}`);
     }
-    throw error
+    throw error;
   }
 }
-export default fetchWithDefaults
+export default fetchWithDefaults;

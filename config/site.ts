@@ -1,4 +1,4 @@
-export type SiteConfig = typeof siteConfig
+export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
   name: "Udon Dance",
@@ -18,4 +18,4 @@ export const siteConfig = {
   links: {
     github: "https://github.com/ClownpieceStripedAbyss/aya-dance-web",
   },
-}
+};

@@ -1,18 +1,12 @@
-import {
-  Navbar as NextUINavbar,
-  NavbarContent,
-  NavbarBrand,
-  NavbarItem,
-} from "@nextui-org/navbar"
+import { Navbar as NextUINavbar, NavbarBrand, NavbarContent, NavbarItem } from "@nextui-org/navbar";
+import { Link } from "@nextui-org/link";
+import { link as linkStyles } from "@nextui-org/theme";
+import NextLink from "next/link";
+import clsx from "clsx";
 
-import { Link } from "@nextui-org/link"
-import { link as linkStyles } from "@nextui-org/theme"
-import NextLink from "next/link"
-import clsx from "clsx"
-
-import { siteConfig } from "@/config/site"
-import { ThemeSwitch } from "@/components/theme-switch"
-import { GithubIcon, Logo } from "@/components/icons"
+import { siteConfig } from "@/config/site";
+import { ThemeSwitch } from "@/components/theme-switch";
+import { GithubIcon, Logo } from "@/components/icons";
 
 export const Navbar = () => {
   return (
@@ -30,7 +24,7 @@ export const Navbar = () => {
               <NextLink
                 className={clsx(
                   linkStyles({ color: "foreground" }),
-                  "data-[active=true]:text-primary data-[active=true]:font-medium"
+                  "data-[active=true]:text-primary data-[active=true]:font-medium",
                 )}
                 color="foreground"
                 href={item.href}
@@ -54,5 +48,5 @@ export const Navbar = () => {
         </NavbarItem>
       </NavbarContent>
     </NextUINavbar>
-  )
-}
+  );
+};

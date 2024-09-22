@@ -1,20 +1,23 @@
-"use client"
+"use client";
 
-import { Video } from "@/types/ayaInfo"
-import styles from "./tableItem.module.css"
-import { Card, CardBody, Image, Link, Button } from "@nextui-org/react"
-import { CirclePlay, Heart, HeartFilled, List, Play } from "@/assets/icon"
+import { Button, Card, CardBody, Image, Link } from "@nextui-org/react";
+
+import styles from "./tableItem.module.css";
+
+import { Video } from "@/types/ayaInfo";
+import { Heart, Play } from "@/assets/icon";
 
 interface SongTableProps {
-  song: Video
+  song: Video;
 }
 
 export default function tableItem({ song }: SongTableProps) {
   // video
   const handleOpenVideo = () => {
     // 设置视频的源
-    const videoURL = `https://api.udon.dance/Api/Songs/play?id=${song.id}`
-    const win = window.open("", "_blank", "noopener=false") as Window
+    const videoURL = `https://api.udon.dance/Api/Songs/play?id=${song.id}`;
+    const win = window.open("", "_blank", "noopener=false") as Window;
+
     win.document.write(`
       <!DOCTYPE html>
       <html style="width:100%;height:100%;margin:0;padding:0;">
@@ -25,53 +28,57 @@ export default function tableItem({ song }: SongTableProps) {
         </video>
       </body>
       </html>
-    `)
-  }
+    `);
+  };
   const videoThumbnailUrl = (video: Video): string => {
-    if (!video) return ""
+    if (!video) return "";
     if (video.originalUrl.length > 0) {
       const youtube = video.originalUrl.find((url) =>
-        url.includes("youtube.com")
-      )
+        url.includes("youtube.com"),
+      );
+
       if (youtube) {
-        const videoId = youtube.split("v=")[1]
-        return `https://img.youtube.com/vi/${videoId}/0.jpg`
+        const videoId = youtube.split("v=")[1];
+
+        return `https://img.youtube.com/vi/${videoId}/0.jpg`;
       }
     }
-    return "/unity-error.jpg"
-  }
+
+    return "/unity-error.jpg";
+  };
   const formatVideoTitle = (): string => {
     return !!song.artist && !!song.dancer
       ? `${song.title} - ${song.artist} | ${song.dancer}`
-      : song.title
-  }
+      : song.title;
+  };
+
   return (
     !!song && (
       <div className={styles.tableItem}>
-        <Card shadow="sm" className="w-full h-[110px]">
+        <Card className="w-full h-[110px]" shadow="sm">
           <CardBody>
             <div className="w-full h-full flex justify-between items-center">
               <a
                 href="#"
-                onClick={handleOpenVideo}
                 style={{ display: "inline-block" }}
+                onClick={handleOpenVideo}
               >
                 <Image
                   alt="Album cover"
                   className="object-cover"
-                  width={138}
                   height={82}
                   shadow="md"
                   src={videoThumbnailUrl(song)}
                   style={{ cursor: "pointer" }}
+                  width={138}
                 />
               </a>
               <div className={styles.title}>
                 <Link
+                  className={styles.hoverUnderline}
+                  color="foreground"
                   href="#"
                   onClick={handleOpenVideo}
-                  color="foreground"
-                  className={styles.hoverUnderline}
                 >
                   {formatVideoTitle()}
                 </Link>
@@ -82,18 +89,18 @@ export default function tableItem({ song }: SongTableProps) {
               <div className={`${styles.operation} flex gap-4 items-center`}>
                 <Button
                   isIconOnly
+                  aria-label="play"
                   color="default"
                   variant="light"
-                  aria-label="play"
                   onClick={handleOpenVideo}
                 >
                   <Play className="w-6 h-6 text-black dark:text-white" />
                 </Button>
                 <Button
                   isIconOnly
+                  aria-label="collection"
                   color="default"
                   variant="light"
-                  aria-label="collection"
                 >
                   {/* <HeartFilled className="w-6 h-6 text-red-600 dark:text-red-700"/> */}
                   <Heart className="w-6 h-6 text-black dark:text-white" />
@@ -113,5 +120,5 @@ export default function tableItem({ song }: SongTableProps) {
         </Card>
       </div>
     )
-  )
+  );
 }
