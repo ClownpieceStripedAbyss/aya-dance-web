@@ -12,6 +12,7 @@ export interface Category {
 
 export interface Video {
   id: number
+  ayaId?: number
   title: string
   category: number
   categoryName: string
@@ -22,8 +23,8 @@ export interface Video {
   flip: boolean
   originalUrl: string[]
   checksum: string | null
-  _fromUdon: UdonDanceUdonInfo | null
-  _matchingAya: Video | null
+  _fromUdon?: UdonDanceUdonInfo | null
+  _matchingAya?: Video | null
 }
 
 export enum SortBy {

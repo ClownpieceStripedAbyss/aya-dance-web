@@ -1,8 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { pinyin } from "pinyin-pro"
+import { pack, unpack } from "jsonpack"
+
 import { RootState } from "../index"
 import { Category, SortBy, Video, VideoIndex } from "@/types/ayaInfo"
 import { Group, UdonDanceUdonInfo, UdonVideoFile } from "@/types/udonInfo"
+
+// local storage key
+const SONG_INFO_KEY = "songInfo"
 
 interface SongInfo {
   loading: boolean
@@ -45,17 +50,23 @@ const SongInfoSlice = createSlice({
   name: "SongInfo",
   initialState,
   reducers: {
+    getLocalSongInfo: (state) => {
+      const localSongInfo: string | null = localStorage.getItem(SONG_INFO_KEY)
+      if (!localSongInfo) return
+      const decompressedData = unpack(localSongInfo) // 解压缩
+      Object.assign(state, decompressedData as SongInfo)
+    },
     initSongInfo: (state, action: PayloadAction<initValues>) => {
       const { groups, categories, defaultSortBy, time, udonFiles } =
         action.payload
-      console.log("initSongInfo 内部")
-      console.log(action.payload)
+
       const initCategories = groups.map((group) => {
         const entries =
           group.songInfos?.map((song) => {
             const ayaSong = findMatchingAyaSong(udonFiles, song, categories)
             return {
               id: song.id,
+              ayaId: ayaSong?.id ?? null,
               title: song.name,
               category: 0,
               categoryName: group.groupName,
@@ -66,8 +77,6 @@ const SongInfoSlice = createSlice({
               flip: song.flip,
               originalUrl: ayaSong?.originalUrl ?? [],
               checksum: ayaSong?.checksum ?? null,
-              _matchingAya: ayaSong,
-              _fromUdon: song,
             } as Video
           }) || []
         return {
@@ -76,7 +85,6 @@ const SongInfoSlice = createSlice({
         } as Category
       })
 
-      console.log(initCategories, "initCategories")
       // 全部
       const allEntries = initCategories
         .flatMap((category) => category.entries)
@@ -88,17 +96,23 @@ const SongInfoSlice = createSlice({
         }, [])
         .sort((a, b) => a.title.localeCompare(b.title))
 
-      state.updated_at = time
-      state.SortBy = defaultSortBy
-      state.songTypes = [
-        {
-          title: "All Songs",
-          entries: allEntries,
-        } as Category,
-        ...initCategories,
-      ]
-      console.log(state.songTypes, "state.songTypes ")
-      state.loading = false
+      const newState = {
+        ...state,
+        updated_at: time,
+        SortBy: defaultSortBy,
+        songTypes: [
+          {
+            title: "All Songs",
+            entries: allEntries,
+          } as Category,
+          ...initCategories,
+        ],
+        loading: false,
+      }
+      Object.assign(state, newState)
+      // 压缩保存到 localStorage
+      const compressedData = pack(newState)
+      localStorage.setItem(SONG_INFO_KEY, compressedData)
     },
   },
 })
@@ -112,5 +126,5 @@ export const selectSongInfo = (state: RootState) => ({
 })
 
 // 导出 actions 和 reducer
-export const { initSongInfo } = SongInfoSlice.actions
+export const { initSongInfo, getLocalSongInfo } = SongInfoSlice.actions
 export default SongInfoSlice.reducer

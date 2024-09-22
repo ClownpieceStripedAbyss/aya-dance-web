@@ -42,10 +42,10 @@ export default function SongTypeSelector({
       {loading ? (
         <div className="flex flex-wrap h-full">
           <div
-            className="flex flex-col justify-between h-full py-[68px]"
+            className="flex flex-col justify-between h-full "
             style={{ width: "10vw" }}
           >
-            {Array.from({ length: 18 }).map((_, index) => (
+            {Array.from({ length: 21 }).map((_, index) => (
               <Skeleton
                 key={index}
                 className="rounded-lg"
@@ -57,7 +57,7 @@ export default function SongTypeSelector({
           </div>
         </div>
       ) : (
-        <ScrollShadow className="w-[220px] h-[662px]" hideScrollBar>
+        <ScrollShadow className="w-[220px] h-[798px]" hideScrollBar>
           <Listbox
             items={songTypeOptions}
             aria-label="songType"

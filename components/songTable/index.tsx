@@ -1,30 +1,36 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableColumn,
-  TableRow,
-  TableCell,
-} from "@nextui-org/react"
+import { useState, useMemo, useEffect, useRef, Component } from "react"
+import TableItem from "./components/tableItem"
 import styles from "./index.module.css"
-import { Category } from "@/types/ayaInfo"
+
+import { Video } from "@/types/ayaInfo"
+import { ScrollShadow } from "@nextui-org/react"
 
 interface SongTableProps {
-  songTypes: Category[]
+  targetData: Video[]
   loading: boolean
-  selectedKeys: string
 }
 
-export default function SongTypeSelector({
-  songTypes,
-  loading,
-}: SongTableProps) {
+export default function SongTable({ targetData, loading }: SongTableProps) {
+  console.log(targetData)
+  const [page, setPage] = useState(1)
+  const rowsPerPage = 12
+
+  const pages = Math.ceil(targetData.length / rowsPerPage)
+
+  const items = useMemo(() => {
+    const start = (page - 1) * rowsPerPage
+    const end = start + rowsPerPage
+
+    return targetData.slice(start, end)
+  }, [page, targetData])
+  const loadingState = loading || targetData?.length === 0 ? "loading" : "idle"
   return (
-    <>
-      <div>111</div>
-    </>
+    <div className={styles.table}>
+      <ScrollShadow className="w-full h-[690px]" hideScrollBar>
+        <TableItem />
+      </ScrollShadow>
+    </div>
   )
 }
