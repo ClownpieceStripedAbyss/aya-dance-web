@@ -79,5 +79,9 @@ export async function fetchUdonInfo(): Promise<UdonInfo> {
   return {
     ...data,
     groups: data.groups.contents,
-  };
+  } as UdonInfo;
+}
+
+export async function fetchUdonFiles(): Promise<UdonVideoFile[]> {
+  return await fetchWithDefaults("https://api.udon.dance/Api/Songs/files");
 }
