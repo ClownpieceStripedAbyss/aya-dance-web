@@ -1,3 +1,5 @@
+import fetchWithDefaults from "@/utils/service";
+
 export interface UdonInfo {
   loading?: boolean;
   time: string;
@@ -69,4 +71,13 @@ export interface Tag {
 
 export interface Tags {
   [key: string]: Tag;
+}
+
+export async function fetchUdonInfo(): Promise<UdonInfo> {
+  const data = await fetchWithDefaults("https://api.udon.dance/Api/Songs/list");
+
+  return {
+    ...data,
+    groups: data.groups.contents,
+  };
 }

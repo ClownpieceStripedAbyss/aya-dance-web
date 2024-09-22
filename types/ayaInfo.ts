@@ -1,3 +1,5 @@
+import fetchWithDefaults from "@/utils/service";
+
 export interface VideoIndex {
   updated_at: number;
   categories: Category[];
@@ -47,4 +49,15 @@ export interface UdonDanceUdonInfo {
   start: number;
   end: number;
   flip: boolean;
+}
+
+export async function fetchAyaInfo(): Promise<VideoIndex> {
+  const index = await fetchWithDefaults(
+    "https://aya-dance-cf.kiva.moe/aya-api/v1/songs",
+  );
+
+  return {
+    ...index,
+    defaultSortBy: SortBy.ID_ASC,
+  } as VideoIndex;
 }
