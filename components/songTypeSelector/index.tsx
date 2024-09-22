@@ -1,31 +1,41 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { Listbox, ListboxItem, Skeleton } from "@nextui-org/react"
+import { useState, useMemo, useEffect } from "react"
+import { Listbox, ListboxItem, Skeleton, ScrollShadow } from "@nextui-org/react"
 import styles from "./index.module.css"
 
+import { Category } from "@/types/ayaInfo"
+
 interface SongTypeSelectorProps {
-  categories: any[]
+  songTypes: Category[]
   loading: boolean
-  selectedKeys: string
+  onSelectionChange: (selectedKey: string) => void
 }
 
 export default function SongTypeSelector({
-  categories,
+  songTypes,
   loading,
+  onSelectionChange,
 }: SongTypeSelectorProps) {
   const songTypeOptions = useMemo(() => {
-    const option = categories.map((category) => {
+    const option = songTypes.map((group: Category) => {
       return {
-        key: category.title,
-        label: category.title,
+        key: group.title,
+        label: group.title,
       }
     })
     option.unshift({ key: "favorites", label: "喜欢的歌曲" })
     return option
-  }, [categories])
+  }, [songTypes])
 
   const [selectedKeys, setSelectedKeys] = useState(new Set(["All Songs"]))
+
+  useEffect(() => {
+    if (selectedKeys.size === 1) {
+      const selectedKey = Array.from(selectedKeys)[0]
+      onSelectionChange(selectedKey)
+    }
+  }, [selectedKeys, onSelectionChange])
 
   return (
     <>
@@ -47,32 +57,32 @@ export default function SongTypeSelector({
           </div>
         </div>
       ) : (
-        <Listbox
-          items={songTypeOptions}
-          aria-label="songType"
-          selectionMode="single"
-          selectedKeys={selectedKeys}
-          onSelectionChange={(keys) => {
-            if (keys instanceof Set && keys.size > 0) {
-              setSelectedKeys(keys as Set<string>)
-            }
-          }}
-          classNames={{
-            base: styles.listbox,
-          }}
-        >
-          {(item) => (
-            <ListboxItem
-              key={item.key}
-              hideSelectedIcon
-              classNames={{
-                base: styles.customListboxItem,
-              }}
-            >
-              {item.label}
-            </ListboxItem>
-          )}
-        </Listbox>
+        <ScrollShadow className="w-[220px] h-[662px]" hideScrollBar>
+          <Listbox
+            items={songTypeOptions}
+            aria-label="songType"
+            selectionMode="single"
+            selectedKeys={selectedKeys}
+            onSelectionChange={(keys) => {
+              if (keys instanceof Set && keys.size > 0) {
+                setSelectedKeys(keys as Set<string>)
+              }
+            }}
+            classNames={{
+              base: `${styles.listbox} `,
+            }}
+          >
+            {(item) => (
+              <ListboxItem
+                key={item.key}
+                className={styles.customListboxItem}
+                hideSelectedIcon
+              >
+                {item.label}
+              </ListboxItem>
+            )}
+          </Listbox>
+        </ScrollShadow>
       )}
     </>
   )

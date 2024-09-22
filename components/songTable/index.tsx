@@ -10,15 +10,21 @@ import {
   TableCell,
 } from "@nextui-org/react"
 import styles from "./index.module.css"
+import { Category } from "@/types/ayaInfo"
 
 interface SongTableProps {
-  categories: { title: string }[]
+  songTypes: Category[]
   loading: boolean
+  selectedKeys: string
 }
 
 export default function SongTypeSelector({
-  categories,
+  songTypes,
   loading,
 }: SongTableProps) {
-  return <></>
+  return (
+    <>
+      <div>111</div>
+    </>
+  )
 }

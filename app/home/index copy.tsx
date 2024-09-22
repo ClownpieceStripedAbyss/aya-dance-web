@@ -1,11 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import type { AppDispatch } from "@/store/index"
 
 import SongTypeSelector from "@/components/songTypeSelector"
-import SongTable from "@/components/songTable"
 import {
   selectUdonInfo,
   fetchUdonInfoMultidataAction,
@@ -61,21 +60,15 @@ export default function HomeBlock() {
   }, [isLoading])
 
   function onSelectionChange(selectedKey: string) {
-    setSelectedKey(selectedKey)
+    console.log(selectedKey)
   }
 
-  const [selectedKey, setSelectedKey] = useState<string>("")
   return (
     <div className="relative flex flex-row items-center justify-left gap-4 py-4 md:py-4 h-full">
       <SongTypeSelector
         songTypes={songTypes}
         onSelectionChange={onSelectionChange}
         loading={!!songLoading}
-      />
-      <SongTable
-        songTypes={songTypes}
-        loading={!!songLoading}
-        selectedKeys={selectedKey}
       />
     </div>
   )

@@ -1,13 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit"
 import { useDispatch } from "react-redux"
-import songInfoReducer from "./modules/songInfo"
-import counterReducer from "./modules/counter"
+import UdonInfoReducer from "./modules/udonInfo"
+import AyaInfoReducer from "./modules/ayaInfo"
+import SongInfoReducer from "./modules/songInfo"
 
 // 配置 Redux store
 export const store = configureStore({
   reducer: {
-    songInfo: songInfoReducer,
-    counter: counterReducer,
+    UdonInfo: UdonInfoReducer,
+    AyaInfo: AyaInfoReducer,
+    SongInfo: SongInfoReducer,
   },
 })
 
