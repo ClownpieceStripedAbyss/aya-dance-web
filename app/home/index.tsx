@@ -1,8 +1,5 @@
 "use client";
 
-// Cloudflare needs it, see: https://nextjs.org/docs/app/building-your-application/rendering/edge-and-nodejs-runtimes
-export const runtime = 'edge';
-
 import type { AppDispatch } from "@/store/index";
 
 import { useEffect, useState } from "react";
