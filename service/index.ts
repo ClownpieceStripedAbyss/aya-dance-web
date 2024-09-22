@@ -26,7 +26,7 @@ async function fetchWithDefaults(
       ...options.headers,
     },
     body: options.body ? JSON.stringify(options.body) : null,
-    cache: options.cache,
+    cache: options.cache || "no-cache",
   }
 
   try {

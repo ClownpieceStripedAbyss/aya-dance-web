@@ -12,6 +12,7 @@ export interface UdonDanceSongInfo {
 }
 
 export interface VideoIndex {
+  loading?: boolean
   updated_at: number
   categories: Category[]
   defaultSortBy: SortBy
