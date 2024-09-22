@@ -1,0 +1,13 @@
+.clearButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.iconClear {
+  color: #a5a5a5;
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+}

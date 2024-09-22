@@ -1,0 +1,34 @@
+.tableItem {
+  padding: 4px;
+  margin-bottom: 12px;
+}
+
+.title {
+  box-sizing: border-box;
+  width: 590px;
+  height: 100%;
+  padding: 6px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ids {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.operation {
+  width: 170px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hoverUnderline {
+  text-decoration: none; 
+}
+
+.hoverUnderline:hover {
+  text-decoration: underline; 
+}

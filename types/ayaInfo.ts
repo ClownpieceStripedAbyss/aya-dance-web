@@ -14,6 +14,8 @@ export interface Video {
   id: number
   ayaId?: number
   title: string
+  artist: string
+  dancer: string
   category: number
   categoryName: string
   titleSpell: string

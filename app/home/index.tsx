@@ -5,7 +5,7 @@ import { useSelector, useDispatch } from "react-redux"
 import type { AppDispatch } from "@/store/index"
 
 import SongTypeSelector from "@/components/songTypeSelector"
-import SongTable from "@/components/songTable"
+
 import {
   selectUdonInfo,
   fetchUdonInfoMultidataAction,
@@ -40,6 +40,7 @@ export default function HomeBlock() {
   const {
     categories,
     defaultSortBy,
+    updated_at: ayaUpdated_at,
     loading: ayaLoading,
   } = useSelector(selectAyaInfo)
 
@@ -53,20 +54,21 @@ export default function HomeBlock() {
   const isLoading = udonLoading || ayaLoading
 
   useEffect(() => {
-    if (!isLoading) {
-      // 异步获取aya和udon数据完成后初始化songInfo
-      // 如果udon混入的songInfo update_at和time一致 则不更新songInfo
-      if (time === updated_at) return
-      dispatch(
-        initSongInfo({
-          groups,
-          categories,
-          defaultSortBy,
-          time,
-          udonFiles: udonFiles || [],
-        })
-      )
-    }
+    if (isLoading) return
+    // 异步获取aya和udon数据完成后初始化songInfo
+    // 如果udon混入的songInfo update_at和time一致 则不更新songInfo
+    if (time === updated_at) return
+    // 如果获取失败 则不更新songInfo
+    if (time === "-1" || ayaUpdated_at === -1) return
+    dispatch(
+      initSongInfo({
+        groups,
+        categories,
+        defaultSortBy,
+        time,
+        udonFiles: udonFiles || [],
+      })
+    )
   }, [isLoading])
 
   function onSelectionChange(selectedKey: string) {
@@ -84,6 +86,7 @@ export default function HomeBlock() {
       <SongShow
         selectedKey={selectedKey}
         songTypes={songTypes}
+        SortBy={SortBy}
         loading={!!songLoading}
       />
     </div>

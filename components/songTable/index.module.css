@@ -1,4 +1,15 @@
 .table {
   width: 100%;
-  height: 720px;
+  height: 730px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+}
+.bottom {
+  display: flex;
+  justify-content: space-between;
+}
+.paginationControl {
+  
 }

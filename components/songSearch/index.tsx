@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react"
 import { Input, Kbd } from "@nextui-org/react"
-
+import { ClearIcon } from "@/assets/icon"
+import styles from "./index.module.css"
 interface SongSearchProps {
   onSearchSubmit: (keyword: string) => void
 }
@@ -31,6 +32,10 @@ export default function SongSearch({ onSearchSubmit }: SongSearchProps) {
       onSearchSubmit(event.currentTarget.value)
     }
   }
+  function handleClear(value: string) {
+    console.log("handleClear")
+    if (value === "") onSearchSubmit("")
+  }
 
   return (
     <>
@@ -39,8 +44,15 @@ export default function SongSearch({ onSearchSubmit }: SongSearchProps) {
         size={"lg"}
         type="search"
         placeholder="搜索: ID/全名/关键字/拼音首字母..."
+        aria-label="Search input"
         onKeyDown={handleKeyDown}
-        endContent={<Kbd keys={["enter"]}>Enter</Kbd>}
+        isClearable={false}
+        onValueChange={(value) => handleClear(value)}
+        endContent={
+          <>
+            <Kbd keys={["enter"]}>Enter</Kbd>
+          </>
+        }
       />
     </>
   )

@@ -46,20 +46,39 @@ function findMatchingAyaSong(
   return ayaSong || null
 }
 
+// 压缩数据并保存到 localStorage
+function saveToLocalStorage(data: SongInfo) {
+  const compressedData = pack(data)
+  localStorage.setItem(SONG_INFO_KEY, compressedData)
+}
+
+// 从 localStorage 解压缩数据
+function loadFromLocalStorage(): SongInfo | null {
+  const localSongInfo: string | null = localStorage.getItem(SONG_INFO_KEY)
+  if (!localSongInfo) return null
+  return unpack(localSongInfo) as SongInfo
+}
+
 const SongInfoSlice = createSlice({
   name: "SongInfo",
   initialState,
   reducers: {
+    setSortBy: (state, action: PayloadAction<SortBy>) => {
+      console.log(action.payload, "setSortBy")
+      state.SortBy = action.payload
+      // TODO 性能问题 后续拆分state保存
+      // saveToLocalStorage(state) // 更新本地存储
+    },
     getLocalSongInfo: (state) => {
-      const localSongInfo: string | null = localStorage.getItem(SONG_INFO_KEY)
-      if (!localSongInfo) return
-      const decompressedData = unpack(localSongInfo) // 解压缩
-      Object.assign(state, decompressedData as SongInfo)
+      const decompressedData = loadFromLocalStorage()
+      if (decompressedData) {
+        Object.assign(state, decompressedData)
+      }
     },
     initSongInfo: (state, action: PayloadAction<initValues>) => {
       const { groups, categories, defaultSortBy, time, udonFiles } =
         action.payload
-
+      console.log(defaultSortBy, "defaultSortBy")
       const initCategories = groups.map((group) => {
         const entries =
           group.songInfos?.map((song) => {
@@ -68,6 +87,8 @@ const SongInfoSlice = createSlice({
               id: song.id,
               ayaId: ayaSong?.id ?? null,
               title: song.name,
+              artist: song.artist,
+              dancer: song.dancer,
               category: 0,
               categoryName: group.groupName,
               titleSpell: pinyin(song.name, { pattern: "first" }),
@@ -111,8 +132,7 @@ const SongInfoSlice = createSlice({
       }
       Object.assign(state, newState)
       // 压缩保存到 localStorage
-      const compressedData = pack(newState)
-      localStorage.setItem(SONG_INFO_KEY, compressedData)
+      saveToLocalStorage(newState)
     },
   },
 })
@@ -122,9 +142,10 @@ export const selectSongInfo = (state: RootState) => ({
   loading: state.SongInfo.loading,
   updated_at: state.SongInfo.updated_at,
   songTypes: state.SongInfo.songTypes,
-  SortBy: state.SongInfo.songTypes,
+  SortBy: state.SongInfo.SortBy,
 })
 
 // 导出 actions 和 reducer
-export const { initSongInfo, getLocalSongInfo } = SongInfoSlice.actions
+export const { initSongInfo, getLocalSongInfo, setSortBy } =
+  SongInfoSlice.actions
 export default SongInfoSlice.reducer

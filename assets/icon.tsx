@@ -130,3 +130,22 @@ export const CirclePlay: React.FC<IconProps> = ({ className }) => {
     </svg>
   )
 }
+
+export const ClearIcon: React.FC<IconProps> = ({ className }) => {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      width="16px"
+      height="16px"
+    >
+      <path
+        fillRule="evenodd"
+        d="M10 9.293l4.293-4.293a1 1 0 011.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 011.414-1.414L10 8.586z"
+        clipRule="evenodd"
+      />
+    </svg>
+  )
+}
