@@ -1,4 +1,4 @@
-import { fetchAyaInfo, VideoIndex } from "@/types/ayaInfo";
+import { fetchAyaInfo } from "@/types/ayaInfo";
 
 // Cloudflare needs it, see: https://nextjs.org/docs/app/building-your-application/rendering/edge-and-nodejs-runtimes
 export const runtime = "nodejs";
@@ -8,7 +8,7 @@ export const dynamicParams = false;
 export const revalidate = 60;
 
 export async function GET() {
-  const VideoIndex: VideoIndex = await fetchAyaInfo();
+  const VideoIndex = await fetchAyaInfo();
 
   return new Response(JSON.stringify(VideoIndex), {
     status: 200,

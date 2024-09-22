@@ -11,20 +11,8 @@ import SongTypeSelector from "@/components/songTypeSelector";
 import { fetchUdonInfoMultidataAction, selectUdonInfo } from "@/store/modules/udonInfo";
 import { fetchAyaInfoMultidataAction, selectAyaInfo } from "@/store/modules/ayaInfo";
 import { getLocalSongInfo, initSongInfo, selectSongInfo } from "@/store/modules/songInfo";
-import { VideoIndex } from "@/types/ayaInfo";
-import { UdonInfo, UdonVideoFile } from "@/types/udonInfo";
 
-export interface HomeBlockProps {
-  fallbackAyaInfo: VideoIndex;
-  fallbackUdonInfo: UdonInfo;
-  fallbackUdonFiles: UdonVideoFile[];
-}
-
-export default function HomeBlock({
-  fallbackAyaInfo,
-  fallbackUdonInfo,
-  fallbackUdonFiles,
-}: HomeBlockProps) {
+export default function HomeBlock() {
   const dispatch = useDispatch<AppDispatch>();
 
   // 初始化
@@ -62,21 +50,8 @@ export default function HomeBlock({
     // 异步获取aya和udon数据完成后初始化songInfo
     // 如果udon混入的songInfo update_at和time一致 则不更新songInfo
     if (time === updated_at) return;
-    // 如果获取失败 则使用 fallback 数据
-    if (time === "-1" || ayaUpdated_at === -1) {
-      console.log("Update failed, use fallback data");
-      dispatch(
-        initSongInfo({
-          groups: fallbackUdonInfo.groups,
-          categories: fallbackAyaInfo.categories,
-          defaultSortBy: fallbackAyaInfo.defaultSortBy,
-          time: fallbackUdonInfo.time,
-          udonFiles: fallbackUdonFiles,
-        }),
-      );
-
-      return;
-    }
+    // 如果获取失败 则不更新songInfo
+    if (time === "-1" || ayaUpdated_at === -1) return;
     dispatch(
       initSongInfo({
         groups,
