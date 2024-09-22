@@ -1,20 +1,17 @@
+import fetchWithDefaults from "@/service/index"
+
 import { VideoIndex, SortBy } from "@/types/udon-dance"
 
 export async function fetchAyaVideoIndex(): Promise<VideoIndex> {
-  const response = await fetch(
+  const indexs: VideoIndex = await fetchWithDefaults(
     "https://aya-dance-cf.kiva.moe/aya-api/v1/songs",
     {
       cache: "no-cache",
     }
   )
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch videos")
-  }
-
-  let index = (await response.json()) as VideoIndex
   return {
-    ...index,
+    ...indexs,
     defaultSortBy: SortBy.ID_ASC,
-  } as VideoIndex
+  }
 }
