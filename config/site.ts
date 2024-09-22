@@ -1,7 +1,7 @@
 export type SiteConfig = typeof siteConfig;
 
 export const siteConfig = {
-  name: "Udon Dance",
+  name: "WannaDance",
   description: "舞蹈收集列表",
   navItems: [
     {

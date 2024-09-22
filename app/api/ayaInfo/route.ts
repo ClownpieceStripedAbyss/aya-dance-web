@@ -1,3 +1,6 @@
+// Cloudflare needs it, see: https://nextjs.org/docs/app/building-your-application/rendering/edge-and-nodejs-runtimes
+export const runtime = 'edge';
+
 import fetchWithDefaults from "@/utils/service";
 import { SortBy, VideoIndex } from "@/types/ayaInfo";
 
