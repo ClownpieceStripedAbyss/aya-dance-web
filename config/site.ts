@@ -8,10 +8,11 @@ export const siteConfig = {
       label: "首页",
       href: "/",
     },
-    {
-      label: "跳舞",
-      href: "/dance",
-    },
+    // TODO 跳舞功能
+    // {
+    //   label: "跳舞",
+    //   href: "/dance",
+    // },
   ],
 
   links: {

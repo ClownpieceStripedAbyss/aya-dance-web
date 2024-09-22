@@ -98,14 +98,15 @@ export default function tableItem({ song }: SongTableProps) {
                   {/* <HeartFilled className="w-6 h-6 text-red-600 dark:text-red-700"/> */}
                   <Heart className="w-6 h-6 text-black dark:text-white" />
                 </Button>
-                <Button
+                {/* TODO 与地图联动 跳舞功能完成后继续 */}
+                {/* <Button
                   isIconOnly
                   color="default"
                   variant="light"
                   aria-label="collection"
                 >
                   <List className="w-6 h-6 text-black dark:text-white" />
-                </Button>
+                </Button> */}
               </div>
             </div>
           </CardBody>
