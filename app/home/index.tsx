@@ -84,7 +84,7 @@ export default function HomeBlock() {
   const [selectedKey, setSelectedKey] = useState<string>("")
 
   return (
-    <div className="relative flex flex-row items-center justify-between gap-4 py-4 md:py-4 h-full">
+    <div className="relative flex flex-row items-center justify-center gap-4 py-4 md:py-4 h-full">
       <SongTypeSelector
         loading={songLoading}
         songTypes={songTypes}

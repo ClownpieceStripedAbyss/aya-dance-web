@@ -90,7 +90,7 @@ export default function SongTypeSelector({
           </div>
         </div>
       ) : (
-        <ScrollShadow hideScrollBar className="w-[11.5vw] h-[74vh]">
+        <ScrollShadow hideScrollBar className="w-[11.5vw] h-[798px]">
           <Accordion
             selectionMode={"multiple"}
             isCompact={true}
