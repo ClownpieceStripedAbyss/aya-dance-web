@@ -65,10 +65,10 @@ export default function SongTypeSelector({
       major: string
       items: { key: string; label: string }[]
     }[] = [];
-    groupBy(option, (item) => item.major).forEach((value, key) => {
+    groupBy(option, (item) => item.major).forEach((value, major) => {
       groups.push({
-        major: key === "" ? "À la carte" : key,
-        items: value
+        major: major === "" ? "À la carte" : major,
+        items: value.filter((item) => item.key !== "Hide")
       });
     });
     return groups;
