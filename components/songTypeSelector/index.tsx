@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Listbox, ListboxItem, ScrollShadow, Skeleton } from "@nextui-org/react";
+import { Accordion, AccordionItem, Listbox, ListboxItem, ScrollShadow, Skeleton } from "@nextui-org/react";
 
 import styles from "./index.module.css";
 
@@ -16,19 +16,42 @@ interface SongTypeSelectorProps {
 export default function SongTypeSelector({
   songTypes,
   loading,
-  onSelectionChange,
+  onSelectionChange
 }: SongTypeSelectorProps) {
+  function groupBy<K, V>(array: V[], grouper: (item: V) => K) {
+    return array.reduce((store: Map<K, V[]>, item) => {
+      var key = grouper(item);
+      if (!store.has(key)) {
+        store.set(key, [item]);
+      } else {
+        store.get(key)!!.push(item);
+      }
+      return store;
+    }, new Map<K, V[]>());
+  }
+
   const songTypeOptions = useMemo(() => {
     const option = songTypes.map((group: GenericVideoGroup) => {
       return {
         key: group.title,
         label: group.title,
+        major: group.major
       };
     });
 
-    option.unshift({ key: "favorites", label: "喜欢的歌曲" });
+    option.unshift({ key: "favorites", label: "喜欢的歌曲", major: "" });
 
-    return option;
+    let groups: {
+      major: string,
+      items: { key: string, label: string }[]
+    }[] = [];
+    groupBy(option, (item) => item.major).forEach((value, key) => {
+      groups.push({
+        major: key === "" ? "À la carte" : key,
+        items: value
+      });
+    });
+    return groups;
   }, [songTypes]);
 
   const [selectedKeys, setSelectedKeys] = useState(new Set(["All Songs"]));
@@ -62,30 +85,45 @@ export default function SongTypeSelector({
         </div>
       ) : (
         <ScrollShadow hideScrollBar className="w-[220px] h-[798px]">
-          <Listbox
-            aria-label="songType"
-            classNames={{
-              base: `${styles.listbox} `,
-            }}
-            items={songTypeOptions}
-            selectedKeys={selectedKeys}
-            selectionMode="single"
-            onSelectionChange={(keys) => {
-              if (keys instanceof Set && keys.size > 0) {
-                setSelectedKeys(keys as Set<string>);
-              }
+          <Accordion
+            selectionMode={"multiple"}
+            isCompact={true}
+            defaultExpandedKeys={songTypeOptions.map(x => x.major)}
+            className={styles.accordion}
+            itemClasses={{
+              base: `${styles.accordionItem}`,
+              title: `${styles.accordionTitle} font-bold text-sm`,
             }}
           >
-            {(item) => (
-              <ListboxItem
-                key={item.key}
-                hideSelectedIcon
-                className={styles.customListboxItem}
-              >
-                {item.label}
-              </ListboxItem>
-            )}
-          </Listbox>
+            {songTypeOptions.map((group) => (
+              <AccordionItem key={group.major} title={group.major} aria-label={group.major}>
+                <Listbox
+                  aria-label="songType"
+                  classNames={{
+                    base: `${styles.listbox}`,
+                  }}
+                  items={group.items}
+                  selectedKeys={selectedKeys}
+                  selectionMode="single"
+                  onSelectionChange={(keys) => {
+                    if (keys instanceof Set && keys.size > 0) {
+                      setSelectedKeys(keys as Set<string>);
+                    }
+                  }}
+                >
+                  {(item) => (
+                    <ListboxItem
+                      key={item.key}
+                      hideSelectedIcon
+                      className={`${styles.customListboxItem}`}
+                    >
+                      {item.label}
+                    </ListboxItem>
+                  )}
+                </Listbox>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </ScrollShadow>
       )}
     </>
