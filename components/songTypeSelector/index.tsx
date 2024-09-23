@@ -5,10 +5,10 @@ import { Listbox, ListboxItem, ScrollShadow, Skeleton } from "@nextui-org/react"
 
 import styles from "./index.module.css";
 
-import { Category } from "@/types/ayaInfo";
+import { GenericVideoGroup } from "@/types/video";
 
 interface SongTypeSelectorProps {
-  songTypes: Category[];
+  songTypes: GenericVideoGroup[];
   loading: boolean;
   onSelectionChange: (selectedKey: string) => void;
 }
@@ -19,7 +19,7 @@ export default function SongTypeSelector({
   onSelectionChange,
 }: SongTypeSelectorProps) {
   const songTypeOptions = useMemo(() => {
-    const option = songTypes.map((group: Category) => {
+    const option = songTypes.map((group: GenericVideoGroup) => {
       return {
         key: group.title,
         label: group.title,

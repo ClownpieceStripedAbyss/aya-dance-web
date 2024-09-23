@@ -12,22 +12,22 @@ import {
 import TableItem from "./components/tableItem"
 import styles from "./index.module.css"
 
-import { SortBy, Video } from "@/types/ayaInfo"
-import { selectSongInfo, setSortBy } from "@/store/modules/songInfo"
+import { selectSongInfo, setSortBy } from "@/store/modules/songInfo";
+import { GenericVideo, SortBy } from "@/types/video";
 
 interface SongTableProps {
-  targetData: Video[]
+  genericVideos: GenericVideo[]
   loading: boolean
   targetKey: string
 }
 
 export default function SongTable({
-  targetData,
+  genericVideos,
   loading,
   targetKey,
 }: SongTableProps) {
   const dispatch = useDispatch()
-  const { SortBy: SortByValue } = useSelector(selectSongInfo)
+  const { sortBy: SortByValue } = useSelector(selectSongInfo)
   const [page, setPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState("20") // 初始值为 20
   const pageOptions = [
@@ -40,18 +40,18 @@ export default function SongTable({
   const pages =
     Math.ceil(targetData.length / numRowsPerPage) === 0
       ? 1
-      : Math.ceil(targetData.length / numRowsPerPage)
+      : Math.ceil(genericVideos.length / numRowsPerPage)
 
   const items = useMemo(() => {
     const start = (page - 1) * numRowsPerPage
     const end = start + numRowsPerPage
 
-    return targetData.slice(start, end)
-  }, [page, numRowsPerPage, targetData])
+    return genericVideos.slice(start, end)
+  }, [page, numRowsPerPage, genericVideos])
 
   useEffect(() => {
     setPage(1)
-  }, [numRowsPerPage, targetData])
+  }, [numRowsPerPage, genericVideos])
 
   // sort
   const sortOptions = [
@@ -63,7 +63,7 @@ export default function SongTable({
 
   return (
     <div className={styles.table}>
-      <div className="font-bold text-l text-primary mb-4 leading-snug">{`${targetData.length} Videos in ${targetKey}`}</div>
+      <div className="font-bold text-l text-primary mb-4 leading-snug">{`${genericVideos.length} Videos in ${targetKey}`}</div>
       <ScrollShadow hideScrollBar className="w-full h-[680px]">
         {items.map((item, index) => (
           <TableItem key={index} song={item} />

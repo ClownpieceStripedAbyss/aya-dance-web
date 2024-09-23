@@ -4,17 +4,16 @@ import { useMemo, useState } from "react";
 
 import SongSearch from "@/components/songSearch";
 import SongTable from "@/components/songTable";
-import { Category, SortBy, Video } from "@/types/ayaInfo";
+import { GenericVideo, GenericVideoGroup, SortBy } from "@/types/video";
 
 interface SongShowProps {
-  songTypes: Category[];
+  songTypes: GenericVideoGroup[];
   loading: boolean;
   selectedKey: string;
   SortBy: SortBy;
 }
 
-const videosQuery = (videos: Video[], query: string): Video[] => {
-  console.log(query);
+const videosQuery = (videos: GenericVideo[], query: string): GenericVideo[] => {
   const VaguelyMatches = (kw: string[], titleSpell: string) => {
     if (kw.length === 0) return false;
 
@@ -31,7 +30,7 @@ const videosQuery = (videos: Video[], query: string): Video[] => {
     return query === id.toString() || id.toString().includes(query);
   };
 
-  function videoMatchesQuery(video: Video, query: string) {
+  function videoMatchesQuery(video: GenericVideo, query: string) {
     const lowerQuery = query.toLowerCase();
     const keywords = lowerQuery.split(" ");
     const fuzzyKeywords =
@@ -39,39 +38,37 @@ const videosQuery = (videos: Video[], query: string): Video[] => {
 
     return [
       fuzzyKeywords &&
-        VaguelyMatches(fuzzyKeywords, video.titleSpell.toLowerCase()),
-      VaguelyMatches(keywords, video.titleSpell.toLowerCase() || video.title),
+        VaguelyMatches(fuzzyKeywords, video.composedTitleSpell.toLowerCase()),
+      VaguelyMatches(
+        keywords,
+        video.composedTitleSpell.toLowerCase() || video.composedTitle,
+      ),
       IdMatches(lowerQuery, video.id),
       video.ayaId && IdMatches(lowerQuery, video.ayaId),
     ].some(Boolean);
   }
 
   if (!query || query.length === 0) return videos;
-  //
-  const filteredVideos = videos.filter((video) => {
+  return videos.filter((video) => {
     return videoMatchesQuery(video, query);
   });
-
-  return filteredVideos;
 };
-const videoSort = (videos: Video[], sortBy: SortBy): Video[] => {
+const videoSort = (videos: GenericVideo[], sortBy: SortBy): GenericVideo[] => {
   const videosCopy = [...videos];
-  const sortVideo = videosCopy.sort((a, b) => {
+  return videosCopy.sort((a, b) => {
     switch (sortBy) {
       case SortBy.ID_ASC:
         return a.id - b.id;
       case SortBy.ID_DESC:
         return b.id - a.id;
       case SortBy.TITLE_ASC:
-        return a.title.localeCompare(b.title);
+        return a.composedTitle.localeCompare(b.composedTitle);
       case SortBy.TITLE_DESC:
-        return b.title.localeCompare(a.title);
+        return b.composedTitle.localeCompare(a.composedTitle);
       default:
         return 0; // should never happen
     }
   });
-
-  return sortVideo;
 };
 
 export default function SongShow({
@@ -83,22 +80,19 @@ export default function SongShow({
   const [searchKeyword, setSearchKeyword] = useState("");
 
   function onSearchSubmit(searchKeywordString: string) {
-    console.log(111);
     setSearchKeyword(searchKeywordString);
   }
 
   // 获取目标歌曲列表
-  const [targetData, setTargetData] = useState<Video[]>([]);
+  const [genericVideos, setGenericVideos] = useState<GenericVideo[]>([]);
 
   useMemo(() => {
     const target = songTypes.find((item) => item.title === selectedKey);
     const entries = target?.entries || [];
-    // 搜索
     const searchEntries = videosQuery(entries, searchKeyword);
-    // 排序
     const sortedEntries = videoSort(searchEntries, SortBy);
 
-    setTargetData(sortedEntries || []);
+    setGenericVideos(sortedEntries || []);
   }, [SortBy, searchKeyword, selectedKey, songTypes]);
 
   return (
@@ -108,8 +102,8 @@ export default function SongShow({
     >
       <SongSearch onSearchSubmit={onSearchSubmit} />
       <SongTable
-        loading={!!loading}
-        targetData={targetData}
+        genericVideos={genericVideos}
+        loading={loading}
         targetKey={selectedKey}
       />
     </div>

@@ -1,63 +1,39 @@
 import fetchWithDefaults from "@/utils/service";
+import { SortBy } from "@/types/video";
 
-export interface VideoIndex {
+export interface AyaVideoIndex {
   updated_at: number;
-  categories: Category[];
+  categories: AyaCategory[];
   defaultSortBy: SortBy;
   loading?: boolean;
 }
 
-export interface Category {
+export interface AyaCategory {
   title: string;
-  entries: Video[];
+  entries: AyaVideo[];
 }
 
-export interface Video {
+export interface AyaVideo {
   id: number;
-  ayaId?: number;
-  title: string;
-  artist: string;
-  dancer: string;
   category: number;
+  title: string;
   categoryName: string;
   titleSpell: string;
   volume: number;
   start: number;
   end: number;
   flip: boolean;
-  originalUrl: string[];
+  originalUrl: string[] | null;
   checksum: string | null;
-  _fromUdon?: UdonDanceUdonInfo | null;
-  _matchingAya?: Video | null;
 }
 
-export enum SortBy {
-  ID_ASC,
-  ID_DESC,
-  TITLE_ASC,
-  TITLE_DESC,
-}
-
-export interface UdonDanceUdonInfo {
-  id: number;
-  danceid: number;
-  name: string;
-  artist: string;
-  dancer: string;
-  playerCount: number;
-  volume: number;
-  start: number;
-  end: number;
-  flip: boolean;
-}
-
-export async function fetchAyaInfo(): Promise<VideoIndex> {
+export async function fetchAyaInfo(): Promise<AyaVideoIndex> {
   const index = await fetchWithDefaults(
-    "https://aya-dance-cf.kiva.moe/aya-api/v1/songs",
+    "https://aya-dance-cf.kiva.moe/aya-api/v1/songs"
   );
 
   return {
     ...index,
-    defaultSortBy: SortBy.ID_ASC,
-  } as VideoIndex;
+    defaultSortBy: SortBy.ID_ASC
+  } as AyaVideoIndex;
 }

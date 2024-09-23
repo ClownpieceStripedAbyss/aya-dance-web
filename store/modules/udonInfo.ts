@@ -2,9 +2,9 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootState } from "../index";
 
-import { UdonInfo } from "@/types/udonInfo";
+import { UdonVideoIndex } from "@/types/udonInfo";
 
-const initialState: UdonInfo = {
+const initialState: UdonVideoIndex = {
   loading: true,
   groups: [],
   tags: {},
@@ -59,13 +59,13 @@ export const fetchUdonInfoMultidataAction = createAsyncThunk(
 
 const handleFetchUdonInfoMultidata = (builder: any) => {
   builder
-    .addCase(fetchUdonInfoMultidataAction.pending, (state: UdonInfo) => {
+    .addCase(fetchUdonInfoMultidataAction.pending, (state: UdonVideoIndex) => {
       state.loading = true;
       // 开始获取数据
     })
     .addCase(
       fetchUdonInfoMultidataAction.fulfilled,
-      (state: UdonInfo, action: PayloadAction<UdonInfo>) => {
+      (state: UdonVideoIndex, action: PayloadAction<UdonVideoIndex>) => {
         console.log("udon fulfilled");
         state.groups = action.payload.groups;
         state.tags = action.payload.tags;
@@ -76,7 +76,7 @@ const handleFetchUdonInfoMultidata = (builder: any) => {
     )
     .addCase(
       fetchUdonInfoMultidataAction.rejected,
-      (state: UdonInfo, action: any) => {
+      (state: UdonVideoIndex, action: any) => {
         state.loading = false;
         console.log("udon rejected");
         if (action.error) {
