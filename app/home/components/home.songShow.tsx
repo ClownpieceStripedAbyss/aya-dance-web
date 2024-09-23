@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useMemo, useState } from "react"
+import { useMemo, useState } from "react";
 
-import SongSearch from "@/components/songSearch"
-import SongTable from "@/components/songTable"
-import { GenericVideo, GenericVideoGroup, SortBy } from "@/types/video"
-import { selectCollection } from "@/store/modules/collection"
-import { useSelector } from "react-redux"
+import SongSearch from "@/components/songSearch";
+import SongTable from "@/components/songTable";
+import { GenericVideo, GenericVideoGroup, SortBy } from "@/types/video";
+import { selectCollection } from "@/store/modules/collection";
+import { useSelector } from "react-redux";
 
 interface SongShowProps {
   songTypes: GenericVideoGroup[]
@@ -97,7 +97,7 @@ export default function SongShow({
   useMemo(() => {
     // 收藏逻辑
     let targetEntries: GenericVideo[] = []
-    if (selectedKey === "喜欢的歌曲") {
+    if (selectedKey === "Favorites") {
       const allSongs =
         songTypes.find((item) => item.title === "All Songs")?.entries || []
       targetEntries = allSongs.filter((item) => {
