@@ -53,10 +53,10 @@ export default function TableItem({ song }: SongTableProps) {
     return "/unity-error.jpg"
   }
   // 获取收藏
-  const { collection } = useSelector(selectCollection)
+  const collection = useSelector(selectCollection)
   const dispatch = useDispatch()
   const isCollection = useMemo(() => {
-    return collection.has(song.id)
+    return collection.includes(song.id)
   }, [collection, song])
   const handleToggleCollection = useCallback(() => {
     if (isCollection) {

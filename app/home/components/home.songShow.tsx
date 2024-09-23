@@ -89,25 +89,26 @@ export default function SongShow({
   }
 
   // 获取收藏
-  const { collection } = useSelector(selectCollection)
+  const collection = useSelector(selectCollection)
 
   // 获取目标歌曲列表
   const [genericVideos, setGenericVideos] = useState<GenericVideo[]>([])
 
   useMemo(() => {
+    // 收藏逻辑
+    let targetEntries: GenericVideo[] = []
+    if (selectedKey === "喜欢的歌曲") {
+      const allSongs =
+        songTypes.find((item) => item.title === "All Songs")?.entries || []
+      targetEntries = allSongs.filter((item) => {
+        return collection.includes(item.id)
+      })
+    } else
+      targetEntries =
+        songTypes.find((item) => item.title === selectedKey)?.entries || []
     // 添加收藏
-    const allSongs =
-      songTypes.find((item) => item.title === "All Songs")?.entries || []
-    const collectionEntries = allSongs.filter((item) => {
-      return collection.has(item.id)
-    })
-    const initSongTypes: GenericVideoGroup[] = [
-      { title: "喜欢的歌曲", entries: collectionEntries, major: "" },
-      ...songTypes,
-    ]
-    const target = initSongTypes.find((item) => item.title === selectedKey)
-    const entries = target?.entries || []
-    const searchEntries = videosQuery(entries, searchKeyword)
+
+    const searchEntries = videosQuery(targetEntries, searchKeyword)
     const sortedEntries = videoSort(searchEntries, SortBy)
 
     setGenericVideos(sortedEntries || [])

@@ -1,32 +1,33 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { pinyin } from "pinyin-pro";
-import { pack, unpack } from "jsonpack";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSelector } from "reselect"
+import { pinyin } from "pinyin-pro"
+import { pack, unpack } from "jsonpack"
 
-import { RootState } from "../index";
+import { RootState } from "../index"
 
-import { AyaCategory, AyaVideo } from "@/types/ayaInfo";
-import { UdonGroup, UdonVideo, UdonVideoFile } from "@/types/udonInfo";
-import { GenericVideo, GenericVideoGroup, SortBy } from "@/types/video";
+import { AyaCategory, AyaVideo } from "@/types/ayaInfo"
+import { UdonGroup, UdonVideo, UdonVideoFile } from "@/types/udonInfo"
+import { GenericVideo, GenericVideoGroup, SortBy } from "@/types/video"
 
 // local storage key
-const SONG_INFO_KEY = "songInfo";
+const SONG_INFO_KEY = "songInfo"
 // local storage format version, bump this if the type `SongInfo` changes
-const SONG_INFO_VERSION = 4;
+const SONG_INFO_VERSION = 4
 
 export interface SongInfo {
-  loading: boolean;
-  updatedAt: string;
-  songTypes: GenericVideoGroup[];
-  sortBy: SortBy;
-  version?: number;
+  loading: boolean
+  updatedAt: string
+  songTypes: GenericVideoGroup[]
+  sortBy: SortBy
+  version?: number
 }
 
 interface InitValues {
-  udonGroups: UdonGroup[]; // udon歌单表
-  ayaCats: AyaCategory[]; // aya歌单表
-  defaultSortBy: SortBy; // 默认排序方式
-  time: string; // udon更新时间
-  udonFiles: UdonVideoFile[]; // udon文件列表
+  udonGroups: UdonGroup[] // udon歌单表
+  ayaCats: AyaCategory[] // aya歌单表
+  defaultSortBy: SortBy // 默认排序方式
+  time: string // udon更新时间
+  udonFiles: UdonVideoFile[] // udon文件列表
 }
 
 const initialState: SongInfo = {
@@ -35,39 +36,39 @@ const initialState: SongInfo = {
   songTypes: [],
   sortBy: SortBy.TITLE_ASC,
   version: SONG_INFO_VERSION,
-};
+}
 
 function findMatchingAyaSong(
   udonFiles: UdonVideoFile[],
   udonSong: UdonVideo,
-  categories: AyaCategory[],
+  categories: AyaCategory[]
 ): AyaVideo | null {
-  const udonSongMd5 = udonFiles.find((file) => file.id === udonSong.id)?.md5;
+  const udonSongMd5 = udonFiles.find((file) => file.id === udonSong.id)?.md5
 
-  if (!udonSongMd5) return null;
+  if (!udonSongMd5) return null
   let ayaSong = categories
     .flatMap((category) => category.entries)
     .find((ayaSong) => {
-      return ayaSong.checksum === udonSongMd5;
-    });
+      return ayaSong.checksum === udonSongMd5
+    })
 
-  return ayaSong || null;
+  return ayaSong || null
 }
 
 // 压缩数据并保存到 localStorage
 function saveToLocalStorage(data: SongInfo) {
-  const compressedData = pack(data);
+  const compressedData = pack(data)
 
-  localStorage.setItem(SONG_INFO_KEY, compressedData);
+  localStorage.setItem(SONG_INFO_KEY, compressedData)
 }
 
 // 从 localStorage 解压缩数据
 function loadFromLocalStorage(): SongInfo | null {
-  const localSongInfo: string | null = localStorage.getItem(SONG_INFO_KEY);
+  const localSongInfo: string | null = localStorage.getItem(SONG_INFO_KEY)
 
-  if (!localSongInfo) return null;
+  if (!localSongInfo) return null
 
-  return unpack(localSongInfo) as SongInfo;
+  return unpack(localSongInfo) as SongInfo
 }
 
 const SongInfoSlice = createSlice({
@@ -75,25 +76,25 @@ const SongInfoSlice = createSlice({
   initialState,
   reducers: {
     setSortBy: (state: SongInfo, action: PayloadAction<SortBy>) => {
-      console.log(action.payload, "setSortBy");
-      state.sortBy = action.payload;
+      console.log(action.payload, "setSortBy")
+      state.sortBy = action.payload
       // TODO 性能问题 后续拆分state保存
       // saveToLocalStorage(state) // 更新本地存储
     },
     getLocalSongInfo: (state: SongInfo) => {
-      const decompressedData = loadFromLocalStorage();
-      if (!decompressedData) return;
+      const decompressedData = loadFromLocalStorage()
+      if (!decompressedData) return
       if (decompressedData.version !== SONG_INFO_VERSION) {
-        console.log("Local song info version mismatch, dropping");
-        return;
+        console.log("Local song info version mismatch, dropping")
+        return
       }
-      console.log("Loaded song info from local storage");
-      console.log(decompressedData);
-      Object.assign(state, decompressedData);
+      console.log("Loaded song info from local storage")
+      console.log(decompressedData)
+      Object.assign(state, decompressedData)
     },
     initSongInfo: (state: SongInfo, action: PayloadAction<InitValues>) => {
       const { udonGroups, ayaCats, defaultSortBy, time, udonFiles } =
-        action.payload;
+        action.payload
       const genericGroups = udonGroups.map(
         (udonGroup) =>
           ({
@@ -104,9 +105,9 @@ const SongInfoSlice = createSlice({
                 const ayaSong = findMatchingAyaSong(
                   udonFiles,
                   udonSong,
-                  ayaCats,
-                );
-                const title = `${udonSong.name} - ${udonSong.artist} | ${udonSong.dancer}`;
+                  ayaCats
+                )
+                const title = `${udonSong.name} - ${udonSong.artist} | ${udonSong.dancer}`
                 return {
                   artist: udonSong.artist,
                   composedTitle: title,
@@ -127,21 +128,21 @@ const SongInfoSlice = createSlice({
                     udonFiles.find((f) => f.id === udonSong.id)?.md5 ??
                     ayaSong?.checksum ??
                     null,
-                } as GenericVideo;
+                } as GenericVideo
               }) || [],
-          }) as GenericVideoGroup,
-      );
+          }) as GenericVideoGroup
+      )
 
       // 全部
       const allSongEntries = genericGroups
         .flatMap((groups) => groups.entries)
         .reduce((acc: GenericVideo[], entry) => {
           if (!acc.find((e) => e.id === entry.id)) {
-            acc.push(entry);
+            acc.push(entry)
           }
-          return acc;
+          return acc
         }, [])
-        .sort((a, b) => a.composedTitle.localeCompare(b.composedTitle));
+        .sort((a, b) => a.composedTitle.localeCompare(b.composedTitle))
 
       const newState: SongInfo = {
         ...state,
@@ -157,24 +158,27 @@ const SongInfoSlice = createSlice({
         ],
         loading: false,
         version: SONG_INFO_VERSION,
-      };
+      }
 
-      Object.assign(state, newState);
+      Object.assign(state, newState)
       // 压缩保存到 localStorage
-      saveToLocalStorage(newState);
+      saveToLocalStorage(newState)
     },
   },
-});
+})
 
 // 选择器fn
-export const selectSongInfo = (state: RootState) => ({
-  loading: state.SongInfo.loading,
-  songTime: state.SongInfo.updatedAt,
-  songTypes: state.SongInfo.songTypes,
-  sortBy: state.SongInfo.sortBy,
-});
+export const selectSongInfo = createSelector(
+  (state: RootState) => state.SongInfo, // 输入选择器
+  (SongInfo) => ({
+    loading: SongInfo.loading,
+    songTime: SongInfo.updatedAt,
+    songTypes: SongInfo.songTypes,
+    sortBy: SongInfo.sortBy,
+  })
+)
 
 // 导出 actions 和 reducer
 export const { initSongInfo, getLocalSongInfo, setSortBy } =
-  SongInfoSlice.actions;
-export default SongInfoSlice.reducer;
+  SongInfoSlice.actions
+export default SongInfoSlice.reducer

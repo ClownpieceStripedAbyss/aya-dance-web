@@ -44,7 +44,7 @@ export default function SongTypeSelector({
         major: group.major,
       }
     })
-
+    option.unshift({ key: "喜欢的歌曲", label: "喜欢的歌曲", major: "" })
     const groups: {
       major: string
       items: { key: string; label: string }[]

@@ -1,14 +1,19 @@
-"use client";
+"use client"
 
-import { Key, useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Autocomplete, AutocompleteItem, Pagination, ScrollShadow } from "@nextui-org/react";
+import { Key, useEffect, useMemo, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import {
+  Autocomplete,
+  AutocompleteItem,
+  Pagination,
+  ScrollShadow,
+} from "@nextui-org/react"
 
-import TableItem from "./components/tableItem";
-import styles from "./index.module.css";
+import TableItem from "./components/tableItem"
+import styles from "./index.module.css"
 
-import { selectSongInfo, setSortBy } from "@/store/modules/songInfo";
-import { GenericVideo, SortBy } from "@/types/video";
+import { selectSongInfo, setSortBy } from "@/store/modules/songInfo"
+import { GenericVideo, SortBy } from "@/types/video"
 
 interface SongTableProps {
   genericVideos: GenericVideo[]
@@ -44,9 +49,9 @@ export default function SongTable({
     return genericVideos.slice(start, end)
   }, [page, numRowsPerPage, genericVideos])
 
-  useEffect(() => {
+  useMemo(() => {
     setPage(1)
-  }, [numRowsPerPage, genericVideos])
+  }, [numRowsPerPage, genericVideos.length])
 
   // sort
   const sortOptions = [
