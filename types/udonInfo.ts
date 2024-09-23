@@ -1,25 +1,11 @@
 import fetchWithDefaults from "@/utils/service";
 
-export interface UdonInfo {
-  loading?: boolean;
+export interface UdonVideoIndex {
   time: string;
-  groups: Group[];
+  groups: UdonGroup[];
   tags?: Tags;
   udonFiles?: UdonVideoFile[];
-}
-
-export interface UdonDanceVideoIndex {
-  time: string;
-  groups: UdonDanceGroup;
-}
-
-export interface UdonDanceGroup {
-  contents: UdonDanceContent[];
-}
-
-export interface UdonDanceContent {
-  groupName: string;
-  UdonInfos: UdonDanceUdonInfo[] | null;
+  loading?: boolean;
 }
 
 export interface UdonVideoFile {
@@ -27,42 +13,28 @@ export interface UdonVideoFile {
   md5: string;
 }
 
-export interface UdonDanceUdonInfo {
-  id: number;
-  danceid: number;
-  name: string;
-  artist: string;
-  dancer: string;
-  playerCount: number;
-  volume: number;
-  start: number;
-  end: number;
-  flip: boolean;
-}
-
-export interface Group {
+export interface UdonGroup {
   groupName: string;
   major: string;
-  songInfos?: Video[];
-  UdonInfos?: UdonDanceUdonInfo[] | null;
+  songInfos?: UdonVideo[];
 }
 
-export interface Video {
-  artist: string;
+export interface UdonVideo {
+  id: number;
   danceid: number;
+  name: string;
+  artist: string;
   dancer: string;
-  double_width: boolean;
+  playerCount: number;
+  volume: number;
+  start: number;
   end: number;
   flip: boolean;
-  id: number;
-  name: string;
-  playerCount: number;
-  start: number;
-  tag: string | null;
-  volume: number;
+  tag: string[] | null;
+  double_width: boolean;
 }
 
-export interface Tag {
+export interface UdonTag {
   en: string;
   cn: string;
   jp: string;
@@ -70,16 +42,16 @@ export interface Tag {
 }
 
 export interface Tags {
-  [key: string]: Tag;
+  [key: string]: UdonTag;
 }
 
-export async function fetchUdonInfo(): Promise<UdonInfo> {
+export async function fetchUdonInfo(): Promise<UdonVideoIndex> {
   const data = await fetchWithDefaults("https://api.udon.dance/Api/Songs/list");
 
   return {
     ...data,
     groups: data.groups.contents,
-  } as UdonInfo;
+  } as UdonVideoIndex;
 }
 
 export async function fetchUdonFiles(): Promise<UdonVideoFile[]> {

@@ -2,9 +2,10 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { RootState } from "../index";
 
-import { SortBy, type VideoIndex } from "@/types/ayaInfo";
+import { type AyaVideoIndex } from "@/types/ayaInfo";
+import { SortBy } from "@/types/video";
 
-const initialState: VideoIndex = {
+const initialState: AyaVideoIndex = {
   loading: true,
   categories: [],
   defaultSortBy: SortBy.TITLE_ASC,
@@ -31,7 +32,7 @@ export const selectAyaInfo = (state: RootState) => ({
   loading: state.AyaInfo.loading,
   categories: state.AyaInfo.categories,
   defaultSortBy: state.AyaInfo.defaultSortBy,
-  updated_at: state.AyaInfo.updated_at,
+  updatedAt: state.AyaInfo.updated_at,
 });
 
 // 获取歌曲信息异步Thunk
@@ -51,13 +52,13 @@ export const fetchAyaInfoMultidataAction = createAsyncThunk(
 
 const handleFetchAyaInfoMultidata = (builder: any) => {
   builder
-    .addCase(fetchAyaInfoMultidataAction.pending, (state: VideoIndex) => {
+    .addCase(fetchAyaInfoMultidataAction.pending, (state: AyaVideoIndex) => {
       state.loading = true;
       // 开始获取数据
     })
     .addCase(
       fetchAyaInfoMultidataAction.fulfilled,
-      (state: VideoIndex, action: PayloadAction<VideoIndex>) => {
+      (state: AyaVideoIndex, action: PayloadAction<AyaVideoIndex>) => {
         console.log("aya fulfilled");
         state.categories = action.payload.categories;
         state.updated_at = action.payload.updated_at;
@@ -67,7 +68,7 @@ const handleFetchAyaInfoMultidata = (builder: any) => {
     )
     .addCase(
       fetchAyaInfoMultidataAction.rejected,
-      (state: VideoIndex, action: any) => {
+      (state: AyaVideoIndex, action: any) => {
         state.loading = false;
         console.log("aya rejected");
         if (action.error) {

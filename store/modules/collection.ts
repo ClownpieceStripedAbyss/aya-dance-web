@@ -1,28 +1,27 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 import { RootState } from "../index"
-
-import { Video } from "@/types/ayaInfo"
+import type { GenericVideo } from "@/types/video"
 const COLLECTION_INFO_KEY = "collection_info"
 interface CollectionState {
-  collection: Set<string>
+  collection: Set<GenericVideo["id"]>
 }
 
 const initialState: CollectionState = {
   collection: new Set(),
 }
 
-const getLocalCollection = (): Video[] => {
-  const localCollectionInfo: string | null =
+const getLocalCollection = (): GenericVideo["id"][] => {
+  const localCollectionIds: string | null =
     localStorage.getItem(COLLECTION_INFO_KEY)
 
-  if (!localCollectionInfo) return []
+  if (!localCollectionIds || !Array.isArray(localCollectionIds)) return []
 
-  return JSON.parse(localCollectionInfo)
+  return JSON.parse(localCollectionIds).map((id: string) => Number(id))
 }
 
 // 保存locaStorage
-const saveLocalCollection = (collection: Video[]) => {
+const saveLocalCollection = (collection: Set<GenericVideo["id"]>) => {
   localStorage.setItem(COLLECTION_INFO_KEY, JSON.stringify(collection))
 }
 
@@ -31,24 +30,18 @@ const CollectionSlice = createSlice({
   initialState,
   reducers: {
     initCollection: (state) => {
-      const localCollection = getLocalCollection()
-      state.collection = localCollection
+      const localCollectionIds = getLocalCollection()
+      state.collection = new Set(localCollectionIds)
     },
-    addCollection: (state, action: PayloadAction<Video>) => {
-      const video = action.payload
+    addCollection: (state, action: PayloadAction<GenericVideo["id"]>) => {
+      const id = action.payload
       // 去重
-      const index = state.collection.findIndex((item) => item.id === video.id)
-      if (index === -1) {
-        state.collection.push(video)
-      }
+      state.collection.add(id)
       saveLocalCollection(state.collection)
     },
-    removeCollection: (state, action: PayloadAction<Video>) => {
-      const video = action.payload
-      const index = state.collection.findIndex((item) => item.id === video.id)
-      if (index > -1) {
-        state.collection.splice(index, 1)
-      }
+    removeCollection: (state, action: PayloadAction<GenericVideo["id"]>) => {
+      const id = action.payload
+      state.collection.delete(id)
       saveLocalCollection(state.collection)
     },
   },

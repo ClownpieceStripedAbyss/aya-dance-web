@@ -1,16 +1,15 @@
-"use client";
+"use client"
 
-import { useEffect, useMemo, useState } from "react";
-import { Listbox, ListboxItem, ScrollShadow, Skeleton } from "@nextui-org/react";
+import { useEffect, useMemo, useState } from "react"
+import { Listbox, ListboxItem, ScrollShadow, Skeleton } from "@nextui-org/react"
 
-import styles from "./index.module.css";
-
-import { Category } from "@/types/ayaInfo";
+import styles from "./index.module.css"
+import { GenericVideoGroup } from "@/types/video"
 
 interface SongTypeSelectorProps {
-  songTypes: Category[];
-  loading: boolean;
-  onSelectionChange: (selectedKey: string) => void;
+  songTypes: GenericVideoGroup[]
+  loading: boolean
+  onSelectionChange: (selectedKey: string) => void
 }
 
 export default function SongTypeSelector({
@@ -19,27 +18,25 @@ export default function SongTypeSelector({
   onSelectionChange,
 }: SongTypeSelectorProps) {
   const songTypeOptions = useMemo(() => {
-    const option = songTypes.map((group: Category) => {
+    const option = songTypes.map((group: GenericVideoGroup) => {
       return {
         key: group.title,
         label: group.title,
-      };
-    });
+      }
+    })
 
-    option.unshift({ key: "favorites", label: "喜欢的歌曲" });
+    return option
+  }, [songTypes])
 
-    return option;
-  }, [songTypes]);
-
-  const [selectedKeys, setSelectedKeys] = useState(new Set(["All Songs"]));
+  const [selectedKeys, setSelectedKeys] = useState(new Set(["All Songs"]))
 
   useEffect(() => {
     if (selectedKeys.size === 1) {
-      const selectedKey = Array.from(selectedKeys)[0];
+      const selectedKey = Array.from(selectedKeys)[0]
 
-      onSelectionChange(selectedKey);
+      onSelectionChange(selectedKey)
     }
-  }, [selectedKeys, onSelectionChange]);
+  }, [selectedKeys, onSelectionChange])
 
   return (
     <>
@@ -72,7 +69,7 @@ export default function SongTypeSelector({
             selectionMode="single"
             onSelectionChange={(keys) => {
               if (keys instanceof Set && keys.size > 0) {
-                setSelectedKeys(keys as Set<string>);
+                setSelectedKeys(keys as Set<string>)
               }
             }}
           >
@@ -89,5 +86,5 @@ export default function SongTypeSelector({
         </ScrollShadow>
       )}
     </>
-  );
+  )
 }
