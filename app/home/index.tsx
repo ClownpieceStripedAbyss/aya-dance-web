@@ -28,6 +28,7 @@ export default function HomeBlock() {
     time,
     loading: udonLoading,
     udonFiles,
+    udonUrls,
   } = useSelector(selectUdonInfo);
   const {
     categories,
@@ -59,6 +60,7 @@ export default function HomeBlock() {
         defaultSortBy,
         time,
         udonFiles: udonFiles || [],
+        udonUrls: udonUrls || [],
       }),
     );
   }, [isLoading]);

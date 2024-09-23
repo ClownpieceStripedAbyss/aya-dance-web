@@ -32,15 +32,18 @@ export default function tableItem({ song }: SongTableProps) {
   };
   const videoThumbnailUrl = (video: GenericVideo): string => {
     if (!video) return "";
-    if (video.originalUrl.length > 0) {
-      const youtube = video.originalUrl.find((url) =>
-        url.includes("youtube.com"),
-      );
 
-      if (youtube) {
-        const videoId = youtube.split("v=")[1];
-        return `https://img.youtube.com/vi/${videoId}/0.jpg`;
-      }
+    const youtube = video.originalUrl.find(url =>
+      url.includes("youtube.com") || url.includes("youtu.be"));
+    // https:\/\/www.youtube.com\/watch?v=RddyhNe0rrk
+    // https:\/\/youtu.be\/KLBuAEWehUY
+    if (youtube && youtube.includes("youtube.com")) {
+      const videoId = youtube.split("v=").pop();
+      return `https://img.youtube.com/vi/${videoId}/0.jpg`;
+    }
+    if (youtube && youtube.includes("youtu.be")) {
+      const videoId = youtube.split("/").pop();
+      return `https://img.youtube.com/vi/${videoId}/0.jpg`;
     }
 
     return "/unity-error.jpg";

@@ -33,27 +33,31 @@ export const selectUdonInfo = (state: RootState) => ({
   tags: state.UdonInfo.tags,
   time: state.UdonInfo.time,
   udonFiles: state.UdonInfo.udonFiles,
+  udonUrls: state.UdonInfo.udonUrls,
 });
 
 // 获取歌曲信息异步Thunk
 export const fetchUdonInfoMultidataAction = createAsyncThunk(
   "UdonInfo/fetchUdonInfoMultidata",
   async () => {
-    const [response, fileResponse] = await Promise.all([
+    const [response, fileResponse, urlResponse] = await Promise.all([
       fetch("/api/udonInfo"),
       fetch("/api/udonFiles"),
+      fetch("/api/udonUrls"),
     ]);
 
-    if (!response.ok || !fileResponse.ok) {
+    if (!response.ok || !fileResponse.ok || !urlResponse.ok) {
       throw new Error("Network response was not ok");
     }
     const data = await response.json();
     const udonFiles = await fileResponse.json();
+    const udonUrls = await urlResponse.json();
 
     return {
       ...data,
       udonFiles,
-    };
+      udonUrls,
+    } as UdonVideoIndex;
   },
 );
 
@@ -71,6 +75,7 @@ const handleFetchUdonInfoMultidata = (builder: any) => {
         state.tags = action.payload.tags;
         state.time = action.payload.time;
         state.udonFiles = action.payload.udonFiles;
+        state.udonUrls = action.payload.udonUrls;
         state.loading = false;
       },
     )

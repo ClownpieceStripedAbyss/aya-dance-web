@@ -39,7 +39,7 @@ export default function SongTypeSelector({
       };
     });
 
-    option.unshift({ key: "favorites", label: "喜欢的歌曲", major: "" });
+    option.unshift({ key: "Favorites", label: "喜欢的歌曲", major: "" });
 
     let groups: {
       major: string,
