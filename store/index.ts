@@ -1,9 +1,10 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { useDispatch } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit"
+import { useDispatch } from "react-redux"
 
-import UdonInfoReducer from "./modules/udonInfo";
-import AyaInfoReducer from "./modules/ayaInfo";
-import SongInfoReducer from "./modules/songInfo";
+import UdonInfoReducer from "./modules/udonInfo"
+import AyaInfoReducer from "./modules/ayaInfo"
+import SongInfoReducer from "./modules/songInfo"
+import CollectionReducer from "./modules/collection"
 
 // 配置 Redux store
 export const store = configureStore({
@@ -11,10 +12,11 @@ export const store = configureStore({
     UdonInfo: UdonInfoReducer,
     AyaInfo: AyaInfoReducer,
     SongInfo: SongInfoReducer,
+    Collection: CollectionReducer,
   },
-});
+})
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch
 
-export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppDispatch = () => useDispatch<AppDispatch>()

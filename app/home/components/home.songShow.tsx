@@ -1,41 +1,45 @@
-"use client";
+"use client"
 
-import { useMemo, useState } from "react";
+import { useMemo, useState } from "react"
 
-import SongSearch from "@/components/songSearch";
-import SongTable from "@/components/songTable";
-import { Category, SortBy, Video } from "@/types/ayaInfo";
+import SongSearch from "@/components/songSearch"
+import SongTable from "@/components/songTable"
+import { Category, SortBy, Video } from "@/types/ayaInfo"
+import { selectCollection } from "@/store/modules/collection"
+import { useSelector } from "react-redux"
+import _ from "lodash"
+import { init } from "next/dist/compiled/webpack/webpack"
 
 interface SongShowProps {
-  songTypes: Category[];
-  loading: boolean;
-  selectedKey: string;
-  SortBy: SortBy;
+  songTypes: Category[]
+  loading: boolean
+  selectedKey: string
+  SortBy: SortBy
 }
 
 const videosQuery = (videos: Video[], query: string): Video[] => {
-  console.log(query);
+  console.log(query)
   const VaguelyMatches = (kw: string[], titleSpell: string) => {
-    if (kw.length === 0) return false;
+    if (kw.length === 0) return false
 
-    const spell = titleSpell.split(" ");
+    const spell = titleSpell.split(" ")
 
-    if (kw.length > spell.length) return false;
+    if (kw.length > spell.length) return false
 
     return spell.some((_, i) =>
-      kw.every((keyword, j) => spell[i + j]?.startsWith(keyword)),
-    );
-  };
+      kw.every((keyword, j) => spell[i + j]?.startsWith(keyword))
+    )
+  }
 
   const IdMatches = (query: string, id: number) => {
-    return query === id.toString() || id.toString().includes(query);
-  };
+    return query === id.toString() || id.toString().includes(query)
+  }
 
   function videoMatchesQuery(video: Video, query: string) {
-    const lowerQuery = query.toLowerCase();
-    const keywords = lowerQuery.split(" ");
+    const lowerQuery = query.toLowerCase()
+    const keywords = lowerQuery.split(" ")
     const fuzzyKeywords =
-      lowerQuery.indexOf(" ") === -1 ? Array.from(lowerQuery) : null;
+      lowerQuery.indexOf(" ") === -1 ? Array.from(lowerQuery) : null
 
     return [
       fuzzyKeywords &&
@@ -43,36 +47,36 @@ const videosQuery = (videos: Video[], query: string): Video[] => {
       VaguelyMatches(keywords, video.titleSpell.toLowerCase() || video.title),
       IdMatches(lowerQuery, video.id),
       video.ayaId && IdMatches(lowerQuery, video.ayaId),
-    ].some(Boolean);
+    ].some(Boolean)
   }
 
-  if (!query || query.length === 0) return videos;
+  if (!query || query.length === 0) return videos
   //
   const filteredVideos = videos.filter((video) => {
-    return videoMatchesQuery(video, query);
-  });
+    return videoMatchesQuery(video, query)
+  })
 
-  return filteredVideos;
-};
+  return filteredVideos
+}
 const videoSort = (videos: Video[], sortBy: SortBy): Video[] => {
-  const videosCopy = [...videos];
+  const videosCopy = [...videos]
   const sortVideo = videosCopy.sort((a, b) => {
     switch (sortBy) {
       case SortBy.ID_ASC:
-        return a.id - b.id;
+        return a.id - b.id
       case SortBy.ID_DESC:
-        return b.id - a.id;
+        return b.id - a.id
       case SortBy.TITLE_ASC:
-        return a.title.localeCompare(b.title);
+        return a.title.localeCompare(b.title)
       case SortBy.TITLE_DESC:
-        return b.title.localeCompare(a.title);
+        return b.title.localeCompare(a.title)
       default:
-        return 0; // should never happen
+        return 0 // should never happen
     }
-  });
+  })
 
-  return sortVideo;
-};
+  return sortVideo
+}
 
 export default function SongShow({
   songTypes,
@@ -80,26 +84,36 @@ export default function SongShow({
   selectedKey,
   SortBy,
 }: SongShowProps) {
-  const [searchKeyword, setSearchKeyword] = useState("");
+  const [searchKeyword, setSearchKeyword] = useState("")
 
   function onSearchSubmit(searchKeywordString: string) {
-    console.log(111);
-    setSearchKeyword(searchKeywordString);
+    setSearchKeyword(searchKeywordString)
   }
 
+  // 获取收藏
+  const { collection } = useSelector(selectCollection)
+
   // 获取目标歌曲列表
-  const [targetData, setTargetData] = useState<Video[]>([]);
+  const [targetData, setTargetData] = useState<Video[]>([])
 
   useMemo(() => {
-    const target = songTypes.find((item) => item.title === selectedKey);
-    const entries = target?.entries || [];
-    // 搜索
-    const searchEntries = videosQuery(entries, searchKeyword);
-    // 排序
-    const sortedEntries = videoSort(searchEntries, SortBy);
+    const initData = _.cloneDeep(songTypes)
 
-    setTargetData(sortedEntries || []);
-  }, [SortBy, searchKeyword, selectedKey, songTypes]);
+    initData.unshift({
+      title: "收藏",
+      entries: collection,
+    })
+
+    console.log(initData)
+    const target = initData.find((item) => item.title === selectedKey)
+    const entries = target?.entries || []
+    // 搜索
+    const searchEntries = videosQuery(entries, searchKeyword)
+    // 排序
+    const sortedEntries = videoSort(searchEntries, SortBy)
+
+    setTargetData(sortedEntries || [])
+  }, [SortBy, searchKeyword, selectedKey, songTypes, collection])
 
   return (
     <div
@@ -113,5 +127,5 @@ export default function SongShow({
         targetKey={selectedKey}
       />
     </div>
-  );
+  )
 }
