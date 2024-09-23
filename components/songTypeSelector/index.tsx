@@ -1,74 +1,149 @@
-"use client"
+"use client";
 
-import { useEffect, useMemo, useState } from "react"
+import { Key, useEffect, useMemo, useState } from "react";
 import {
   Accordion,
   AccordionItem,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
   Listbox,
   ListboxItem,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   ScrollShadow,
   Skeleton,
-} from "@nextui-org/react"
+  Textarea,
+  useDisclosure
+} from "@nextui-org/react";
 
-import styles from "./index.module.css"
-import { GenericVideoGroup } from "@/types/video"
+import styles from "./index.module.css";
+import { GenericVideoGroup } from "@/types/video";
+import { Button } from "@nextui-org/button";
+import { useDispatch, useSelector } from "react-redux";
+import { addCollection, selectCollection } from "@/store/modules/collection";
 
 interface SongTypeSelectorProps {
-  songTypes: GenericVideoGroup[]
-  loading: boolean
-  onSelectionChange: (selectedKey: string) => void
+  songTypes: GenericVideoGroup[];
+  loading: boolean;
+  onSelectionChange: (selectedKey: string) => void;
+}
+
+function groupBy<K, V>(array: V[], grouper: (item: V) => K) {
+  return array.reduce((store: Map<K, V[]>, item) => {
+    var key = grouper(item);
+    if (!store.has(key)) {
+      store.set(key, [item]);
+    } else {
+      store.get(key)!!.push(item);
+    }
+    return store;
+  }, new Map<K, V[]>());
 }
 
 export default function SongTypeSelector({
   songTypes,
   loading,
-  onSelectionChange,
+  onSelectionChange
 }: SongTypeSelectorProps) {
-  function groupBy<K, V>(array: V[], grouper: (item: V) => K) {
-    return array.reduce((store: Map<K, V[]>, item) => {
-      var key = grouper(item)
-      if (!store.has(key)) {
-        store.set(key, [item])
-      } else {
-        store.get(key)!!.push(item)
-      }
-      return store
-    }, new Map<K, V[]>())
-  }
-
   const songTypeOptions = useMemo(() => {
     const option = songTypes.map((group: GenericVideoGroup) => {
       return {
         key: group.title,
         label: group.title,
-        major: group.major,
-      }
-    })
+        major: group.major
+      };
+    });
 
-    option.unshift({ key: "Favorites", label: "喜欢的歌曲", major: "" })
+    option.unshift({ key: "Favorites", label: "喜欢的歌曲", major: "" });
 
     let groups: {
       major: string
       items: { key: string; label: string }[]
-    }[] = []
+    }[] = [];
     groupBy(option, (item) => item.major).forEach((value, key) => {
       groups.push({
         major: key === "" ? "À la carte" : key,
-        items: value,
-      })
-    })
-    return groups
-  }, [songTypes])
+        items: value
+      });
+    });
+    return groups;
+  }, [songTypes]);
 
-  const [selectedKeys, setSelectedKeys] = useState(new Set(["All Songs"]))
+  const [selectedKeys, setSelectedKeys] = useState(new Set(["All Songs"]));
 
   useEffect(() => {
     if (selectedKeys.size === 1) {
-      const selectedKey = Array.from(selectedKeys)[0]
+      const selectedKey = Array.from(selectedKeys)[0];
 
-      onSelectionChange(selectedKey)
+      onSelectionChange(selectedKey);
     }
-  }, [selectedKeys, onSelectionChange])
+  }, [selectedKeys, onSelectionChange]);
+
+  const { isOpen: isExportOpen, onOpen: onExportOpen, onClose: onExportClose } = useDisclosure();
+  const { isOpen: isImportOpen, onOpen: onImportOpen, onClose: onImportClose } = useDisclosure();
+  const [importFavoriteInput, setImportFavoriteInput] = useState("");
+  const dispatch = useDispatch();
+
+
+  const collection = useSelector(selectCollection);
+  const exportFavorite = () => {
+    return `WannaFavorite:${collection.join(",")}`;
+  };
+  const importFavorite = (input: string) => {
+    const [prefix, ids] = input.trim().split(":");
+    if (prefix.trim() === "WannaFavorite") {
+      const idsArray = ids.trim().split(",");
+      const idsSet = new Set(idsArray.map((id) => parseInt(id.trim())));
+      idsSet.forEach((id) => {
+        if (!collection.includes(id)) {
+          dispatch(addCollection(id));
+        }
+      });
+    }
+  };
+
+  const handleDropdownAction = (key: Key) => {
+    switch (key) {
+      case "import-favorite":
+        onImportOpen();
+        break;
+      case "export-favorite":
+        onExportOpen();
+        break;
+      default:
+        break;
+    }
+  };
+
+  const makeGroupItem = (item: { key: string; label: string }) => {
+    return (
+      <ListboxItem
+        key={item.key}
+        hideSelectedIcon
+        className={`${styles.customListboxItem}`}
+      >
+        {item.key === "Favorites" ? (
+          <span>
+            {item.label}
+            <Dropdown>
+              <DropdownTrigger>
+                <span className="text-primary">⭐</span>
+              </DropdownTrigger>
+              <DropdownMenu variant="light" hideSelectedIcon onAction={(e) => handleDropdownAction(e)}>
+                <DropdownItem key="export-favorite">导出收藏</DropdownItem>
+                <DropdownItem key="import-favorite">导入收藏</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </span>
+        ) : item.label}
+      </ListboxItem>
+    );
+  };
 
   return (
     <>
@@ -98,7 +173,7 @@ export default function SongTypeSelector({
             className={styles.accordion}
             itemClasses={{
               base: `${styles.accordionItem}`,
-              title: `${styles.accordionTitle} font-bold text-sm`,
+              title: `${styles.accordionTitle} font-bold text-sm`
             }}
           >
             {songTypeOptions.map((group) => (
@@ -110,32 +185,88 @@ export default function SongTypeSelector({
                 <Listbox
                   aria-label="songType"
                   classNames={{
-                    base: `${styles.listbox}`,
+                    base: `${styles.listbox}`
                   }}
                   items={group.items}
                   selectedKeys={selectedKeys}
                   selectionMode="single"
                   onSelectionChange={(keys) => {
                     if (keys instanceof Set && keys.size > 0) {
-                      setSelectedKeys(keys as Set<string>)
+                      setSelectedKeys(keys as Set<string>);
                     }
                   }}
                 >
-                  {(item) => (
-                    <ListboxItem
-                      key={item.key}
-                      hideSelectedIcon
-                      className={`${styles.customListboxItem}`}
-                    >
-                      {item.label}
-                    </ListboxItem>
-                  )}
+                  {makeGroupItem}
                 </Listbox>
               </AccordionItem>
             ))}
           </Accordion>
         </ScrollShadow>
       )}
+      <Modal
+        size="md"
+        isOpen={isExportOpen}
+        onClose={onExportClose}
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">导出收藏</ModalHeader>
+              <ModalBody>
+                <Textarea
+                  isReadOnly
+                  label="歌曲收藏"
+                  variant="bordered"
+                  labelPlacement="outside"
+                  defaultValue={exportFavorite()}
+                  className="max-w-full"
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="primary"
+                  onPress={onClose}
+                  onClick={() => navigator.clipboard.writeText(exportFavorite())}>
+                  复制到剪贴板
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+      <Modal
+        size="md"
+        isOpen={isImportOpen}
+        onClose={onImportClose}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">导入收藏</ModalHeader>
+              <ModalBody>
+                <Textarea
+                  label="歌曲收藏"
+                  variant="bordered"
+                  labelPlacement="outside"
+                  placeholder="请粘贴收藏内容"
+                  className="max-w-full"
+                  value={importFavoriteInput}
+                  onValueChange={setImportFavoriteInput}
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  取消
+                </Button>
+                <Button color="primary" onPress={onClose} onClick={() => importFavorite(importFavoriteInput)}>
+                  导入
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </>
-  )
+  );
 }
