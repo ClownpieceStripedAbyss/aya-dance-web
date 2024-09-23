@@ -6,13 +6,18 @@ import { pack, unpack } from "jsonpack"
 import { RootState } from "../index"
 
 import { AyaCategory, AyaVideo } from "@/types/ayaInfo"
-import { UdonGroup, UdonVideo, UdonVideoFile } from "@/types/udonInfo"
+import {
+  UdonGroup,
+  UdonVideo,
+  UdonVideoFile,
+  UdonVideoUrl,
+} from "@/types/udonInfo"
 import { GenericVideo, GenericVideoGroup, SortBy } from "@/types/video"
 
 // local storage key
 const SONG_INFO_KEY = "songInfo"
 // local storage format version, bump this if the type `SongInfo` changes
-const SONG_INFO_VERSION = 4
+const SONG_INFO_VERSION = 6
 
 export interface SongInfo {
   loading: boolean
@@ -28,6 +33,7 @@ interface InitValues {
   defaultSortBy: SortBy // 默认排序方式
   time: string // udon更新时间
   udonFiles: UdonVideoFile[] // udon文件列表
+  udonUrls: UdonVideoUrl[] // udon视频原始链接列表
 }
 
 const initialState: SongInfo = {
@@ -93,7 +99,7 @@ const SongInfoSlice = createSlice({
       Object.assign(state, decompressedData)
     },
     initSongInfo: (state: SongInfo, action: PayloadAction<InitValues>) => {
-      const { udonGroups, ayaCats, defaultSortBy, time, udonFiles } =
+      const { udonGroups, ayaCats, defaultSortBy, time, udonFiles, udonUrls } =
         action.payload
       const genericGroups = udonGroups.map(
         (udonGroup) =>
@@ -108,6 +114,15 @@ const SongInfoSlice = createSlice({
                   ayaCats
                 )
                 const title = `${udonSong.name} - ${udonSong.artist} | ${udonSong.dancer}`
+                const originalUrlFromUdon = udonUrls.find(
+                  (url) => url.id === udonSong.id
+                )?.url
+                const originalUrl = originalUrlFromUdon
+                  ? [originalUrlFromUdon]
+                  : ayaSong?.originalUrl
+                const checksum =
+                  udonFiles.find((f) => f.id === udonSong.id)?.md5 ??
+                  ayaSong?.checksum
                 return {
                   artist: udonSong.artist,
                   composedTitle: title,
@@ -123,11 +138,8 @@ const SongInfoSlice = createSlice({
                   start: udonSong.start,
                   tag: udonSong.tag,
                   volume: udonSong.volume,
-                  originalUrl: ayaSong?.originalUrl || [],
-                  checksum:
-                    udonFiles.find((f) => f.id === udonSong.id)?.md5 ??
-                    ayaSong?.checksum ??
-                    null,
+                  originalUrl: originalUrl ?? [],
+                  checksum: checksum ?? null,
                 } as GenericVideo
               }) || [],
           }) as GenericVideoGroup

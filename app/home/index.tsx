@@ -71,6 +71,7 @@ export default function HomeBlock() {
         defaultSortBy,
         time,
         udonFiles: udonFiles || [],
+        udonUrls: udonUrls || [],
       })
     )
   }, [isLoading])

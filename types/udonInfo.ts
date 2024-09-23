@@ -5,12 +5,20 @@ export interface UdonVideoIndex {
   groups: UdonGroup[];
   tags?: Tags;
   udonFiles?: UdonVideoFile[];
+  udonUrls?: UdonVideoUrl[];
   loading?: boolean;
 }
 
+// https://api.udon.dance/Api/Songs/files
 export interface UdonVideoFile {
   id: number;
   md5: string;
+}
+
+// https://api.udon.dance/Api/Songs/url
+export interface UdonVideoUrl {
+  id: number,
+  url: string,
 }
 
 export interface UdonGroup {
@@ -56,4 +64,8 @@ export async function fetchUdonInfo(): Promise<UdonVideoIndex> {
 
 export async function fetchUdonFiles(): Promise<UdonVideoFile[]> {
   return await fetchWithDefaults("https://api.udon.dance/Api/Songs/files");
+}
+
+export async function fetchUdonUrls(): Promise<UdonVideoUrl[]> {
+  return await fetchWithDefaults("https://api.udon.dance/Api/Songs/url");
 }
