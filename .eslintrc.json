@@ -26,6 +26,17 @@
     }
   },
   "rules": {
+    "max-len": [
+      "warn",
+      {
+        "code": 120,
+        "tabWidth": 2,
+        "ignoreComments": true,
+        "ignoreUrls": true,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true
+      }
+    ],
     "no-console": "off",
     "react/prop-types": "off",
     "react/jsx-uses-react": "off",

@@ -33,17 +33,15 @@ const videosQuery = (videos: GenericVideo[], query: string): GenericVideo[] => {
   function videoMatchesQuery(video: GenericVideo, query: string) {
     const lowerQuery = query.toLowerCase();
     const keywords = lowerQuery.split(" ");
-    const fuzzyKeywords =
-      lowerQuery.indexOf(" ") === -1 ? Array.from(lowerQuery) : null;
+    const fuzzyKeywords = lowerQuery.indexOf(" ") === -1 ? Array.from(lowerQuery) : null;
 
     return [
-      fuzzyKeywords &&
-        VaguelyMatches(fuzzyKeywords, video.composedTitleSpell.toLowerCase()),
-      VaguelyMatches(
-        keywords,
-        video.composedTitleSpell.toLowerCase() || video.composedTitle,
-      ),
+      fuzzyKeywords && VaguelyMatches(fuzzyKeywords, video.composedTitleSpell.toLowerCase()),
+      fuzzyKeywords && VaguelyMatches(fuzzyKeywords, video.composedTitle.toLowerCase()),
+      VaguelyMatches(keywords, video.composedTitleSpell.toLowerCase()),
+      VaguelyMatches(keywords, video.composedTitle.toLowerCase()),
       IdMatches(lowerQuery, video.id),
+      [video.artist, video.dancer, video.name].some(s => s.toLowerCase().includes(lowerQuery)),
       video.ayaId && IdMatches(lowerQuery, video.ayaId),
     ].some(Boolean);
   }
