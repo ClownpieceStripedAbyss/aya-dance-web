@@ -5,6 +5,7 @@ import UdonInfoReducer from "./modules/udonInfo"
 import AyaInfoReducer from "./modules/ayaInfo"
 import SongInfoReducer from "./modules/songInfo"
 import CollectionReducer from "./modules/collection"
+import PlayListReducer from "./modules/playList"
 
 // 配置 Redux store
 export const store = configureStore({
@@ -13,6 +14,7 @@ export const store = configureStore({
     AyaInfo: AyaInfoReducer,
     SongInfo: SongInfoReducer,
     Collection: CollectionReducer,
+    PlayList: PlayListReducer,
   },
 })
 
