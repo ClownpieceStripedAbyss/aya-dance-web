@@ -13,6 +13,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   flip = false,
   onVideoEnded,
 }) => {
+  console.log(videoUrl)
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const plyrInstance = useRef<Plyr | null>(null)
 
@@ -24,6 +25,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
       plyrInstance.current.on("ended", () => {
         if (onVideoEnded) {
+          console.log(111)
           onVideoEnded()
         }
       })
@@ -63,9 +65,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   }
 
   return (
-    <div>
+    <div className="w-full h-full">
       <video ref={videoRef} controls className="plyr__video-embed">
-        <source src={videoUrl} type="video/mp4" />
+        <source src={videoUrl} type="video/mp4" className=" w-full h-full" />
       </video>
     </div>
   )

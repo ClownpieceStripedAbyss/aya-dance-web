@@ -1,7 +1,7 @@
 "use client"
 
-import { selectPlayList } from "@/store/modules/playList"
-import { useMemo } from "react"
+import { nextVideo, selectPlayList } from "@/store/modules/playList"
+import { useCallback, useMemo } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import PlyrWrapper from "@/components/PlyrWrapper"
 
@@ -21,9 +21,10 @@ export default function DancePage() {
     return song.flip
   }, [song])
 
-  const onVideoEnded = () => {
-    dispatch({ type: "playList/removeFirstSong" })
-  }
+  const onVideoEnded = useCallback(() => {
+    console.log("onVideoEnded")
+    dispatch(nextVideo())
+  }, [dispatch])
   return (
     <>
       <PlyrWrapper

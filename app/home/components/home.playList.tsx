@@ -1,28 +1,58 @@
 "use client"
 
+import { Card, CardBody, ScrollShadow } from "@nextui-org/react"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { selectPlayList } from "@/store/modules/playList"
+import { nextVideo, selectPlayList, topSong } from "@/store/modules/playList"
 import { useDispatch, useSelector } from "react-redux"
+import { GenericVideo } from "@/types/video"
+import Link from "next/link"
 
 interface PlyaListProps {}
 
 export default function PlayList({}: PlyaListProps) {
   const { playList } = useSelector(selectPlayList)
   const dispatch = useDispatch()
-
+  const handleTopSong = useCallback(
+    (video: GenericVideo) => () => {
+      dispatch(topSong(video))
+    },
+    [dispatch]
+  )
+  const handleNextSong = useCallback(() => {
+    dispatch(nextVideo())
+  }, [dispatch])
   return (
     <>
       {playList.length > 0 && (
-        <div className="absolute top-0 right-[-17.5vw] w-[17vw] h-12 bg-gray-50 my-4 rounded-r-md">
-          {playList.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center justify-center text-gray-400"
-            >
-              <span className="mr-2">{item.id}.</span>
-              <span className="mr-2">{item.composedTitle}</span>
-            </div>
-          ))}
+        <div className="absolute box-border top-0 right-[-17vw] w-[17vw] h-full  py-4 rounded-r-md">
+          <ScrollShadow hideScrollBar className="w-full h-[93.2%]">
+            {playList.map((item) => (
+              <a
+                href="#"
+                key={item.id}
+                className="w-full"
+                onClick={handleTopSong(item)}
+              >
+                <Card key={item.id} className="w-[96%] m-2" shadow="sm">
+                  <CardBody>
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-left "
+                    >
+                      <span className="">
+                        {item.id} {item.composedTitle}
+                      </span>
+                    </div>
+                  </CardBody>
+                </Card>
+              </a>
+            ))}
+          </ScrollShadow>
+          <div className="w-full h-[6.8%] flex justify-end items-center">
+            <Link href="#" className="text-[#006fee]" onClick={handleNextSong}>
+              Next
+            </Link>
+          </div>
         </div>
       )}
     </>

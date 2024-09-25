@@ -70,6 +70,14 @@ const PlayListSlice = createSlice({
       state.playList.splice(1, 0, video)
       state.playList = _.cloneDeep(state.playList)
     },
+    nextVideo: (state) => {
+      if (state.playList.length === 0) {
+        toast.error("播放列表暂无歌曲")
+        return
+      }
+      state.playList.shift()
+      state.playList = _.cloneDeep(state.playList)
+    },
     sendPlayList: (state) => {
       channel.postMessage({
         action: "currentPlayList",
@@ -94,5 +102,6 @@ export const {
   removePlayList,
   sendPlayList,
   topSong,
+  nextVideo,
 } = PlayListSlice.actions
 export default PlayListSlice.reducer
