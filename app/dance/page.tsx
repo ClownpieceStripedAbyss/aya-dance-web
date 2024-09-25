@@ -5,7 +5,12 @@ export const runtime = "nodejs";
 import { nextVideo, selectPlayList } from "@/store/modules/playList";
 import { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import PlyrWrapper from "@/components/PlyrWrapper";
+import dynamic from "next/dynamic";
+
+const PlyrNoSSR = dynamic(
+  () => import('../../components/PlyrWrapper'),
+  { ssr: false }
+)
 
 export default function DancePage() {
   const { playList } = useSelector(selectPlayList);
@@ -19,7 +24,7 @@ export default function DancePage() {
 
   return (
     <>
-      <PlyrWrapper
+      <PlyrNoSSR
         video={video}
         onVideoEnded={onVideoEnded}
       />
