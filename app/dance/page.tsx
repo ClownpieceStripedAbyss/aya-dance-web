@@ -24,10 +24,7 @@ export default function DancePage() {
 
   return (
     <>
-      <PlyrNoSSR
-        video={video}
-        onVideoEnded={onVideoEnded}
-      />
+      <PlyrNoSSR video={video} onVideoEnded={onVideoEnded} />
     </>
   );
 }
