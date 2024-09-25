@@ -76,7 +76,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   return (
     <div className="w-full h-full">
-      <h1>{video && `${video.id}. ${video.composedTitle}`}</h1>
+      <h1
+        className="mb-4 text-4xl font-extrabold text-center leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+        {video && `${video.id}. ${video.composedTitle}`}
+      </h1>
       <video ref={videoRef} controls className="plyr__video-embed">
         <source src={videoUrl} type="video/mp4" className=" w-full h-full" />
       </video>
