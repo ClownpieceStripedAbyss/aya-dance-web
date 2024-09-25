@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { initPlayList, selectPlayList } from "@/store/modules/playList"
+import { selectPlayList } from "@/store/modules/playList"
 import { useDispatch, useSelector } from "react-redux"
 
 interface PlyaListProps {}

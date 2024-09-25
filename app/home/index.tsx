@@ -1,85 +1,18 @@
 "use client"
 
-import type { AppDispatch } from "@/store/index"
-
-import { useEffect, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useState } from "react"
+import { useSelector } from "react-redux"
 
 import SongShow from "./components/home.songShow"
 import PlayList from "./components/home.playList"
 
 import SongTypeSelector from "@/components/songTypeSelector"
-import {
-  fetchUdonInfoMultidataAction,
-  selectUdonInfo,
-} from "@/store/modules/udonInfo"
-import {
-  fetchAyaInfoMultidataAction,
-  selectAyaInfo,
-} from "@/store/modules/ayaInfo"
-import {
-  getLocalSongInfo,
-  initSongInfo,
-  selectSongInfo,
-} from "@/store/modules/songInfo"
-import { initCollection } from "@/store/modules/collection"
+
+import { selectSongInfo } from "@/store/modules/songInfo"
 
 export default function HomeBlock() {
-  const dispatch = useDispatch<AppDispatch>()
-
-  // 初始化
-  useEffect(() => {
-    const channel = new BroadcastChannel("playlist_channel")
-    dispatch(getLocalSongInfo())
-    dispatch(initCollection())
-    dispatch(fetchUdonInfoMultidataAction())
-    dispatch(fetchAyaInfoMultidataAction())
-    channel.postMessage({ action: "requestPlayList" })
-    return () => channel.close()
-  }, [dispatch])
-
   // 获取redux数据
-  const {
-    groups,
-    time,
-    loading: udonLoading,
-    udonFiles,
-    udonUrls,
-  } = useSelector(selectUdonInfo)
-  const {
-    categories,
-    defaultSortBy,
-    updatedAt: ayaUpdatedAt,
-    loading: ayaLoading,
-  } = useSelector(selectAyaInfo)
-
-  const {
-    songTime,
-    loading: songLoading,
-    sortBy,
-    songTypes,
-  } = useSelector(selectSongInfo)
-
-  const isLoading = udonLoading || ayaLoading
-
-  useEffect(() => {
-    if (isLoading) return
-    // 异步获取aya和udon数据完成后初始化songInfo
-    // 如果udon混入的songInfo update_at和time一致 则不更新songInfo
-    if (time === songTime) return
-    // 如果获取失败 则不更新songInfo
-    if (time === "-1" || ayaUpdatedAt === -1) return
-    dispatch(
-      initSongInfo({
-        udonGroups: groups,
-        ayaCats: categories,
-        defaultSortBy,
-        time,
-        udonFiles: udonFiles || [],
-        udonUrls: udonUrls || [],
-      })
-    )
-  }, [isLoading])
+  const { loading, sortBy, songTypes } = useSelector(selectSongInfo)
 
   function onSelectionChange(selectedKey: string) {
     setSelectedKey(selectedKey)
@@ -90,13 +23,13 @@ export default function HomeBlock() {
   return (
     <div className="relative flex flex-row items-center justify-center gap-4 py-4 md:py-4 h-full">
       <SongTypeSelector
-        loading={songLoading}
+        loading={loading}
         songTypes={songTypes}
         onSelectionChange={onSelectionChange}
       />
       <SongShow
         SortBy={sortBy}
-        loading={songLoading}
+        loading={loading}
         selectedKey={selectedKey}
         songTypes={songTypes}
       />

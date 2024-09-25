@@ -7,9 +7,9 @@ import { Providers } from "./providers"
 import { siteConfig } from "@/config/site"
 import { fontSans } from "@/config/fonts"
 import { Navbar } from "@/components/navbar"
-
+import { DataInitializer } from "./dataInitializer"
 // 消息通知
-import { Slide, ToastContainer, toast } from "react-toastify"
+import { Slide, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 
 export const metadata: Metadata = {
@@ -45,13 +45,15 @@ export default function RootLayout({
         )}
       >
         <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+          {/* 获取数据 */}
+          <DataInitializer />
           <div className="relative flex flex-col h-screen">
             <Navbar />
             <main className="container mx-auto max-w-7xl pt-0 px-6 flex-grow">
               {children}
             </main>
             <footer className="w-full flex items-center justify-center py-3">
-              {/* TODO 页尾 */}
+              {/* 页尾 */}
             </footer>
             <ToastContainer
               position="top-center"
