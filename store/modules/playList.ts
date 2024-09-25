@@ -90,9 +90,12 @@ const PlayListSlice = createSlice({
 // 选择器函数
 export const selectPlayList = createSelector(
   (state: RootState) => state.PlayList,
-  (PlayList) => ({
-    playList: [...PlayList.playList],
-  })
+  (PlayList) => {
+    if(!PlayList) return {playList: []}
+    return {
+      playList: [...PlayList.playList]
+    }
+  }
 )
 
 // 导出 actions 和 reducer

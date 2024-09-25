@@ -47,7 +47,9 @@ export function DataInitializer() {
     dispatch(initCollection())
     dispatch(fetchUdonInfoMultidataAction())
     dispatch(fetchAyaInfoMultidataAction())
-    channel.postMessage({ action: "requestPlayList" })
+    setTimeout(() => {
+      channel.postMessage({ action: "requestPlayList" })
+    }, 0);
     return () => channel.close()
   }, [dispatch])
 
