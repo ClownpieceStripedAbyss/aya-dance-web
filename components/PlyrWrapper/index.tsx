@@ -1,15 +1,18 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Plyr from "plyr";
 import "plyr/dist/plyr.css";
 import { delay } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { nextVideo, selectPlayList } from "@/store/modules/playList";
 
+enum DoubleWidthShowMode {
+  Both, Original, Simplified
+}
+
 interface VideoPlayerProps {
 }
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({
-}) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const { playList } = useSelector(selectPlayList);
   const dispatch = useDispatch();
   const video = useMemo(() => playList[0] ?? null, [playList]);
@@ -20,9 +23,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   const videoUrl = video ? `https://api.udon.dance/Api/Songs/play?id=${video.id}` : "";
   const flip = video?.flip ?? false;
+  const doubleWidth = video?.doubleWidth ?? false;
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const plyrInstance = useRef<Plyr | null>(null);
+
+  const [doubleWidthShowMode, setDoubleWidthShowMode] = useState<DoubleWidthShowMode>(DoubleWidthShowMode.Original);
 
   useEffect(() => {
     if (videoUrl === "") return;
@@ -50,7 +56,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       });
 
       muteAndUnmuteAfterDelay();
-      applyFlipEffect();
+      applyScreenEffect();
       // This enforces the video to reload when the videoUrl changes
       videoRef.current.load();
     }
@@ -68,13 +74,33 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   };
 
-  const applyFlipEffect = () => {
+  const applyScreenEffect = () => {
     if (videoRef.current) {
       const wrapper = videoRef.current.closest(
         ".plyr__video-wrapper"
       ) as HTMLElement;
       if (wrapper) {
-        wrapper.style.transform = flip ? "scaleX(-1)" : "scaleX(1)";
+        console.log(`Applying screen effect for flip=${flip}, doubleWidth=${doubleWidth}, doubleWidthShowMode=${doubleWidthShowMode}`);
+        if (!doubleWidth) {
+          wrapper.style.transform = flip ? "scaleX(-1)" : "scaleX(1)";
+        } else {
+          let scaleX = 1;
+          let scaleY = 1;
+          let translateX = 0;
+          if (doubleWidthShowMode === DoubleWidthShowMode.Original) {
+            scaleX = flip ? -2 : 2;
+            translateX = 25;
+          }
+          if (doubleWidthShowMode === DoubleWidthShowMode.Simplified) {
+            scaleX = flip ? -2 : 2;
+            translateX = -25;
+          }
+          if (doubleWidthShowMode === DoubleWidthShowMode.Both) {
+            scaleY = 0.5;
+          }
+
+          wrapper.style.transform = `scaleX(${scaleX}) scaleY(${scaleY}) translateX(${translateX}%)`;
+        }
       }
     }
   };
@@ -88,6 +114,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
       <video ref={videoRef} controls className="plyr__video-embed">
         <source src={videoUrl} type="video/mp4" className=" w-full h-full" />
       </video>
+      <span>Flip: {flip ? "true" : "false"}, Combined: {doubleWidth ? "true" : "false"}</span>
     </div>
   );
 };
