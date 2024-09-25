@@ -1,5 +1,7 @@
 "use client";
 
+export const runtime = "nodejs";
+
 import { nextVideo, selectPlayList } from "@/store/modules/playList";
 import { useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
