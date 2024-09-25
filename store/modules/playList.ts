@@ -1,10 +1,10 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { createSelector } from "reselect"
-import { RootState } from "../index"
-import type { GenericVideo } from "@/types/video"
-import { toast } from "react-toastify"
-import { store } from "../index"
-import _ from "lodash"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector } from "reselect";
+import type { GenericVideo } from "@/types/video";
+import { toast } from "react-toastify";
+import { RootState, store } from "@/store";
+import _ from "lodash";
+
 interface PlayListState {
   playList: GenericVideo[]
 }

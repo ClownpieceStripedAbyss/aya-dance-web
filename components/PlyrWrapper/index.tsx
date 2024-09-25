@@ -1,18 +1,23 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import Plyr from "plyr";
 import "plyr/dist/plyr.css";
-import { GenericVideo } from "@/types/video";
 import { delay } from "lodash";
+import { useDispatch, useSelector } from "react-redux";
+import { nextVideo, selectPlayList } from "@/store/modules/playList";
 
 interface VideoPlayerProps {
-  video: GenericVideo | null;
-  onVideoEnded: () => void;
 }
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({
-  video,
-  onVideoEnded
 }) => {
+  const { playList } = useSelector(selectPlayList);
+  const dispatch = useDispatch();
+  const video = useMemo(() => playList[0] ?? null, [playList]);
+  const onVideoEnded = useCallback(() => {
+    console.log("onVideoEnded");
+    dispatch(nextVideo());
+  }, []);
+
   const videoUrl = video ? `https://api.udon.dance/Api/Songs/play?id=${video.id}` : "";
   const flip = video?.flip ?? false;
 
