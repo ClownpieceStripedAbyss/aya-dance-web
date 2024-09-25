@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { createSelector } from "reselect"
 import { RootState } from "../index"
-
+import { toast } from "react-toastify"
 import { UdonVideoIndex } from "@/types/udonInfo"
 
 const initialState: UdonVideoIndex = {
@@ -73,6 +73,7 @@ const handleFetchUdonInfoMultidata = (builder: any) => {
       fetchUdonInfoMultidataAction.fulfilled,
       (state: UdonVideoIndex, action: PayloadAction<UdonVideoIndex>) => {
         console.log("udon fulfilled")
+
         state.groups = action.payload.groups
         state.tags = action.payload.tags
         state.time = action.payload.time

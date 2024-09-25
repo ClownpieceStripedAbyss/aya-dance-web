@@ -6,6 +6,7 @@ import AyaInfoReducer from "./modules/ayaInfo"
 import SongInfoReducer from "./modules/songInfo"
 import CollectionReducer from "./modules/collection"
 import PlayListReducer from "./modules/playList"
+import sendPlayListMiddleware from "./modules/playList.middleware"
 
 // 配置 Redux store
 export const store = configureStore({
@@ -16,6 +17,8 @@ export const store = configureStore({
     Collection: CollectionReducer,
     PlayList: PlayListReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(sendPlayListMiddleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>

@@ -1,25 +1,30 @@
-"use client";
+"use client"
 
-import { Badge, Button, Card, CardBody, Image, Link } from "@nextui-org/react";
+import { Badge, Button, Card, CardBody, Image, Link } from "@nextui-org/react"
 
-import styles from "./tableItem.module.css";
+import styles from "./tableItem.module.css"
 
-import { Heart, HeartFilled, Play } from "@/assets/icon";
-import { GenericVideo } from "@/types/video";
-import { useDispatch, useSelector } from "react-redux";
-import { useCallback, useMemo } from "react";
-import { addCollection, removeCollection, selectCollection } from "@/store/modules/collection";
+import { Heart, HeartFilled, List, Play } from "@/assets/icon"
+import { GenericVideo } from "@/types/video"
+import { useDispatch, useSelector } from "react-redux"
+import { useCallback, useMemo } from "react"
+import {
+  addCollection,
+  removeCollection,
+  selectCollection,
+} from "@/store/modules/collection"
+import { addPlayList } from "@/store/modules/playList"
 
 interface SongTableProps {
-  song: GenericVideo;
+  song: GenericVideo
 }
 
 export default function TableItem({ song }: SongTableProps) {
   // video
   const handleOpenVideo = () => {
     // 设置视频的源
-    const videoURL = `https://api.udon.dance/Api/Songs/play?id=${song.id}`;
-    const win = window.open("", "_blank", "noopener=false") as Window;
+    const videoURL = `https://api.udon.dance/Api/Songs/play?id=${song.id}`
+    const win = window.open("", "_blank", "noopener=false") as Window
 
     win.document.write(`
       <!DOCTYPE html>
@@ -31,63 +36,68 @@ export default function TableItem({ song }: SongTableProps) {
         </video>
       </body>
       </html>
-    `);
-  };
+    `)
+  }
   const videoThumbnailUrl = (video: GenericVideo): string => {
-    if (!video) return "";
+    if (!video) return ""
 
     const youtube = video.originalUrl.find(
       (url) => url.includes("youtube.com") || url.includes("youtu.be")
-    );
+    )
     // https:\/\/www.youtube.com\/watch?v=RddyhNe0rrk
     // https:\/\/youtu.be\/KLBuAEWehUY
     if (youtube && youtube.includes("youtube.com")) {
-      const videoId = youtube.split("v=").pop();
-      return `https://img.youtube.com/vi/${videoId}/0.jpg`;
+      const videoId = youtube.split("v=").pop()
+      return `https://img.youtube.com/vi/${videoId}/0.jpg`
     }
     if (youtube && youtube.includes("youtu.be")) {
-      const videoId = youtube.split("/").pop();
-      return `https://img.youtube.com/vi/${videoId}/0.jpg`;
+      const videoId = youtube.split("/").pop()
+      return `https://img.youtube.com/vi/${videoId}/0.jpg`
     }
 
-    return "/unity-error.jpg";
-  };
+    return "/unity-error.jpg"
+  }
   // 获取收藏
-  const collection = useSelector(selectCollection);
-  const dispatch = useDispatch();
+  const collection = useSelector(selectCollection)
+  const dispatch = useDispatch()
   const isCollection = useMemo(() => {
-    return collection.includes(song.id);
-  }, [collection, song]);
+    return collection.includes(song.id)
+  }, [collection, song])
   const handleToggleCollection = useCallback(() => {
     if (isCollection) {
-      dispatch(removeCollection(song.id));
+      dispatch(removeCollection(song.id))
     } else {
-      dispatch(addCollection(song.id));
+      dispatch(addCollection(song.id))
     }
-  }, [dispatch, isCollection, song.id]);
+  }, [dispatch, isCollection, song.id])
 
-  const outstandingTag = song.tag?.find((tag) => tag === "combined-video")
-    ?? song.tag?.find((tag) => tag === "new");
+  const handleAddPlaylist = useCallback(() => {
+    dispatch(addPlayList(song))
+  }, [song])
+
+  const outstandingTag =
+    song.tag?.find((tag) => tag === "combined-video") ??
+    song.tag?.find((tag) => tag === "new")
   const formatTag = (tag: string | undefined) => {
     switch (tag) {
       case "combined-video":
-        return "复合";
+        return "复合"
       case "new":
-        return "新歌";
+        return "新歌"
       default:
-        return tag;
+        return tag
     }
-  };
+  }
   const formatColor = (tag: string | undefined) => {
     switch (tag) {
       case "combined-video":
-        return "danger";
+        return "danger"
       case "new":
-        return "primary";
+        return "primary"
       default:
-        return undefined;
+        return undefined
     }
-  };
+  }
 
   return (
     <div className={styles.tableItem}>
@@ -99,7 +109,11 @@ export default function TableItem({ song }: SongTableProps) {
               style={{ display: "inline-block" }}
               onClick={handleOpenVideo}
             >
-              <Badge content={formatTag(outstandingTag)} color={formatColor(outstandingTag)} size="sm">
+              <Badge
+                content={formatTag(outstandingTag)}
+                color={formatColor(outstandingTag)}
+                size="sm"
+              >
                 <Image
                   alt="Album cover"
                   className="object-cover"
@@ -125,7 +139,7 @@ export default function TableItem({ song }: SongTableProps) {
               </div>
             </div>
             <div className={`${styles.operation} flex gap-4 items-center`}>
-              <Button
+              {/* <Button
                 isIconOnly
                 aria-label="play"
                 color="default"
@@ -133,7 +147,7 @@ export default function TableItem({ song }: SongTableProps) {
                 onClick={handleOpenVideo}
               >
                 <Play className="w-6 h-6 text-black dark:text-white" />
-              </Button>
+              </Button> */}
               <Button
                 isIconOnly
                 aria-label="collection"
@@ -147,19 +161,20 @@ export default function TableItem({ song }: SongTableProps) {
                   <Heart className="w-6 h-6 text-black dark:text-white" />
                 )}
               </Button>
-              {/* TODO 与地图联动 跳舞功能完成后继续 */}
-              {/* <Button
+
+              <Button
                 isIconOnly
                 color="default"
                 variant="light"
                 aria-label="collection"
+                onClick={handleAddPlaylist}
               >
                 <List className="w-6 h-6 text-black dark:text-white" />
-              </Button> */}
+              </Button>
             </div>
           </div>
         </CardBody>
       </Card>
     </div>
-  );
+  )
 }

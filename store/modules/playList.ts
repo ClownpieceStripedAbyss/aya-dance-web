@@ -2,16 +2,30 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { createSelector } from "reselect"
 import { RootState } from "../index"
 import type { GenericVideo } from "@/types/video"
+import { toast } from "react-toastify"
+import { store } from "../index"
 import _ from "lodash"
-
-const PLAY_LIST_INFO_KEY = "play_list_info"
-
 interface PlayListState {
   playList: GenericVideo[]
 }
 
 const initialState: PlayListState = {
   playList: [],
+}
+
+// BroadcastChannel
+const channel = new BroadcastChannel("playlist_channel")
+
+// 监听消息
+channel.onmessage = (event) => {
+  console.log(event.data)
+  if (event.data.action === "requestPlayList") {
+    // 如果收到播放列表请求，发送当前播放列表
+    store.dispatch(sendPlayList())
+  } else if (event.data.action === "currentPlayList") {
+    // 如果收到当前播放列表，更新本地播放列表
+    store.dispatch(initPlayList(event.data.playList))
+  }
 }
 
 const PlayListSlice = createSlice({
@@ -27,46 +41,58 @@ const PlayListSlice = createSlice({
     addPlayList: (state, action: PayloadAction<GenericVideo>) => {
       const video = action.payload
       if (!video) return console.warn("video is empty")
-      // 去重
-      if (state.playList.some((item) => item.id === video.id))
-        return console.warn("video is already in playList")
-      state.playList.push(video)
+      if (state.playList.some((item) => item.id === video.id)) {
+        toast.warn("视频已在播放列表")
+        console.warn("video is already in playList")
+        return
+      }
+      state.playList = [...state.playList, video]
     },
     removePlayList: (state, action: PayloadAction<GenericVideo>) => {
       const video = action.payload
       if (!video) return console.warn("video is empty")
-      const index = state.playList.findIndex((item) => item.id === video.id)
-      if (index === -1) return console.warn("video is not in playList")
-      state.playList.splice(index, 1)
+      state.playList = state.playList.filter((item) => item.id !== video.id)
     },
     topSong: (state, action: PayloadAction<GenericVideo>) => {
       const video = action.payload
       if (!video) return console.warn("video is empty")
-      const index = state.playList.findIndex((item) => {
-        return item.id === video.id
-      })
+      const index = state.playList.findIndex((item) => item.id === video.id)
       if (index === -1) return console.warn("video is not in playList")
       if (index === 0) {
-        console.error("正在播放")
+        toast.error("正在播放")
         return
       }
       if (index === 1) {
-        console.error("已至下一首")
+        toast.error("已至下一首")
         return
       }
       state.playList.splice(index, 1)
       state.playList.splice(1, 0, video)
+      state.playList = _.cloneDeep(state.playList)
+    },
+    sendPlayList: (state) => {
+      channel.postMessage({
+        action: "currentPlayList",
+        playList: _.cloneDeep(state.playList),
+      })
     },
   },
 })
 
 // 选择器函数
 export const selectPlayList = createSelector(
-  (state: RootState) => state.PlayList.playList,
-  (playList) => [...playList]
+  (state: RootState) => state.PlayList,
+  (PlayList) => ({
+    playList: [...PlayList.playList],
+  })
 )
 
 // 导出 actions 和 reducer
-export const { initPlayList, addPlayList, removePlayList } =
-  PlayListSlice.actions
+export const {
+  initPlayList,
+  addPlayList,
+  removePlayList,
+  sendPlayList,
+  topSong,
+} = PlayListSlice.actions
 export default PlayListSlice.reducer

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 
 import SongShow from "./components/home.songShow"
+import PlayList from "./components/home.playList"
 
 import SongTypeSelector from "@/components/songTypeSelector"
 import {
@@ -28,10 +29,13 @@ export default function HomeBlock() {
 
   // 初始化
   useEffect(() => {
+    const channel = new BroadcastChannel("playlist_channel")
     dispatch(getLocalSongInfo())
     dispatch(initCollection())
     dispatch(fetchUdonInfoMultidataAction())
     dispatch(fetchAyaInfoMultidataAction())
+    channel.postMessage({ action: "requestPlayList" })
+    return () => channel.close()
   }, [dispatch])
 
   // 获取redux数据
@@ -96,6 +100,7 @@ export default function HomeBlock() {
         selectedKey={selectedKey}
         songTypes={songTypes}
       />
+      <PlayList />
     </div>
   )
 }
