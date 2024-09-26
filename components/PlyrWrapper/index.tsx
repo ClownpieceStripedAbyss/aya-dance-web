@@ -37,6 +37,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const videoUrl = video ? `https://api.udon.dance/Api/Songs/play?id=${video.id}` : "";
   const flip = video?.flip ?? false;
   const doubleWidth = video?.doubleWidth ?? false;
+  const volume = video?.volume ?? 0.514;
 
   const videoInfo = video ? `${video.id}. ${video.composedTitle} ${doubleWidth ? `(${formatDoubleWidthShowMode(doubleWidthShowMode)})` : ""}` : "";
 
@@ -95,7 +96,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       setTimeout(() => {
         if (plyrInstance.current) {
           plyrInstance.current.muted = false;
-          plyrInstance.current.volume = 1;
+          plyrInstance.current.volume = volume;
         }
       }, delay);
     }
