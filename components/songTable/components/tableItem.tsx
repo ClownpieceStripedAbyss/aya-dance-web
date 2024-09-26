@@ -135,7 +135,8 @@ export default function TableItem({ song }: SongTableProps) {
                 {song.composedTitle}
               </Link>
               <div className={styles.ids}>
-                id: {song.id} {song.ayaId ? `(PyPy ID: ${song.ayaId})` : ""}
+                id: {song.id} {song.ayaId ? `(PyPy ID: ${song.ayaId})` : ""}{" "}
+                人数：{song.playerCount}
               </div>
             </div>
             <div className={`${styles.operation} flex gap-4 items-center`}>
