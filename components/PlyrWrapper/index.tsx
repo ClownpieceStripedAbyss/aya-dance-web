@@ -52,6 +52,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const MAX_WAIT_COUNT_DOWN = 15;
   const [waitCountDown, setWaitCountDown] = useState(MAX_WAIT_COUNT_DOWN);
 
+  let internalCounter = 0;
+
   useEffect(() => {
     if (videoUrl === "") return;
 
@@ -69,6 +71,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
         onVideoEnded()
         if (spinnerRef.current) spinnerRef.current.style.display = "block";
         setWaitCountDown(MAX_WAIT_COUNT_DOWN);
+        internalCounter++;
       });
       plyrInstance.current.on("playing", () => {
         if (spinnerRef.current) spinnerRef.current.style.display = "none";
@@ -83,8 +86,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
         // The Y-combinator
         // const Y = (f: any) => (g => g(g))((g: any) => f((x: any) => g(g)(x)))
 
+        // capture by value
+        const counterCopy = internalCounter;
         const resumePlay = () => {
+          if (counterCopy !== internalCounter) {
+            console.log("Resume video counter mismatch, aborting this count down");
+            return;
+          }
           const elapsed = Date.now() - now;
+          console.log(`Elapsed: ${elapsed}, waitCountDown: ${Math.max(0, MAX_WAIT_COUNT_DOWN - Math.floor(elapsed / 1000))}`);
           setWaitCountDown(Math.max(0, MAX_WAIT_COUNT_DOWN - Math.floor(elapsed / 1000)));
           if (elapsed >= MAX_WAIT_COUNT_DOWN * 1000) {
             plyrInstance.current?.play();
