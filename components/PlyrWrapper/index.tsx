@@ -4,6 +4,7 @@ import "plyr/dist/plyr.css";
 import { delay } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { nextVideo, selectPlayList } from "@/store/modules/playList";
+import styles from "./index.module.css";
 
 enum DoubleWidthShowMode {
   Both, Original, Simplified
@@ -27,6 +28,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const plyrInstance = useRef<Plyr | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
 
   const [doubleWidthShowMode, setDoubleWidthShowMode] = useState<DoubleWidthShowMode>(DoubleWidthShowMode.Original);
 
@@ -54,11 +56,24 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
           }
         }, 10000);
       });
+      plyrInstance.current.on("enterfullscreen", () => {
+        if (overlayRef.current) {
+          overlayRef.current.style.display = "block";
+        }
+      });
+      plyrInstance.current.on("exitfullscreen", () => {
+        if (overlayRef.current) {
+          overlayRef.current.style.display = "none";
+        }
+      });
 
       muteAndUnmuteAfterDelay();
       applyScreenEffect();
       // This enforces the video to reload when the videoUrl changes
       videoRef.current.load();
+      if (overlayRef.current) {
+      videoRef.current?.parentElement?.append(overlayRef.current)
+        }
     }
   }, [videoUrl]);
 
@@ -107,6 +122,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
         className="mb-4 text-4xl font-extrabold text-center leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
         {video && `${video.id}. ${video.composedTitle}`}
       </h1>
+      <div ref={overlayRef} className={`${styles.overlay} mb-4 text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
+        <h1>{video && `${video.id}. ${video.composedTitle}`}</h1>
+      </div>
       <video ref={videoRef} controls className="plyr__video-embed">
         <source src={videoUrl} type="video/mp4" className=" w-full h-full" />
       </video>
