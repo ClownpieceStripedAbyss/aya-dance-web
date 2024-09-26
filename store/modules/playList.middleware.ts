@@ -1,7 +1,7 @@
-import { Middleware, isAnyOf } from "@reduxjs/toolkit"
-import { addPlayList, removePlayList, topSong, nextVideo } from "./playList"
-import _ from "lodash"
-import channel from "@/utils/channel"
+import { isAnyOf, Middleware } from "@reduxjs/toolkit";
+import { addPlayList, nextVideo, removePlayList, topSong } from "./playList";
+import _ from "lodash";
+import channel, { PlayListMessage } from "@/utils/channel";
 
 const sendPlayListMiddleware: Middleware = (store) => (next) => (action) => {
   // 获取执行action前后状态用于比对
@@ -18,7 +18,7 @@ const sendPlayListMiddleware: Middleware = (store) => (next) => (action) => {
     channel.postMessage({
       action: "currentPlayList",
       playList: _.cloneDeep(nextPlayList),
-    })
+    } as PlayListMessage)
   }
 
   return result
