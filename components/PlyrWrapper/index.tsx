@@ -22,7 +22,7 @@ const formatDoubleWidthShowMode = (mode: DoubleWidthShowMode) => {
     case DoubleWidthShowMode.Simplified:
       return "简化";
   }
-}
+};
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const { playList } = useSelector(selectPlayList);
@@ -85,8 +85,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       // This enforces the video to reload when the videoUrl changes
       videoRef.current.load();
       if (overlayRef.current) {
-      videoRef.current?.parentElement?.parentElement?.append(overlayRef.current)
-        }
+        videoRef.current?.parentElement?.parentElement?.append(overlayRef.current);
+      }
     }
   }, [videoUrl]);
 
@@ -135,7 +135,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
         className="mb-4 text-4xl font-extrabold text-center leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
         {videoInfo}
       </h1>
-      <div ref={overlayRef} className={`${styles.overlay} mb-4 text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
+      <div ref={overlayRef}
+           className={`${styles.overlay} mb-4 text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
         <h1>{videoInfo}</h1>
       </div>
       <video ref={videoRef} controls className="plyr__video-embed">
