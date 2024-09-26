@@ -81,26 +81,22 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       ) as HTMLElement;
       if (wrapper) {
         console.log(`Applying screen effect for flip=${flip}, doubleWidth=${doubleWidth}, doubleWidthShowMode=${doubleWidthShowMode}`);
-        if (!doubleWidth) {
-          wrapper.style.transform = flip ? "scaleX(-1)" : "scaleX(1)";
-        } else {
-          let scaleX = 1;
-          let scaleY = 1;
-          let translateX = 0;
-          if (doubleWidthShowMode === DoubleWidthShowMode.Original) {
-            scaleX = flip ? -2 : 2;
-            translateX = 25;
-          }
-          if (doubleWidthShowMode === DoubleWidthShowMode.Simplified) {
-            scaleX = flip ? -2 : 2;
-            translateX = -25;
-          }
-          if (doubleWidthShowMode === DoubleWidthShowMode.Both) {
-            scaleY = 0.5;
-          }
-
-          wrapper.style.transform = `scaleX(${scaleX}) scaleY(${scaleY}) translateX(${translateX}%)`;
+        let scaleX = flip ? -1 : 1;
+        let scaleY = 1;
+        let translateX = 0;
+        if (doubleWidth && doubleWidthShowMode === DoubleWidthShowMode.Original) {
+          scaleX = flip ? -2 : 2;
+          translateX = 25;
         }
+        if (doubleWidth && doubleWidthShowMode === DoubleWidthShowMode.Simplified) {
+          scaleX = flip ? -2 : 2;
+          translateX = -25;
+        }
+        if (doubleWidth && doubleWidthShowMode === DoubleWidthShowMode.Both) {
+          scaleY = 0.5;
+        }
+
+        wrapper.style.transform = `scaleX(${scaleX}) scaleY(${scaleY}) translateX(${translateX}%)`;
       }
     }
   };
