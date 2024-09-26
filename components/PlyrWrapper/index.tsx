@@ -42,7 +42,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const doubleWidth = queue?.video.doubleWidth ?? false;
   const volume = queue?.video.volume ?? 0.514;
 
-  const videoInfo = queue ? `${queue.video.id}. ${queue.video.composedTitle} ${doubleWidth ? `(${formatDoubleWidthShowMode(doubleWidthShowMode)})` : ""} ${queue.isRandom ? "(随机)" : ""}` : "";
+  const videoInfo = queue ? `${queue.video.id}. ${queue.video.composedTitle} ${doubleWidth ? `(${formatDoubleWidthShowMode(doubleWidthShowMode)})` : ""} ${queue.isRandom ? " | 随机" : ""}` : "";
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const plyrInstance = useRef<Plyr | null>(null);
@@ -161,8 +161,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
            className={`${styles.overlay} mb-4 text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
         <h1>{videoInfo}</h1>
       </div>
-      <div ref={spinnerRef} className={`${styles.overlay} text-center leading-none tracking-tight w-full h-full`}>
-        <Spinner size="lg" className="h-full" />
+      <div ref={spinnerRef} className={`${styles.overlay} text-center leading-none tracking-tight w-full h-full bg-black bg-opacity-80 hidden`}>
+        <div className={`${styles.overlay} mb-4 text-4xl font-extrabold text-center leading-none tracking-tight bg-black text-white`}>
+          <h1>{videoInfo}</h1>
+        </div>
+        <Spinner size="lg" className="h-full scale-150" />
       </div>
       <video ref={videoRef} controls className="plyr__video-embed">
         <source src={videoUrl} type="video/mp4" className=" w-full h-full" />
