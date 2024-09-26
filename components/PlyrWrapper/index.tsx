@@ -13,6 +13,17 @@ enum DoubleWidthShowMode {
 interface VideoPlayerProps {
 }
 
+const formatDoubleWidthShowMode = (mode: DoubleWidthShowMode) => {
+  switch (mode) {
+    case DoubleWidthShowMode.Both:
+      return "全部";
+    case DoubleWidthShowMode.Original:
+      return "原版";
+    case DoubleWidthShowMode.Simplified:
+      return "简化";
+  }
+}
+
 const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const { playList } = useSelector(selectPlayList);
   const dispatch = useDispatch();
@@ -21,16 +32,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
     console.log("onVideoEnded");
     dispatch(nextVideo());
   }, []);
+  const [doubleWidthShowMode, setDoubleWidthShowMode] = useState<DoubleWidthShowMode>(DoubleWidthShowMode.Original);
 
   const videoUrl = video ? `https://api.udon.dance/Api/Songs/play?id=${video.id}` : "";
   const flip = video?.flip ?? false;
   const doubleWidth = video?.doubleWidth ?? false;
 
+  const videoInfo = video ? `${video.id}. ${video.composedTitle} ${doubleWidth ? `(${formatDoubleWidthShowMode(doubleWidthShowMode)})` : ""}` : "";
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const plyrInstance = useRef<Plyr | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
-
-  const [doubleWidthShowMode, setDoubleWidthShowMode] = useState<DoubleWidthShowMode>(DoubleWidthShowMode.Original);
 
   useEffect(() => {
     if (videoUrl === "") return;
@@ -72,7 +84,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       // This enforces the video to reload when the videoUrl changes
       videoRef.current.load();
       if (overlayRef.current) {
-      videoRef.current?.parentElement?.append(overlayRef.current)
+      videoRef.current?.parentElement?.parentElement?.append(overlayRef.current)
         }
     }
   }, [videoUrl]);
@@ -120,10 +132,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
     <div className="w-full h-full">
       <h1
         className="mb-4 text-4xl font-extrabold text-center leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-        {video && `${video.id}. ${video.composedTitle}`}
+        {videoInfo}
       </h1>
       <div ref={overlayRef} className={`${styles.overlay} mb-4 text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
-        <h1>{video && `${video.id}. ${video.composedTitle}`}</h1>
+        <h1>{videoInfo}</h1>
       </div>
       <video ref={videoRef} controls className="plyr__video-embed">
         <source src={videoUrl} type="video/mp4" className=" w-full h-full" />
