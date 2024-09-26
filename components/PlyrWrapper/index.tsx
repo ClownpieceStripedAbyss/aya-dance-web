@@ -49,6 +49,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const spinnerRef = useRef<HTMLDivElement | null>(null);
 
+  const MAX_WAIT_COUNT_DOWN = 15;
+  const [waitCountDown, setWaitCountDown] = useState(MAX_WAIT_COUNT_DOWN);
+
   useEffect(() => {
     if (videoUrl === "") return;
 
@@ -65,6 +68,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       plyrInstance.current.on("ended", () => {
         onVideoEnded()
         if (spinnerRef.current) spinnerRef.current.style.display = "block";
+        setWaitCountDown(MAX_WAIT_COUNT_DOWN);
       });
       plyrInstance.current.on("playing", () => {
         if (spinnerRef.current) spinnerRef.current.style.display = "none";
@@ -76,14 +80,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
 
         // SetTimeout is not reliable, let's compute Date on our own
         const now = Date.now();
-
         // The Y-combinator
         // const Y = (f: any) => (g => g(g))((g: any) => f((x: any) => g(g)(x)))
 
         const resumePlay = () => {
           const elapsed = Date.now() - now;
-          console.log(`Elapsed milliseconds: ${elapsed}, waiting until it reaches 10000`);
-          if (elapsed >= 10 * 1000) {
+          setWaitCountDown(Math.max(0, MAX_WAIT_COUNT_DOWN - Math.floor(elapsed / 1000)));
+          if (elapsed >= MAX_WAIT_COUNT_DOWN * 1000) {
             plyrInstance.current?.play();
           } else {
             // WOW! Dynamic scoping! No Y-combinator needed!
@@ -158,12 +161,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
         {videoInfo}
       </h1>
       <div ref={overlayRef}
-           className={`${styles.overlay} mb-4 text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
+           className={`${styles.overlay} text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
         <h1>{videoInfo}</h1>
       </div>
-      <div ref={spinnerRef} className={`${styles.overlay} text-center leading-none tracking-tight w-full h-full bg-black bg-opacity-80 hidden`}>
-        <div className={`${styles.overlay} mb-4 text-4xl font-extrabold text-center leading-none tracking-tight bg-black text-white`}>
+      <div ref={spinnerRef} className={`${styles.overlay} text-center leading-none tracking-tight w-full h-full bg-black bg-opacity-90 hidden`}>
+        <div className={`${styles.overlay} text-6xl font-extrabold text-center leading-none tracking-tight bg-black text-white`}>
           <h1>{videoInfo}</h1>
+          <h1>{waitCountDown}</h1>
         </div>
         <Spinner size="lg" className="h-full scale-150" />
       </div>
