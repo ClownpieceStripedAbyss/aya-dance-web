@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { use, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import {
   fetchUdonInfoMultidataAction,
@@ -17,10 +17,12 @@ import {
 } from "@/store/modules/songInfo"
 import { initCollection } from "@/store/modules/collection"
 import { AppDispatch } from "@/store"
+import { initPlayList, selectPlayList } from "@/store/modules/playList"
+import _ from "lodash"
+import channel from "@/utils/channel"
 
 export function DataInitializer() {
   const dispatch = useDispatch<AppDispatch>()
-
   // 获取redux数据
   const {
     groups,
@@ -35,21 +37,35 @@ export function DataInitializer() {
     updatedAt: ayaUpdatedAt,
     loading: ayaLoading,
   } = useSelector(selectAyaInfo)
-
+  const { playList } = useSelector(selectPlayList)
   const { songTime } = useSelector(selectSongInfo)
 
   const isLoading = udonLoading || ayaLoading
-
+  // BroadcastChannel
+  // 监听消息
+  channel.onmessage = (event) => {
+    if (event.data.action === "requestPlayList") {
+      // 如果收到播放列表请求，发送当前播放列表
+      console.log("发送当前播放列表", playList)
+      channel.postMessage({
+        action: "currentPlayList",
+        playList: _.cloneDeep(playList),
+      })
+    } else if (event.data.action === "currentPlayList") {
+      // 如果收到当前播放列表，更新本地播放列表
+      console.log("收到当前播放列表", event.data.playList)
+      dispatch(initPlayList(event.data.playList))
+    }
+  }
   // 初始化
   useEffect(() => {
-    const channel = new BroadcastChannel("playlist_channel")
     dispatch(getLocalSongInfo())
     dispatch(initCollection())
     dispatch(fetchUdonInfoMultidataAction())
     dispatch(fetchAyaInfoMultidataAction())
-    setTimeout(() => {
-      channel.postMessage({ action: "requestPlayList" })
-    }, 0);
+
+    channel.postMessage({ action: "requestPlayList" })
+
     return () => channel.close()
   }, [dispatch])
 

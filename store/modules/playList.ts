@@ -1,9 +1,9 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createSelector } from "reselect";
-import type { GenericVideo } from "@/types/video";
-import { toast } from "react-toastify";
-import { RootState, store } from "@/store";
-import _ from "lodash";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSelector } from "reselect"
+import type { GenericVideo } from "@/types/video"
+import { toast } from "react-toastify"
+import { RootState, store } from "@/store"
+import _ from "lodash"
 
 interface PlayListState {
   playList: GenericVideo[]
@@ -11,21 +11,6 @@ interface PlayListState {
 
 const initialState: PlayListState = {
   playList: [],
-}
-
-// BroadcastChannel
-const channel = new BroadcastChannel("playlist_channel")
-
-// 监听消息
-channel.onmessage = (event) => {
-  console.log(event.data)
-  if (event.data.action === "requestPlayList") {
-    // 如果收到播放列表请求，发送当前播放列表
-    store.dispatch(sendPlayList())
-  } else if (event.data.action === "currentPlayList") {
-    // 如果收到当前播放列表，更新本地播放列表
-    store.dispatch(initPlayList(event.data.playList))
-  }
 }
 
 const PlayListSlice = createSlice({
@@ -78,12 +63,6 @@ const PlayListSlice = createSlice({
       state.playList.shift()
       state.playList = _.cloneDeep(state.playList)
     },
-    sendPlayList: (state) => {
-      channel.postMessage({
-        action: "currentPlayList",
-        playList: _.cloneDeep(state.playList),
-      })
-    },
   },
 })
 
@@ -91,20 +70,13 @@ const PlayListSlice = createSlice({
 export const selectPlayList = createSelector(
   (state: RootState) => state.PlayList,
   (PlayList) => {
-    if(!PlayList) return {playList: []}
     return {
-      playList: [...PlayList.playList]
+      playList: [...PlayList.playList],
     }
   }
 )
 
 // 导出 actions 和 reducer
-export const {
-  initPlayList,
-  addPlayList,
-  removePlayList,
-  sendPlayList,
-  topSong,
-  nextVideo,
-} = PlayListSlice.actions
+export const { initPlayList, addPlayList, removePlayList, topSong, nextVideo } =
+  PlayListSlice.actions
 export default PlayListSlice.reducer

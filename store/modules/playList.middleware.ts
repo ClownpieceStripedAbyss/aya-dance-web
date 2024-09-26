@@ -1,11 +1,7 @@
 import { Middleware, isAnyOf } from "@reduxjs/toolkit"
-import {
-  sendPlayList,
-  addPlayList,
-  removePlayList,
-  topSong,
-  nextVideo,
-} from "./playList"
+import { addPlayList, removePlayList, topSong, nextVideo } from "./playList"
+import _ from "lodash"
+import channel from "@/utils/channel"
 
 const sendPlayListMiddleware: Middleware = (store) => (next) => (action) => {
   // 获取执行action前后状态用于比对
@@ -15,9 +11,14 @@ const sendPlayListMiddleware: Middleware = (store) => (next) => (action) => {
 
   if (
     isAnyOf(addPlayList, removePlayList, topSong, nextVideo)(action) &&
+    previousPlayList &&
+    nextPlayList &&
     previousPlayList !== nextPlayList
   ) {
-    store.dispatch(sendPlayList())
+    channel.postMessage({
+      action: "currentPlayList",
+      playList: _.cloneDeep(nextPlayList),
+    })
   }
 
   return result
