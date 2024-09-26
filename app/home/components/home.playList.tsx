@@ -2,16 +2,18 @@
 
 import { Card, CardBody, CardHeader, Divider, ScrollShadow } from "@nextui-org/react";
 import { useCallback } from "react";
-import { nextVideo, QueueVideo, selectPlayList, topSong } from "@/store/modules/playList";
+import { nextVideoWithRandom, QueueVideo, selectPlayList, topSong } from "@/store/modules/playList";
 import { useDispatch, useSelector } from "react-redux";
 import { formatGenreColor } from "@/types/video";
 import Link from "next/link";
 import { Play } from "@/assets/icon";
+import { selectSongInfo } from "@/store/modules/songInfo";
 
 interface PlyaListProps {}
 
 export default function PlayList({}: PlyaListProps) {
   const { playList } = useSelector(selectPlayList)
+  const { songTypes } = useSelector(selectSongInfo)
   const dispatch = useDispatch()
   const handleTopSong = useCallback(
     (video: QueueVideo) => () => {
@@ -20,7 +22,7 @@ export default function PlayList({}: PlyaListProps) {
     [dispatch]
   )
   const handleNextSong = useCallback(() => {
-    dispatch(nextVideo())
+    dispatch(nextVideoWithRandom(songTypes.find(t => t.title === "All Songs")?.entries ?? []));
   }, [dispatch])
   return (
     <>

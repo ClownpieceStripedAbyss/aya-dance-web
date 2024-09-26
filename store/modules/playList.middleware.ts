@@ -1,5 +1,5 @@
 import { isAnyOf, Middleware } from "@reduxjs/toolkit";
-import { addPlayList, nextVideo, removePlayList, topSong } from "./playList";
+import { addPlayList, nextVideo, nextVideoWithRandom, removePlayList, topSong } from "./playList";
 import _ from "lodash";
 import channel, { PlayListMessage } from "@/utils/channel";
 
@@ -10,7 +10,7 @@ const sendPlayListMiddleware: Middleware = (store) => (next) => (action) => {
   const nextPlayList = store.getState().PlayList?.playList
 
   if (
-    isAnyOf(addPlayList, removePlayList, topSong, nextVideo)(action) &&
+    isAnyOf(addPlayList, removePlayList, topSong, nextVideo, nextVideoWithRandom)(action) &&
     previousPlayList &&
     nextPlayList &&
     previousPlayList !== nextPlayList

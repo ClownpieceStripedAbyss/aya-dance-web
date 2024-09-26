@@ -3,8 +3,9 @@ import Plyr from "plyr";
 import "plyr/dist/plyr.css";
 import { delay } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
-import { nextVideo, selectPlayList } from "@/store/modules/playList";
+import { nextVideoWithRandom, selectPlayList } from "@/store/modules/playList";
 import styles from "./index.module.css";
+import { selectSongInfo } from "@/store/modules/songInfo";
 
 enum DoubleWidthShowMode {
   Both, Original, Simplified
@@ -26,11 +27,12 @@ const formatDoubleWidthShowMode = (mode: DoubleWidthShowMode) => {
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const { playList } = useSelector(selectPlayList);
+  const { songTypes } = useSelector(selectSongInfo);
   const dispatch = useDispatch();
   const queue = useMemo(() => playList[0] ?? null, [playList]);
   const onVideoEnded = useCallback(() => {
     console.log("onVideoEnded");
-    dispatch(nextVideo());
+    dispatch(nextVideoWithRandom(songTypes.find(t => t.title === "All Songs")?.entries ?? []));
   }, []);
   const [doubleWidthShowMode, setDoubleWidthShowMode] = useState<DoubleWidthShowMode>(DoubleWidthShowMode.Original);
 

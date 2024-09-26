@@ -68,6 +68,22 @@ const PlayListSlice = createSlice({
       state.playList.shift()
       state.playList = _.cloneDeep(state.playList)
     },
+    nextVideoWithRandom: (state, action: PayloadAction<GenericVideo[]>) => {
+      // the video ended is the last video in the playList,
+      // check if random playList is enabled
+      if (state.playList.length === 1) {
+        const videos = action.payload
+        if (videos.length === 0) {
+          return
+        }
+        const randomIndex = Math.floor(Math.random() * videos.length)
+        const video = videos[randomIndex]
+        state.playList = _.cloneDeep([{ video, isRandom: true }])
+        return;
+      }
+      state.playList.shift()
+      state.playList = _.cloneDeep(state.playList)
+    }
   },
 })
 
@@ -82,6 +98,6 @@ export const selectPlayList = createSelector(
 )
 
 // 导出 actions 和 reducer
-export const { initPlayList, addPlayList, removePlayList, topSong, nextVideo } =
+export const { initPlayList, addPlayList, removePlayList, topSong, nextVideo, nextVideoWithRandom } =
   PlayListSlice.actions
 export default PlayListSlice.reducer
