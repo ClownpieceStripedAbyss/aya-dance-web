@@ -1,19 +1,15 @@
-"use client"
+"use client";
 
-import { Badge, Button, Card, CardBody, Image, Link } from "@nextui-org/react"
+import { Badge, Button, Card, CardBody, Image, Link } from "@nextui-org/react";
 
-import styles from "./tableItem.module.css"
+import styles from "./tableItem.module.css";
 
-import { Heart, HeartFilled, List, Play } from "@/assets/icon"
-import { GenericVideo } from "@/types/video"
-import { useDispatch, useSelector } from "react-redux"
-import { useCallback, useMemo } from "react"
-import {
-  addCollection,
-  removeCollection,
-  selectCollection,
-} from "@/store/modules/collection"
-import { addPlayList } from "@/store/modules/playList"
+import { Heart, HeartFilled, List } from "@/assets/icon";
+import { formatTag, formatTagColor, GenericVideo } from "@/types/video";
+import { useDispatch, useSelector } from "react-redux";
+import { useCallback, useMemo } from "react";
+import { addCollection, removeCollection, selectCollection } from "@/store/modules/collection";
+import { addPlayList } from "@/store/modules/playList";
 
 interface SongTableProps {
   song: GenericVideo
@@ -78,26 +74,6 @@ export default function TableItem({ song }: SongTableProps) {
   const outstandingTag =
     song.tag?.find((tag) => tag === "combined-video") ??
     song.tag?.find((tag) => tag === "new")
-  const formatTag = (tag: string | undefined) => {
-    switch (tag) {
-      case "combined-video":
-        return "复合"
-      case "new":
-        return "新歌"
-      default:
-        return tag
-    }
-  }
-  const formatColor = (tag: string | undefined) => {
-    switch (tag) {
-      case "combined-video":
-        return "danger"
-      case "new":
-        return "primary"
-      default:
-        return undefined
-    }
-  }
 
   return (
     <div className={styles.tableItem}>
@@ -111,7 +87,7 @@ export default function TableItem({ song }: SongTableProps) {
             >
               <Badge
                 content={formatTag(outstandingTag)}
-                color={formatColor(outstandingTag)}
+                color={formatTagColor(outstandingTag)}
                 size="sm"
               >
                 <Image

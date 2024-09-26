@@ -1,23 +1,18 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { createSelector } from "reselect"
-import { pinyin } from "pinyin-pro"
-import { pack, unpack } from "jsonpack"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector } from "reselect";
+import { pinyin } from "pinyin-pro";
+import { pack, unpack } from "jsonpack";
 
-import { RootState } from "../index"
+import { RootState } from "../index";
 
-import { AyaCategory, AyaVideo } from "@/types/ayaInfo"
-import {
-  UdonGroup,
-  UdonVideo,
-  UdonVideoFile,
-  UdonVideoUrl,
-} from "@/types/udonInfo"
-import { GenericVideo, GenericVideoGroup, SortBy } from "@/types/video"
+import { AyaCategory, AyaVideo } from "@/types/ayaInfo";
+import { UdonGroup, UdonVideo, UdonVideoFile, UdonVideoUrl } from "@/types/udonInfo";
+import { GenericVideo, GenericVideoGroup, SortBy } from "@/types/video";
 
 // local storage key
 const SONG_INFO_KEY = "songInfo"
 // local storage format version, bump this if the type `SongInfo` changes
-const SONG_INFO_VERSION = 6
+const SONG_INFO_VERSION = 7
 
 export interface SongInfo {
   loading: boolean
@@ -127,6 +122,8 @@ const SongInfoSlice = createSlice({
                   artist: udonSong.artist,
                   composedTitle: title,
                   composedTitleSpell: pinyin(title, { pattern: "first" }),
+                  group: udonGroup.groupName,
+                  genre: udonGroup.major,
                   dancer: udonSong.dancer,
                   doubleWidth: udonSong.double_width,
                   end: udonSong.end,

@@ -13,6 +13,8 @@ export interface GenericVideo {
   playerCount: number;
   composedTitle: string;
   composedTitleSpell: string;
+  group: string;
+  genre: string;
   volume: number;
   start: number;
   end: number;
@@ -28,4 +30,36 @@ export enum SortBy {
   ID_DESC,
   TITLE_ASC,
   TITLE_DESC,
+}
+
+export const formatTag = (tag: string | undefined) => {
+  switch (tag) {
+    case "combined-video":
+      return "复合"
+    case "new":
+      return "新歌"
+    default:
+      return tag
+  }
+}
+
+export const formatTagColor = (tag: string | undefined) : string | undefined => {
+  switch (tag) {
+    case "combined-video":
+      return "danger"
+    case "new":
+      return "primary"
+    default:
+      return undefined
+  }
+}
+
+export const formatGenreColor = (genre: string) : string | undefined => {
+  if (genre.includes("K-POP") || genre.includes("KPOP")) {
+    return "text-danger"
+  }
+  if (genre.includes("ACGN")) {
+    return "text-primary"
+  }
+  return undefined
 }
