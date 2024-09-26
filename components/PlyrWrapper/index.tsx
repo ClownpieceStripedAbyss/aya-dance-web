@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { nextVideoWithRandom, selectPlayList } from "@/store/modules/playList";
 import styles from "./index.module.css";
 import { selectSongInfo } from "@/store/modules/songInfo";
+import { Spinner } from "@nextui-org/react";
 
 enum DoubleWidthShowMode {
   Both, Original, Simplified
@@ -46,6 +47,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const plyrInstance = useRef<Plyr | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
+  const spinnerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (videoUrl === "") return;
@@ -60,7 +62,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
         autopause: false
       });
 
-      plyrInstance.current.on("ended", () => onVideoEnded());
+      plyrInstance.current.on("ended", () => {
+        onVideoEnded()
+        if (spinnerRef.current) spinnerRef.current.style.display = "block";
+      });
+      plyrInstance.current.on("playing", () => {
+        if (spinnerRef.current) spinnerRef.current.style.display = "none";
+      });
       plyrInstance.current.on("loadeddata", () => {
         // This enforces the video to play when the video is loaded;
         // the "autoplay" option works only on the first video,
@@ -86,23 +94,21 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
         delay(resumePlay, 1000);
       });
       plyrInstance.current.on("enterfullscreen", () => {
-        if (overlayRef.current) {
-          overlayRef.current.style.display = "block";
-        }
+        if (overlayRef.current) overlayRef.current.style.display = "block";
       });
       plyrInstance.current.on("exitfullscreen", () => {
-        if (overlayRef.current) {
-          overlayRef.current.style.display = "none";
-        }
+        if (overlayRef.current) overlayRef.current.style.display = "none";
       });
 
       muteAndUnmuteAfterDelay();
       applyScreenEffect();
       // This enforces the video to reload when the videoUrl changes
       videoRef.current.load();
-      if (overlayRef.current) {
-        videoRef.current?.parentElement?.parentElement?.append(overlayRef.current);
-      }
+
+      // setup the loading spinner and fullscreen info overlay
+      const plyrContainer = videoRef.current?.parentElement?.parentElement;
+      if (overlayRef.current) plyrContainer?.append(overlayRef.current);
+      if (spinnerRef.current) plyrContainer?.append(spinnerRef.current);
     }
   }, [videoUrl]);
 
@@ -154,6 +160,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       <div ref={overlayRef}
            className={`${styles.overlay} mb-4 text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
         <h1>{videoInfo}</h1>
+      </div>
+      <div ref={spinnerRef} className={`${styles.overlay} text-center leading-none tracking-tight w-full h-full`}>
+        <Spinner size="lg" className="h-full" />
       </div>
       <video ref={videoRef} controls className="plyr__video-embed">
         <source src={videoUrl} type="video/mp4" className=" w-full h-full" />
