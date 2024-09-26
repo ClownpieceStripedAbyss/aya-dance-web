@@ -71,7 +71,7 @@ const PlayListSlice = createSlice({
     nextVideoWithRandom: (state, action: PayloadAction<GenericVideo[]>) => {
       // the video ended is the last video in the playList,
       // check if random playList is enabled
-      if (state.playList.length === 1) {
+      if (state.playList.length === 1 || state.playList.length === 0) {
         const videos = action.payload
         if (videos.length === 0) {
           return
