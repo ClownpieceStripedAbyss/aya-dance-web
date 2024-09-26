@@ -61,15 +61,29 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       });
 
       plyrInstance.current.on("ended", () => onVideoEnded());
-      plyrInstance.current.on("canplay", () => {
+      plyrInstance.current.on("loadeddata", () => {
         // This enforces the video to play when the video is loaded;
         // the "autoplay" option works only on the first video,
         // for videos that are loaded after the first one, we need to call play() manually
-        delay(() => {
-          if (plyrInstance.current) {
-            plyrInstance.current.play();
+
+        // SetTimeout is not reliable, let's compute Date on our own
+        const now = Date.now();
+
+        // The Y-combinator
+        // const Y = (f: any) => (g => g(g))((g: any) => f((x: any) => g(g)(x)))
+
+        const resumePlay = () => {
+          const elapsed = Date.now() - now;
+          console.log(`Elapsed milliseconds: ${elapsed}, waiting until it reaches 10000`);
+          if (elapsed >= 10 * 1000) {
+            plyrInstance.current?.play();
+          } else {
+            // WOW! Dynamic scoping! No Y-combinator needed!
+            delay(resumePlay, 1000);
           }
-        }, 10000);
+        };
+
+        delay(resumePlay, 1000);
       });
       plyrInstance.current.on("enterfullscreen", () => {
         if (overlayRef.current) {
