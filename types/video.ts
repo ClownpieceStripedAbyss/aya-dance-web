@@ -43,7 +43,7 @@ export const formatTag = (tag: string | undefined) => {
   }
 }
 
-export const formatTagColor = (tag: string | undefined) : string | undefined => {
+export const formatTagColor = (tag: string | undefined) : "danger" | "primary" | undefined => {
   switch (tag) {
     case "combined-video":
       return "danger"

@@ -27,19 +27,19 @@ const formatDoubleWidthShowMode = (mode: DoubleWidthShowMode) => {
 const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const { playList } = useSelector(selectPlayList);
   const dispatch = useDispatch();
-  const video = useMemo(() => playList[0] ?? null, [playList]);
+  const queue = useMemo(() => playList[0] ?? null, [playList]);
   const onVideoEnded = useCallback(() => {
     console.log("onVideoEnded");
     dispatch(nextVideo());
   }, []);
   const [doubleWidthShowMode, setDoubleWidthShowMode] = useState<DoubleWidthShowMode>(DoubleWidthShowMode.Original);
 
-  const videoUrl = video ? `https://api.udon.dance/Api/Songs/play?id=${video.id}` : "";
-  const flip = video?.flip ?? false;
-  const doubleWidth = video?.doubleWidth ?? false;
-  const volume = video?.volume ?? 0.514;
+  const videoUrl = queue ? `https://api.udon.dance/Api/Songs/play?id=${queue.video.id}` : "";
+  const flip = queue?.video.flip ?? false;
+  const doubleWidth = queue?.video.doubleWidth ?? false;
+  const volume = queue?.video.volume ?? 0.514;
 
-  const videoInfo = video ? `${video.id}. ${video.composedTitle} ${doubleWidth ? `(${formatDoubleWidthShowMode(doubleWidthShowMode)})` : ""}` : "";
+  const videoInfo = queue ? `${queue.video.id}. ${queue.video.composedTitle} ${doubleWidth ? `(${formatDoubleWidthShowMode(doubleWidthShowMode)})` : ""} ${queue.isRandom ? "(随机)" : ""}` : "";
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const plyrInstance = useRef<Plyr | null>(null);

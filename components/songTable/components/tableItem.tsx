@@ -9,7 +9,7 @@ import { formatTag, formatTagColor, GenericVideo } from "@/types/video";
 import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useMemo } from "react";
 import { addCollection, removeCollection, selectCollection } from "@/store/modules/collection";
-import { addPlayList } from "@/store/modules/playList";
+import { addPlayList, QueueVideo } from "@/store/modules/playList";
 
 interface SongTableProps {
   song: GenericVideo
@@ -68,7 +68,10 @@ export default function TableItem({ song }: SongTableProps) {
   }, [dispatch, isCollection, song.id])
 
   const handleAddPlaylist = useCallback(() => {
-    dispatch(addPlayList(song))
+    dispatch(addPlayList({
+      video: song,
+      isRandom: false
+    } as QueueVideo))
   }, [song])
 
   const outstandingTag =

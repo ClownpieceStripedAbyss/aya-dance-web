@@ -1,12 +1,17 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { createSelector } from "reselect"
-import type { GenericVideo } from "@/types/video"
-import { toast } from "react-toastify"
-import { RootState, store } from "@/store"
-import _ from "lodash"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector } from "reselect";
+import type { GenericVideo } from "@/types/video";
+import { toast } from "react-toastify";
+import { RootState } from "@/store";
+import _ from "lodash";
+
+export interface QueueVideo {
+  video: GenericVideo,
+  isRandom: boolean
+}
 
 interface PlayListState {
-  playList: GenericVideo[]
+  playList: QueueVideo[]
 }
 
 const initialState: PlayListState = {
@@ -17,38 +22,38 @@ const PlayListSlice = createSlice({
   name: "playList",
   initialState,
   reducers: {
-    initPlayList: (state, action: PayloadAction<GenericVideo[]>) => {
+    initPlayList: (state, action: PayloadAction<QueueVideo[]>) => {
       const playList = action.payload
       if (!playList || playList.length === 0)
         return console.warn("playList is empty")
       state.playList = playList
     },
-    addPlayList: (state, action: PayloadAction<GenericVideo>) => {
+    addPlayList: (state, action: PayloadAction<QueueVideo>) => {
       const video = action.payload
       if (!video) return console.warn("video is empty")
-      if (state.playList.some((item) => item.id === video.id)) {
+      if (state.playList.some((item) => item.video.id === video.video.id)) {
         toast.warn("视频已在播放列表")
         console.warn("video is already in playList")
         return
       }
       state.playList = [...state.playList, video]
     },
-    removePlayList: (state, action: PayloadAction<GenericVideo>) => {
+    removePlayList: (state, action: PayloadAction<QueueVideo>) => {
       const video = action.payload
       if (!video) return console.warn("video is empty")
-      state.playList = state.playList.filter((item) => item.id !== video.id)
+      state.playList = state.playList.filter((item) => item.video.id !== video.video.id)
     },
-    topSong: (state, action: PayloadAction<GenericVideo>) => {
+    topSong: (state, action: PayloadAction<QueueVideo>) => {
       const video = action.payload
       if (!video) return console.warn("video is empty")
-      const index = state.playList.findIndex((item) => item.id === video.id)
+      const index = state.playList.findIndex((item) => item.video.id === video.video.id)
       if (index === -1) return console.warn("video is not in playList")
       if (index === 0) {
         toast.error("正在播放")
         return
       }
       if (index === 1) {
-        toast.error("已至下一首")
+        toast.info("已至下一首")
         return
       }
       state.playList.splice(index, 1)
