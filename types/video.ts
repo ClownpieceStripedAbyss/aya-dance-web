@@ -1,28 +1,38 @@
+import fetchWithDefaults from "@/utils/service"
+
 export interface GenericVideoGroup {
-  title: string;
-  entries: GenericVideo[];
-  major: string | "";
+  title: string
+  entries: GenericVideo[]
+  major: string | ""
 }
 
 export interface GenericVideo {
-  id: number;
-  ayaId: number | null;
-  name: string;
-  artist: string;
-  dancer: string;
-  playerCount: number;
-  composedTitle: string;
-  composedTitleSpell: string;
-  group: string;
-  genre: string;
-  volume: number;
-  start: number;
-  end: number;
-  flip: boolean;
-  tag: string[] | null;
-  doubleWidth: boolean;
-  originalUrl: string[];
-  checksum: string | null;
+  id: number
+  ayaId: number | null
+  name: string
+  artist: string
+  dancer: string
+  playerCount: number
+  composedTitle: string
+  composedTitleSpell: string
+  group: string
+  genre: string
+  volume: number
+  start: number
+  end: number
+  flip: boolean
+  tag: string[] | null
+  doubleWidth: boolean
+  originalUrl: string[]
+  checksum: string | null
+}
+
+export interface WannaData {
+  code: number
+  data: {
+    time: string
+    groups: GenericVideoGroup[]
+  }
 }
 
 export enum SortBy {
@@ -43,7 +53,9 @@ export const formatTag = (tag: string | undefined) => {
   }
 }
 
-export const formatTagColor = (tag: string | undefined) : "danger" | "primary" | undefined => {
+export const formatTagColor = (
+  tag: string | undefined
+): "danger" | "primary" | undefined => {
   switch (tag) {
     case "combined-video":
       return "danger"
@@ -54,7 +66,7 @@ export const formatTagColor = (tag: string | undefined) : "danger" | "primary" |
   }
 }
 
-export const formatGenreColor = (genre: string) : string | undefined => {
+export const formatGenreColor = (genre: string): string | undefined => {
   if (genre.includes("K-POP") || genre.includes("KPOP")) {
     return "text-danger"
   }
@@ -62,4 +74,8 @@ export const formatGenreColor = (genre: string) : string | undefined => {
     return "text-primary"
   }
   return undefined
+}
+
+export async function fetchWannaSongs(): Promise<WannaData[]> {
+  return await fetchWithDefaults("https://x.kiva.moe/api/wanna/songs")
 }

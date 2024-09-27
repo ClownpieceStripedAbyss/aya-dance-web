@@ -11,7 +11,7 @@ export async function GET() {
   const VideoIndex: AyaVideoIndex = await fetchAyaInfo();
 
   return new Response(JSON.stringify(VideoIndex), {
-    status: 200,
+      status: 200,
     headers: {
       "Content-Type": "application/json",
     },
