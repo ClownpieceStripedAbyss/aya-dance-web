@@ -1,19 +1,15 @@
-"use client"
+"use client";
 
-import { Key, useEffect, useMemo, useState } from "react"
-import { useDispatch, useSelector } from "react-redux"
-import {
-  Autocomplete,
-  AutocompleteItem,
-  Pagination,
-  ScrollShadow,
-} from "@nextui-org/react"
+import { Key, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Autocomplete, AutocompleteItem, Checkbox, Pagination, ScrollShadow } from "@nextui-org/react";
 
-import TableItem from "./components/tableItem"
-import styles from "./index.module.css"
+import TableItem from "./components/tableItem";
+import styles from "./index.module.css";
 
-import { selectSongInfo, setSortBy } from "@/store/modules/songInfo"
-import { GenericVideo, SortBy } from "@/types/video"
+import { selectSongInfo, setSortBy } from "@/store/modules/songInfo";
+import { GenericVideo, SortBy } from "@/types/video";
+import { selectPlayOptions, setLockedRandomGroup } from "@/store/modules/playOptions";
 
 interface SongTableProps {
   genericVideos: GenericVideo[]
@@ -28,6 +24,7 @@ export default function SongTable({
 }: SongTableProps) {
   const dispatch = useDispatch()
   const { sortBy: SortByValue } = useSelector(selectSongInfo)
+  const { lockedRandomGroup } = useSelector(selectPlayOptions)
   const [page, setPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState("20") // 初始值为 20
   const pageOptions = [
@@ -60,6 +57,10 @@ export default function SongTable({
     { value: `${SortBy.TITLE_ASC}`, label: "标题升序" },
     { value: `${SortBy.TITLE_DESC}`, label: "标题降序" },
   ]
+
+  const handleLockRandom = (locked: boolean) => {
+    dispatch(setLockedRandomGroup(locked ? targetKey : null))
+  }
 
   return (
     <div className={styles.table}>
@@ -103,6 +104,12 @@ export default function SongTable({
               </AutocompleteItem>
             ))}
           </Autocomplete>
+          <Checkbox
+            className="ml-2"
+            isSelected={targetKey === lockedRandomGroup}
+            onValueChange={handleLockRandom}>
+            锁定随机
+          </Checkbox>
         </div>
 
         <Pagination

@@ -1,12 +1,13 @@
-import { configureStore } from "@reduxjs/toolkit"
-import { useDispatch } from "react-redux"
+import { configureStore } from "@reduxjs/toolkit";
+import { useDispatch } from "react-redux";
 
-import UdonInfoReducer from "./modules/udonInfo"
-import AyaInfoReducer from "./modules/ayaInfo"
-import SongInfoReducer from "./modules/songInfo"
-import CollectionReducer from "./modules/collection"
-import PlayListReducer from "./modules/playList"
-import sendPlayListMiddleware from "./modules/playList.middleware"
+import UdonInfoReducer from "./modules/udonInfo";
+import AyaInfoReducer from "./modules/ayaInfo";
+import SongInfoReducer from "./modules/songInfo";
+import CollectionReducer from "./modules/collection";
+import PlayListReducer from "./modules/playList";
+import PlayOptionReducer from "./modules/playOptions";
+import sendPlayListMiddleware from "./modules/playList.middleware";
 
 // 配置 Redux store
 export const store = configureStore({
@@ -16,6 +17,7 @@ export const store = configureStore({
     SongInfo: SongInfoReducer,
     Collection: CollectionReducer,
     PlayList: PlayListReducer,
+    PlayOptions: PlayOptionReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(sendPlayListMiddleware),
