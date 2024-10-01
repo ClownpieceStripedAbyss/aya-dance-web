@@ -1,17 +1,15 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import {
-  getLocalSongInfo,
-  fetchWannaInfoMultidataAction,
-} from "@/store/modules/songInfo"
-import { initCollection } from "@/store/modules/collection"
-import { AppDispatch } from "@/store"
-import { initPlayList, selectPlayList } from "@/store/modules/playList"
-import _ from "lodash"
-import channel, { PlayListMessage } from "@/utils/channel"
+import { fetchWannaInfoMultidataAction, getLocalSongInfo } from "@/store/modules/songInfo";
+import { initCollection } from "@/store/modules/collection";
+import { AppDispatch } from "@/store";
+import { initPlayList, selectPlayList } from "@/store/modules/playList";
+import _ from "lodash";
+import channel, { PlayListMessage } from "@/utils/channel";
+import { initPlayOptions } from "@/store/modules/playOptions";
 
 export function DataInitializer() {
   const dispatch = useDispatch<AppDispatch>()
@@ -38,6 +36,7 @@ export function DataInitializer() {
   useEffect(() => {
     dispatch(getLocalSongInfo())
     dispatch(initCollection())
+    dispatch(initPlayOptions())
     dispatch(fetchWannaInfoMultidataAction())
 
     channel.postMessage({ action: "requestPlayList" } as PlayListMessage)

@@ -8,12 +8,14 @@ import { formatGenreColor } from "@/types/video";
 import Link from "next/link";
 import { Play } from "@/assets/icon";
 import { selectSongInfo } from "@/store/modules/songInfo";
+import { selectPlayOptions } from "@/store/modules/playOptions";
 
 interface PlyaListProps {}
 
 export default function PlayList({}: PlyaListProps) {
   const { playList } = useSelector(selectPlayList)
   const { songTypes } = useSelector(selectSongInfo)
+  const { lockedRandomGroup } = useSelector(selectPlayOptions)
   const dispatch = useDispatch()
   const handleTopSong = useCallback(
     (video: QueueVideo) => () => {
@@ -22,7 +24,11 @@ export default function PlayList({}: PlyaListProps) {
     [dispatch]
   )
   const handleNextSong = useCallback(() => {
-    dispatch(nextVideoWithRandom(songTypes.find(t => t.title === "All Songs")?.entries ?? []));
+    const group = lockedRandomGroup && songTypes.find(t => t.title === lockedRandomGroup)
+      ? lockedRandomGroup
+      : "All Songs";
+    console.log(`Handle next random range: ${group}, options = ${lockedRandomGroup}`)
+    dispatch(nextVideoWithRandom(songTypes.find(t => t.title === group)?.entries ?? []));
   }, [dispatch])
   return (
     <>

@@ -2,6 +2,7 @@ import { isAnyOf, Middleware } from "@reduxjs/toolkit";
 import { addPlayList, nextVideo, nextVideoWithRandom, removePlayList, topSong } from "./playList";
 import _ from "lodash";
 import channel, { PlayListMessage } from "@/utils/channel";
+import { setLockedRandomGroup } from "@/store/modules/playOptions";
 
 const sendPlayListMiddleware: Middleware = (store) => (next) => (action) => {
   // 获取执行action前后状态用于比对
@@ -10,7 +11,7 @@ const sendPlayListMiddleware: Middleware = (store) => (next) => (action) => {
   const nextPlayList = store.getState().PlayList?.playList
 
   if (
-    isAnyOf(addPlayList, removePlayList, topSong, nextVideo, nextVideoWithRandom)(action) &&
+    isAnyOf(addPlayList, removePlayList, topSong, nextVideo, nextVideoWithRandom, setLockedRandomGroup)(action) &&
     previousPlayList &&
     nextPlayList &&
     previousPlayList !== nextPlayList

@@ -7,6 +7,7 @@ import { nextVideoWithRandom, selectPlayList } from "@/store/modules/playList";
 import styles from "./index.module.css";
 import { selectSongInfo } from "@/store/modules/songInfo";
 import { Spinner } from "@nextui-org/react";
+import { selectPlayOptions } from "@/store/modules/playOptions";
 
 enum DoubleWidthShowMode {
   Both, Original, Simplified
@@ -29,11 +30,16 @@ const formatDoubleWidthShowMode = (mode: DoubleWidthShowMode) => {
 const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const { playList } = useSelector(selectPlayList);
   const { songTypes } = useSelector(selectSongInfo);
+  const { lockedRandomGroup } = useSelector(selectPlayOptions);
   const dispatch = useDispatch();
   const queue = useMemo(() => playList[0] ?? null, [playList]);
   const onVideoEnded = useCallback(() => {
     console.log("onVideoEnded");
-    dispatch(nextVideoWithRandom(songTypes.find(t => t.title === "All Songs")?.entries ?? []));
+    const group = lockedRandomGroup && songTypes.find(t => t.title === lockedRandomGroup)
+      ? lockedRandomGroup
+      : "All Songs";
+    console.log(`Handle next random range: ${group}, options = ${lockedRandomGroup}`)
+    dispatch(nextVideoWithRandom(songTypes.find(t => t.title === group)?.entries ?? []));
   }, []);
   const [doubleWidthShowMode, setDoubleWidthShowMode] = useState<DoubleWidthShowMode>(DoubleWidthShowMode.Original);
 
@@ -69,7 +75,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       });
 
       plyrInstance.current.on("ended", () => {
-        onVideoEnded()
+        onVideoEnded();
         if (spinnerRef.current) spinnerRef.current.style.display = "block";
         setWaitCountDown(MAX_WAIT_COUNT_DOWN);
         internalCounter++;
@@ -175,8 +181,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
            className={`${styles.overlay} text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
         <h1>{videoInfo}</h1>
       </div>
-      <div ref={spinnerRef} className={`${styles.overlay} text-center leading-none tracking-tight w-full h-full bg-black bg-opacity-90 hidden`}>
-        <div className={`${styles.overlay} text-6xl font-extrabold text-center leading-none tracking-tight bg-black text-white`}>
+      <div ref={spinnerRef}
+           className={`${styles.overlay} text-center leading-none tracking-tight w-full h-full bg-black bg-opacity-90 hidden`}>
+        <div
+          className={`${styles.overlay} text-6xl font-extrabold text-center leading-none tracking-tight bg-black text-white`}>
           <h1>{videoInfo}</h1>
           <h1>{waitCountDown}</h1>
         </div>
