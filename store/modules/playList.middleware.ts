@@ -6,23 +6,33 @@ import { setLockedRandomGroup } from "@/store/modules/playOptions";
 
 const sendPlayListMiddleware: Middleware = (store) => (next) => (action) => {
   // 获取执行action前后状态用于比对
-  const previousPlayList = store.getState().PlayList?.playList
-  const result = next(action)
-  const nextPlayList = store.getState().PlayList?.playList
+  const previousPlayList = store.getState().PlayList?.playList;
+  const previousPlayOptions = store.getState().PlayOptions;
+  const result = next(action);
+  const nextPlayList = store.getState().PlayList?.playList;
+  const nextPlayOptions = store.getState().PlayOptions;
 
   if (
     isAnyOf(addPlayList, removePlayList, topSong, nextVideo, nextVideoWithRandom, setLockedRandomGroup)(action) &&
-    previousPlayList &&
-    nextPlayList &&
-    previousPlayList !== nextPlayList
+    isAnyOf(previousPlayList &&
+      nextPlayList &&
+      previousPlayList !== nextPlayList,
+      previousPlayOptions &&
+      nextPlayOptions &&
+      previousPlayOptions !== nextPlayOptions
+    )
   ) {
+    console.log("Shared status changed, re-syncing");
     channel.postMessage({
       action: "currentPlayList",
-      playList: _.cloneDeep(nextPlayList),
-    } as PlayListMessage)
+      playList: _.cloneDeep(nextPlayList)
+    } as PlayListMessage);
+    channel.postMessage({
+      action: "currentPlayOptions"
+    } as PlayListMessage);
   }
 
-  return result
-}
+  return result;
+};
 
-export default sendPlayListMiddleware
+export default sendPlayListMiddleware;

@@ -30,6 +30,10 @@ export function DataInitializer() {
       // 如果收到当前播放列表，更新本地播放列表
       console.log("收到当前播放列表", event.data.playList)
       dispatch(initPlayList(event.data.playList!!))
+    } else if (event.data.action === "currentPlayOptions") {
+      // 如果收到当前播放选项，更新本地播放选项
+      console.log("收到当前播放选项", event.data)
+      dispatch(initPlayOptions())
     }
   }
   // 初始化

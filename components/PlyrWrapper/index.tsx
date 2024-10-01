@@ -193,7 +193,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       <video ref={videoRef} controls className="plyr__video-embed">
         <source src={videoUrl} type="video/mp4" className=" w-full h-full" />
       </video>
-      <span>Flip: {flip ? "true" : "false"}, Combined: {doubleWidth ? "true" : "false"}</span>
+      <span>Flip: {flip ? "true" : "false"}, Combined: {doubleWidth ? "true" : "false"}, Locked Random: {lockedRandomGroup}</span>
     </div>
   );
 };
