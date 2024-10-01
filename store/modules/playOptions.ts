@@ -3,9 +3,9 @@ import { createSelector } from "reselect";
 import { RootState } from "../index";
 import type { GenericVideo } from "@/types/video";
 
-const OPTION_KEY = "play_options"
+export const OPTION_KEY = "play_options"
 
-interface PlayOptions {
+export interface PlayOptions {
    lockedRandomGroup: GenericVideo["group"] | null
 }
 
@@ -13,7 +13,7 @@ const initialState: PlayOptions = {
   lockedRandomGroup: null,
 }
 
-const getPlayOptions = (): PlayOptions | null => {
+export const getPlayOptions = (): PlayOptions | null => {
   const opts: string | null =
     localStorage.getItem(OPTION_KEY)
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Plyr from "plyr";
 import "plyr/dist/plyr.css";
 import { delay } from "lodash";
@@ -7,7 +7,8 @@ import { nextVideoWithRandom, selectPlayList } from "@/store/modules/playList";
 import styles from "./index.module.css";
 import { selectSongInfo } from "@/store/modules/songInfo";
 import { Spinner } from "@nextui-org/react";
-import { selectPlayOptions } from "@/store/modules/playOptions";
+import { getPlayOptions, selectPlayOptions } from "@/store/modules/playOptions";
+import { GenericVideo } from "@/types/video";
 
 enum DoubleWidthShowMode {
   Both, Original, Simplified
@@ -33,17 +34,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const { lockedRandomGroup } = useSelector(selectPlayOptions);
   const dispatch = useDispatch();
   const queue = useMemo(() => playList[0] ?? null, [playList]);
-  const lockedRandomGroupOrAll = useMemo(() => {
-    return lockedRandomGroup && songTypes.find(t => t.title === lockedRandomGroup)
-      ? lockedRandomGroup
-      : "All Songs";
-  }, [lockedRandomGroup]);
-  const onVideoEnded = useCallback(() => {
-    console.log("onVideoEnded");
-    const group = lockedRandomGroupOrAll;
-    console.log(`Handle next random range: ${group}, options = ${lockedRandomGroup}`)
-    dispatch(nextVideoWithRandom(songTypes.find(t => t.title === group)?.entries ?? []));
-  }, []);
+  const lockedRandomGroupOrAll = lockedRandomGroup && songTypes.find(t => t.title === lockedRandomGroup)
+    ? lockedRandomGroup
+    : "All Songs";
+  const onVideoEnded = (randomGroup: GenericVideo["group"] | null) => {
+    console.log(`OnVideoEnded: Handle next random range: ${randomGroup}`)
+    dispatch(nextVideoWithRandom(songTypes.find(t => t.title === randomGroup)?.entries ?? []));
+  };
   const [doubleWidthShowMode, setDoubleWidthShowMode] = useState<DoubleWidthShowMode>(DoubleWidthShowMode.Original);
 
   // IMPORTANT: use `http`, so our self-hosted CDN can serve the video locally! DONT USE `https`!
@@ -78,7 +75,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       });
 
       plyrInstance.current.on("ended", () => {
-        onVideoEnded();
+        // TODO: workaround JavaScript unreasonable capturing behavior
+        const options = getPlayOptions();
+        const group = options?.lockedRandomGroup ?? null;
+        const groupOrAll = lockedRandomGroup && songTypes.find(t => t.title === group)
+          ? group
+          : "All Songs";
+        // TODO: end workaround
+
+        onVideoEnded(groupOrAll);
         if (spinnerRef.current) spinnerRef.current.style.display = "block";
         setWaitCountDown(MAX_WAIT_COUNT_DOWN);
         internalCounter++;
@@ -196,7 +201,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       <video ref={videoRef} controls className="plyr__video-embed">
         <source src={videoUrl} type="video/mp4" className=" w-full h-full" />
       </video>
-      <span>Flip: {flip ? "true" : "false"}, Combined: {doubleWidth ? "true" : "false"}, Locked Random: {lockedRandomGroup}</span>
+      <span>Flip: {flip ? "true" : "false"}, Combined: {doubleWidth ? "true" : "false"}, Locked Random: {lockedRandomGroupOrAll}</span>
     </div>
   );
 };
