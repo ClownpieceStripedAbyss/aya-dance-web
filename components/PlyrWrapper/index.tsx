@@ -33,11 +33,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const { lockedRandomGroup } = useSelector(selectPlayOptions);
   const dispatch = useDispatch();
   const queue = useMemo(() => playList[0] ?? null, [playList]);
-  const onVideoEnded = useCallback(() => {
-    console.log("onVideoEnded");
-    const group = lockedRandomGroup && songTypes.find(t => t.title === lockedRandomGroup)
+  const lockedRandomGroupOrAll = useMemo(() => {
+    return lockedRandomGroup && songTypes.find(t => t.title === lockedRandomGroup)
       ? lockedRandomGroup
       : "All Songs";
+  }, [lockedRandomGroup]);
+  const onVideoEnded = useCallback(() => {
+    console.log("onVideoEnded");
+    const group = lockedRandomGroupOrAll;
     console.log(`Handle next random range: ${group}, options = ${lockedRandomGroup}`)
     dispatch(nextVideoWithRandom(songTypes.find(t => t.title === group)?.entries ?? []));
   }, []);
