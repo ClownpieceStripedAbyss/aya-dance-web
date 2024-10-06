@@ -1,15 +1,24 @@
-"use client";
+"use client"
 
-import { Key, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Autocomplete, AutocompleteItem, Checkbox, Pagination, ScrollShadow } from "@nextui-org/react";
+import { Key, useMemo, useState } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import {
+  Autocomplete,
+  AutocompleteItem,
+  Checkbox,
+  Pagination,
+  ScrollShadow,
+} from "@nextui-org/react"
 
-import TableItem from "./components/tableItem";
-import styles from "./index.module.css";
+import TableItem from "./components/tableItem"
+import styles from "./index.module.css"
 
-import { selectSongInfo, setSortBy } from "@/store/modules/songInfo";
-import { GenericVideo, SortBy } from "@/types/video";
-import { selectPlayOptions, setLockedRandomGroup } from "@/store/modules/playOptions";
+import { selectSongInfo, setSortBy } from "@/store/modules/songInfo"
+import { GenericVideo, SortBy } from "@/types/video"
+import {
+  selectPlayOptions,
+  setLockedRandomGroup,
+} from "@/store/modules/playOptions"
 
 interface SongTableProps {
   genericVideos: GenericVideo[]
@@ -71,7 +80,7 @@ export default function SongTable({
         ))}
       </ScrollShadow>
       <div className={styles.bottom}>
-        <div className={styles.paginationControl}>
+        <div>
           <Autocomplete
             aria-label="change rows per page"
             className="w-[130px]"
@@ -107,7 +116,8 @@ export default function SongTable({
           <Checkbox
             className="ml-2"
             isSelected={targetKey === lockedRandomGroup}
-            onValueChange={handleLockRandom}>
+            onValueChange={handleLockRandom}
+          >
             锁定随机
           </Checkbox>
         </div>

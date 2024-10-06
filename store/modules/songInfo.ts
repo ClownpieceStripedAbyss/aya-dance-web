@@ -1,8 +1,13 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createSelector } from "reselect";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSelector } from "reselect"
 
-import { RootState } from "../index";
-import { GenericVideo, GenericVideoGroup, SortBy, WannaData } from "@/types/video";
+import { RootState } from "../index"
+import {
+  GenericVideo,
+  GenericVideoGroup,
+  SortBy,
+  WannaData,
+} from "@/types/video"
 
 // local storage key
 const SONG_INFO_KEY = "songInfo"
@@ -25,13 +30,13 @@ const initialState: SongInfo = {
   version: SONG_INFO_VERSION,
 }
 
-// 压缩数据并保存到 localStorage
+// State保存到 localStorage
 function saveToLocalStorage(data: SongInfo) {
-  const jsonData = JSON.stringify(data);
+  const jsonData = JSON.stringify(data)
   localStorage.setItem(SONG_INFO_KEY, jsonData)
 }
 
-// 从 localStorage 解压缩数据
+// 从 localStorage 解压缩State
 function loadFromLocalStorage(): SongInfo | null {
   const localSongInfo: string | null = localStorage.getItem(SONG_INFO_KEY)
   if (!localSongInfo) return null
@@ -41,11 +46,10 @@ function loadFromLocalStorage(): SongInfo | null {
     const newState = getNewState(saveState, allSongEntries)
     return newState
   } catch (error) {
-    console.log('loadFromLocalStorage error', error)
+    console.log("loadFromLocalStorage error", error)
     return null
   }
 }
-
 
 const SongInfoSlice = createSlice({
   name: "SongInfo",
@@ -95,7 +99,7 @@ const handleFetchWannaMultidata = (builder: any) => {
     })
     .addCase(
       fetchWannaInfoMultidataAction.fulfilled,
-      (state: SongInfo, action: PayloadAction<WannaData['data']>) => {
+      (state: SongInfo, action: PayloadAction<WannaData["data"]>) => {
         console.log("wanna fulfilled")
         const { groups, time } = action.payload
         if (time === state.updatedAt) {
@@ -104,7 +108,7 @@ const handleFetchWannaMultidata = (builder: any) => {
         } // 无需更新
         console.log("init SongInfo")
         const saveState = initSongInfo(groups, time)
-         // 保存到 localStorage
+        // 保存到 localStorage
         saveToLocalStorage(saveState)
         const allSongEntries = getAllSongEntries(saveState)
         const newState = getNewState(saveState, allSongEntries)
@@ -124,10 +128,7 @@ const handleFetchWannaMultidata = (builder: any) => {
     )
 }
 
-const initSongInfo = (
-  genericGroups: GenericVideoGroup[],
-  time: string,
-) => {
+const initSongInfo = (genericGroups: GenericVideoGroup[], time: string) => {
   const newState: SongInfo = {
     updatedAt: time,
     sortBy: SortBy.ID_ASC,
@@ -160,7 +161,7 @@ const getNewState = (saveState: SongInfo, allSongEntries: GenericVideo[]) => {
       entries: allSongEntries,
       major: "",
     } as GenericVideoGroup,
-    ...songTypes
+    ...songTypes,
   ]
   return saveState
 }
