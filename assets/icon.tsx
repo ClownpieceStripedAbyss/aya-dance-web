@@ -241,3 +241,32 @@ export const MoonFilledIcon = ({
     />
   </svg>
 )
+export const ExportIcon = ({
+  size = 24,
+  width,
+  height,
+  ...props
+}: IconSvgProps) => (
+  <svg
+    aria-hidden="true"
+    focusable="false"
+    height={size || height}
+    role="presentation"
+    viewBox="0 0 1024 1024"
+    width={size || width}
+    {...props}
+  >
+    <path
+      d="M290.1 662.6h-50c0-58.3 11.4-114.9 34-168.2 21.8-51.4 52.9-97.6 92.6-137.3s85.9-70.8 137.3-92.6c53.3-22.5 109.9-34 168.2-34v50c-210.7 0.1-382.1 171.4-382.1 382.1z"
+      fill="currentColor"
+    />
+    <path
+      d="M878 450v427.9l-0.1 0.1H148.1l-0.1-0.1V148.1l0.1-0.1h364V98H148c-27.5 0-50 22.5-50 50v730c0 27.5 22.5 50 50 50h730c27.5 0 50-22.5 50-50V450h-50z"
+      fill="currentColor"
+    />
+    <path
+      d="M672.1 62.9v217.7h50V156.4L869.9 255l-147.8 98.7V320h-50v127.2L960 255z"
+      fill="currentColor"
+    />
+  </svg>
+)

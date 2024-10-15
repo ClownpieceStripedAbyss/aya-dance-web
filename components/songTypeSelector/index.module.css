@@ -16,3 +16,8 @@
 .accordion {
   margin-top: 6px;
 }
+
+.favoriteRow {
+  display: flex;
+  justify-content: space-between;
+}

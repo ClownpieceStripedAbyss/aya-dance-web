@@ -26,6 +26,7 @@ import { GenericVideoGroup } from "@/types/video";
 import { Button } from "@nextui-org/button";
 import { useDispatch, useSelector } from "react-redux";
 import { addCollection, selectCollection } from "@/store/modules/collection";
+import { ExportIcon } from "@/assets/icon";
 
 interface SongTypeSelectorProps {
   songTypes: GenericVideoGroup[];
@@ -128,18 +129,18 @@ export default function SongTypeSelector({
         className={`${styles.customListboxItem}`}
       >
         {item.key === "Favorites" ? (
-          <span>
+          <div className={`${styles.favoriteRow}`}>
             {item.label}
             <Dropdown>
               <DropdownTrigger>
-                <span className="text-primary">⭐</span>
+                <span><ExportIcon size={18}/></span>
               </DropdownTrigger>
               <DropdownMenu variant="light" hideSelectedIcon onAction={(e) => handleDropdownAction(e)}>
                 <DropdownItem key="export-favorite">导出收藏</DropdownItem>
                 <DropdownItem key="import-favorite">导入收藏</DropdownItem>
               </DropdownMenu>
             </Dropdown>
-          </span>
+          </div>
         ) : item.label}
       </ListboxItem>
     );
