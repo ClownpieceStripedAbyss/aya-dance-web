@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 
 import SongSearch from "@/components/songSearch";
 import SongTable from "@/components/songTable";
-import { GenericVideo, GenericVideoGroup, SortBy } from "@/types/video";
+import { allSongsFromGroups, GenericVideo, GenericVideoGroup, SortBy } from "@/types/video";
 import { selectCollection } from "@/store/modules/collection";
 import { useSelector } from "react-redux";
 
@@ -98,8 +98,7 @@ export default function SongShow({
     // 收藏逻辑
     let targetEntries: GenericVideo[] = []
     if (selectedKey === "Favorites") {
-      const allSongs =
-        songTypes.find((item) => item.title === "All Songs")?.entries || []
+      const allSongs = allSongsFromGroups(songTypes)
       targetEntries = allSongs.filter((item) => {
         return collection.includes(item.id)
       })

@@ -22,7 +22,7 @@ import {
 } from "@nextui-org/react";
 
 import styles from "./index.module.css";
-import { GenericVideoGroup } from "@/types/video";
+import { findSongById, GenericVideoGroup } from "@/types/video";
 import { Button } from "@nextui-org/button";
 import { useDispatch, useSelector } from "react-redux";
 import { addCollection, selectCollection } from "@/store/modules/collection";
@@ -87,14 +87,21 @@ export default function SongTypeSelector({
 
   const { isOpen: isExportOpen, onOpen: onExportOpen, onClose: onExportClose } = useDisclosure();
   const { isOpen: isImportOpen, onOpen: onImportOpen, onClose: onImportClose } = useDisclosure();
+  const { isOpen: isExportListOpen, onOpen: onExportListOpen, onClose: onExportListClose } = useDisclosure();
   const [importFavoriteInput, setImportFavoriteInput] = useState("");
   const dispatch = useDispatch();
-
 
   const collection = useSelector(selectCollection);
   const exportFavorite = () => {
     return `WannaFavorite:${collection.join(",")}`;
   };
+  const exportFavoriteAsHumanReadableList = () => {
+    const favSongs = collection
+      .map((id) => findSongById(songTypes, id))
+      .filter((song) => song !== null);
+    const favList = favSongs.map(s => `${s!!.id}. ${s!!.composedTitle}`);
+    return favList.join("\n");
+  }
   const importFavorite = (input: string) => {
     const [prefix, ids] = input.trim().split(":");
     if (prefix.trim() === "WannaFavorite") {
@@ -116,6 +123,9 @@ export default function SongTypeSelector({
       case "export-favorite":
         onExportOpen();
         break;
+      case "export-favorite-list":
+        onExportListOpen();
+        break;
       default:
         break;
     }
@@ -133,11 +143,12 @@ export default function SongTypeSelector({
             {item.label}
             <Dropdown>
               <DropdownTrigger>
-                <span><ExportIcon size={18}/></span>
+                <span><ExportIcon size={18} /></span>
               </DropdownTrigger>
               <DropdownMenu variant="light" hideSelectedIcon onAction={(e) => handleDropdownAction(e)}>
                 <DropdownItem key="export-favorite">导出收藏</DropdownItem>
                 <DropdownItem key="import-favorite">导入收藏</DropdownItem>
+                <DropdownItem key="export-favorite-list">导出歌曲列表</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -262,6 +273,38 @@ export default function SongTypeSelector({
                 </Button>
                 <Button color="primary" onPress={onClose} onClick={() => importFavorite(importFavoriteInput)}>
                   导入
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+      <Modal
+        size="md"
+        isOpen={isExportListOpen}
+        onClose={onExportListClose}
+        scrollBehavior="inside"
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">导出歌曲列表</ModalHeader>
+              <ModalBody>
+                <Textarea
+                  isReadOnly
+                  label="歌曲列表"
+                  variant="bordered"
+                  labelPlacement="outside"
+                  defaultValue={exportFavoriteAsHumanReadableList()}
+                  className="max-w-full"
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button
+                  color="primary"
+                  onPress={onClose}
+                  onClick={() => navigator.clipboard.writeText(exportFavoriteAsHumanReadableList())}>
+                  复制到剪贴板
                 </Button>
               </ModalFooter>
             </>

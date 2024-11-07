@@ -1,4 +1,4 @@
-import fetchWithDefaults from "@/utils/service"
+import fetchWithDefaults from "@/utils/service";
 
 export interface GenericVideoGroup {
   title: string
@@ -74,6 +74,15 @@ export const formatGenreColor = (genre: string): string | undefined => {
     return "text-primary"
   }
   return undefined
+}
+
+export const allSongsFromGroups = (songTypes: GenericVideoGroup[]): GenericVideo[] => {
+  return songTypes.find((item) => item.title === "All Songs")?.entries || []
+}
+
+export const findSongById = (songTypes: GenericVideoGroup[], id: number) : GenericVideo | null => {
+  const allSongs = allSongsFromGroups(songTypes)
+  return allSongs.find((item) => item.id === id) || null
 }
 
 export async function fetchWannaSongs(): Promise<WannaData[]> {
