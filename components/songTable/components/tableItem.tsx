@@ -16,24 +16,24 @@ interface SongTableProps {
 }
 
 export default function TableItem({ song }: SongTableProps) {
+  var url = `https://api.udon.dance/Api/Songs/play?id=${song.id}`;
   // video
-  const handleOpenVideo = () => {
-    // 设置视频的源
-    const videoURL = `https://api.udon.dance/Api/Songs/play?id=${song.id}`
-    const win = window.open("", "_blank", "noopener=false") as Window
-
-    win.document.write(`
-      <!DOCTYPE html>
-      <html style="width:100%;height:100%;margin:0;padding:0;">
-      <body style="width:100%;height:100%;margin:0;padding:0;overflow:hidden;">
-        <video style="width:100%;height:100%;object-fit:cover;" autoplay controls>
-          <source src="${videoURL}" type="video/mp4">
-          您的浏览器不支持 HTML5 video 标签。
-        </video>
-      </body>
-      </html>
-    `)
-  }
+  // const handleOpenVideo = () => {
+  //   // 设置视频的源
+  //   const win = window.open("", "_blank", "noopener=false") as Window
+  //
+  //   win.document.write(`
+  //     <!DOCTYPE html>
+  //     <html style="width:100%;height:100%;margin:0;padding:0;">
+  //     <body style="width:100%;height:100%;margin:0;padding:0;overflow:hidden;">
+  //       <video style="width:100%;height:100%;object-fit:cover;" autoplay controls>
+  //         <source src="${url}" type="video/mp4">
+  //         您的浏览器不支持 HTML5 video 标签。
+  //       </video>
+  //     </body>
+  //     </html>
+  //   `)
+  // }
   const videoThumbnailUrl = (video: GenericVideo): string => {
     if (!video) return ""
 
@@ -84,9 +84,9 @@ export default function TableItem({ song }: SongTableProps) {
         <CardBody>
           <div className="w-full h-full flex justify-between items-center">
             <a
-              href="#"
+              href={url}
               style={{ display: "inline-block" }}
-              onClick={handleOpenVideo}
+              // onClick={handleOpenVideo}
             >
               <Badge
                 content={formatTag(outstandingTag)}
@@ -108,8 +108,8 @@ export default function TableItem({ song }: SongTableProps) {
               <Link
                 className={styles.hoverUnderline}
                 color="foreground"
-                href="#"
-                onClick={handleOpenVideo}
+                href={url}
+                // onClick={handleOpenVideo}
               >
                 {song.composedTitle}
               </Link>
