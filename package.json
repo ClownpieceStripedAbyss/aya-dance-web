@@ -25,7 +25,7 @@
 		"@react-aria/visually-hidden": "3.8.12",
 		"@reduxjs/toolkit": "^2.2.7",
 		"clsx": "2.1.1",
-		"framer-motion": "~11.1.1",
+		"framer-motion": "^11.5.6",
 		"intl-messageformat": "^10.5.0",
 		"lodash": "^4.17.21",
 		"next": "^14.2.14",
