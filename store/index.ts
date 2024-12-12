@@ -5,6 +5,7 @@ import SongInfoReducer from "./modules/songInfo"
 import CollectionReducer from "./modules/collection"
 import PlayListReducer from "./modules/playList"
 import PlayOptionReducer from "./modules/playOptions"
+import CustomListStoreReducer from "./modules/customListStore"
 import sendPlayListMiddleware from "./modules/playList.middleware"
 
 // 配置 Redux store
@@ -14,6 +15,7 @@ export const store = configureStore({
     Collection: CollectionReducer,
     PlayList: PlayListReducer,
     PlayOptions: PlayOptionReducer,
+    CustomListStore: CustomListStoreReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(sendPlayListMiddleware),

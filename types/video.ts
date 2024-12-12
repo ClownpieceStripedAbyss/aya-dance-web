@@ -1,4 +1,4 @@
-import fetchWithDefaults from "@/utils/service";
+import fetchWithDefaults from "@/utils/service"
 
 export interface GenericVideoGroup {
   title: string
@@ -40,6 +40,7 @@ export enum SortBy {
   ID_DESC,
   TITLE_ASC,
   TITLE_DESC,
+  NATURAL_ORDER,
 }
 
 export const formatTag = (tag: string | undefined) => {
@@ -76,11 +77,16 @@ export const formatGenreColor = (genre: string): string | undefined => {
   return undefined
 }
 
-export const allSongsFromGroups = (songTypes: GenericVideoGroup[]): GenericVideo[] => {
+export const allSongsFromGroups = (
+  songTypes: GenericVideoGroup[]
+): GenericVideo[] => {
   return songTypes.find((item) => item.title === "All Songs")?.entries || []
 }
 
-export const findSongById = (songTypes: GenericVideoGroup[], id: number) : GenericVideo | null => {
+export const findSongById = (
+  songTypes: GenericVideoGroup[],
+  id: number
+): GenericVideo | null => {
   const allSongs = allSongsFromGroups(songTypes)
   return allSongs.find((item) => item.id === id) || null
 }
