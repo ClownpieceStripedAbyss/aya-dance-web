@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Key, useEffect, useMemo, useState } from "react";
+import { Key, useEffect, useMemo, useState } from "react"
 import {
   Accordion,
   AccordionItem,
@@ -18,118 +18,134 @@ import {
   ScrollShadow,
   Skeleton,
   Textarea,
-  useDisclosure
-} from "@nextui-org/react";
+  useDisclosure,
+} from "@nextui-org/react"
 
-import styles from "./index.module.css";
-import { findSongById, GenericVideoGroup } from "@/types/video";
-import { Button } from "@nextui-org/button";
-import { useDispatch, useSelector } from "react-redux";
-import { addCollection, selectCollection } from "@/store/modules/collection";
-import { ExportIcon } from "@/assets/icon";
+import styles from "./index.module.css"
+import { findSongById, GenericVideoGroup } from "@/types/video"
+import { Button } from "@nextui-org/button"
+import { useDispatch, useSelector } from "react-redux"
+import { addCollection, selectCollection } from "@/store/modules/collection"
+import { ExportIcon } from "@/assets/icon"
 
 interface SongTypeSelectorProps {
-  songTypes: GenericVideoGroup[];
-  loading: boolean;
-  onSelectionChange: (selectedKey: string) => void;
+  songTypes: GenericVideoGroup[]
+  loading: boolean
+  onSelectionChange: (selectedKey: string) => void
 }
 
 function groupBy<K, V>(array: V[], grouper: (item: V) => K) {
   return array.reduce((store: Map<K, V[]>, item) => {
-    var key = grouper(item);
+    var key = grouper(item)
     if (!store.has(key)) {
-      store.set(key, [item]);
+      store.set(key, [item])
     } else {
-      store.get(key)!!.push(item);
+      store.get(key)!!.push(item)
     }
-    return store;
-  }, new Map<K, V[]>());
+    return store
+  }, new Map<K, V[]>())
 }
 
 export default function SongTypeSelector({
   songTypes,
   loading,
-  onSelectionChange
+  onSelectionChange,
 }: SongTypeSelectorProps) {
   const songTypeOptions = useMemo(() => {
     const option = songTypes.map((group: GenericVideoGroup) => {
       return {
         key: group.title,
         label: group.title,
-        major: group.major
-      };
-    });
+        major: group.major,
+      }
+    })
 
-    option.unshift({ key: "Favorites", label: "喜欢的歌曲", major: "" });
+    option.unshift({ key: "CustomList", label: "新增歌单", major: "" })
+    option.unshift({ key: "Favorites", label: "喜欢的歌曲", major: "" })
 
     let groups: {
       major: string
       items: { key: string; label: string }[]
-    }[] = [];
+    }[] = []
     groupBy(option, (item) => item.major).forEach((value, major) => {
       groups.push({
         major: major === "" ? "À la carte" : major,
-        items: value.filter((item) => item.key !== "Hide")
-      });
-    });
-    return groups;
-  }, [songTypes]);
+        items: value.filter((item) => item.key !== "Hide"),
+      })
+    })
+    return groups
+  }, [songTypes])
 
-  const [selectedKeys, setSelectedKeys] = useState(new Set(["All Songs"]));
+  const [selectedKeys, setSelectedKeys] = useState(new Set(["All Songs"]))
 
   useEffect(() => {
     if (selectedKeys.size === 1) {
-      const selectedKey = Array.from(selectedKeys)[0];
+      const selectedKey = Array.from(selectedKeys)[0]
 
-      onSelectionChange(selectedKey);
+      onSelectionChange(selectedKey)
     }
-  }, [selectedKeys, onSelectionChange]);
+  }, [selectedKeys, onSelectionChange])
 
-  const { isOpen: isExportOpen, onOpen: onExportOpen, onClose: onExportClose } = useDisclosure();
-  const { isOpen: isImportOpen, onOpen: onImportOpen, onClose: onImportClose } = useDisclosure();
-  const { isOpen: isExportListOpen, onOpen: onExportListOpen, onClose: onExportListClose } = useDisclosure();
-  const [importFavoriteInput, setImportFavoriteInput] = useState("");
-  const dispatch = useDispatch();
+  const {
+    isOpen: isExportOpen,
+    onOpen: onExportOpen,
+    onClose: onExportClose,
+  } = useDisclosure()
+  const {
+    isOpen: isImportOpen,
+    onOpen: onImportOpen,
+    onClose: onImportClose,
+  } = useDisclosure()
+  const {
+    isOpen: isExportListOpen,
+    onOpen: onExportListOpen,
+    onClose: onExportListClose,
+  } = useDisclosure()
+  const [importFavoriteInput, setImportFavoriteInput] = useState("")
+  const dispatch = useDispatch()
 
-  const collection = useSelector(selectCollection);
+  const collection = useSelector(selectCollection)
   const exportFavorite = () => {
-    return `WannaFavorite:${collection.join(",")}`;
-  };
+    return `WannaFavorite:${collection.join(",")}`
+  }
   const exportFavoriteAsHumanReadableList = () => {
     const favSongs = collection
       .map((id) => findSongById(songTypes, id))
-      .filter((song) => song !== null);
-    const favList = favSongs.map(s => `${s!!.id}. ${s!!.composedTitle}`);
-    return favList.join("\n");
+      .filter((song) => song !== null)
+    const favList = favSongs.map((s) => `${s!!.id}. ${s!!.composedTitle}`)
+    return favList.join("\n")
   }
   const importFavorite = (input: string) => {
-    const [prefix, ids] = input.trim().split(":");
+    const [prefix, ids] = input.trim().split(":")
     if (prefix.trim() === "WannaFavorite") {
-      const idsArray = ids.trim().split(",");
-      const idsSet = new Set(idsArray.map((id) => parseInt(id.trim())));
+      const idsArray = ids.trim().split(",")
+      const idsSet = new Set(idsArray.map((id) => parseInt(id.trim())))
       idsSet.forEach((id) => {
         if (!collection.includes(id)) {
-          dispatch(addCollection(id));
+          dispatch(addCollection(id))
         }
-      });
+      })
     }
-  };
+  }
 
   const handleDropdownAction = (key: Key) => {
     switch (key) {
       case "import-favorite":
-        onImportOpen();
-        break;
+        onImportOpen()
+        break
       case "export-favorite":
-        onExportOpen();
-        break;
+        onExportOpen()
+        break
       case "export-favorite-list":
-        onExportListOpen();
-        break;
+        onExportListOpen()
+        break
       default:
-        break;
+        break
     }
-  };
+  }
+  function handleAddCustomList() {
+    console.log("新增歌单")
+  }
 
   const makeGroupItem = (item: { key: string; label: string }) => {
     return (
@@ -138,24 +154,45 @@ export default function SongTypeSelector({
         hideSelectedIcon
         className={`${styles.customListboxItem}`}
       >
-        {item.key === "Favorites" ? (
-          <div className={`${styles.favoriteRow}`}>
-            {item.label}
-            <Dropdown>
-              <DropdownTrigger>
-                <span><ExportIcon size={18} /></span>
-              </DropdownTrigger>
-              <DropdownMenu variant="light" hideSelectedIcon onAction={(e) => handleDropdownAction(e)}>
-                <DropdownItem key="export-favorite">导出收藏</DropdownItem>
-                <DropdownItem key="import-favorite">导入收藏</DropdownItem>
-                <DropdownItem key="export-favorite-list">导出歌曲列表</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        ) : item.label}
+        {(() => {
+          switch (item.key) {
+            case "Favorites":
+              return (
+                <div className={`${styles.favoriteRow}`}>
+                  {item.label}
+                  <Dropdown>
+                    <DropdownTrigger>
+                      <span>
+                        <ExportIcon size={18} />
+                      </span>
+                    </DropdownTrigger>
+                    <DropdownMenu
+                      variant="light"
+                      hideSelectedIcon
+                      onAction={(e) => handleDropdownAction(e)}
+                    >
+                      <DropdownItem key="export-favorite">
+                        导出收藏
+                      </DropdownItem>
+                      <DropdownItem key="import-favorite">
+                        导入收藏
+                      </DropdownItem>
+                      <DropdownItem key="export-favorite-list">
+                        导出歌曲列表
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
+                </div>
+              )
+            case "CustomList":
+              return <div onClick={handleAddCustomList}>{item.label}</div>
+            default:
+              return item.label
+          }
+        })()}
       </ListboxItem>
-    );
-  };
+    )
+  }
 
   return (
     <>
@@ -185,7 +222,7 @@ export default function SongTypeSelector({
             className={styles.accordion}
             itemClasses={{
               base: `${styles.accordionItem}`,
-              title: `${styles.accordionTitle} font-bold text-sm`
+              title: `${styles.accordionTitle} font-bold text-sm`,
             }}
           >
             {songTypeOptions.map((group) => (
@@ -197,14 +234,14 @@ export default function SongTypeSelector({
                 <Listbox
                   aria-label="songType"
                   classNames={{
-                    base: `${styles.listbox}`
+                    base: `${styles.listbox}`,
                   }}
                   items={group.items}
                   selectedKeys={selectedKeys}
                   selectionMode="single"
                   onSelectionChange={(keys) => {
                     if (keys instanceof Set && keys.size > 0) {
-                      setSelectedKeys(keys as Set<string>);
+                      setSelectedKeys(keys as Set<string>)
                     }
                   }}
                 >
@@ -224,7 +261,9 @@ export default function SongTypeSelector({
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">导出收藏</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                导出收藏
+              </ModalHeader>
               <ModalBody>
                 <Textarea
                   isReadOnly
@@ -239,7 +278,10 @@ export default function SongTypeSelector({
                 <Button
                   color="primary"
                   onPress={onClose}
-                  onClick={() => navigator.clipboard.writeText(exportFavorite())}>
+                  onClick={() =>
+                    navigator.clipboard.writeText(exportFavorite())
+                  }
+                >
                   复制到剪贴板
                 </Button>
               </ModalFooter>
@@ -247,15 +289,13 @@ export default function SongTypeSelector({
           )}
         </ModalContent>
       </Modal>
-      <Modal
-        size="md"
-        isOpen={isImportOpen}
-        onClose={onImportClose}
-      >
+      <Modal size="md" isOpen={isImportOpen} onClose={onImportClose}>
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">导入收藏</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                导入收藏
+              </ModalHeader>
               <ModalBody>
                 <Textarea
                   label="歌曲收藏"
@@ -271,7 +311,11 @@ export default function SongTypeSelector({
                 <Button color="danger" variant="light" onPress={onClose}>
                   取消
                 </Button>
-                <Button color="primary" onPress={onClose} onClick={() => importFavorite(importFavoriteInput)}>
+                <Button
+                  color="primary"
+                  onPress={onClose}
+                  onClick={() => importFavorite(importFavoriteInput)}
+                >
                   导入
                 </Button>
               </ModalFooter>
@@ -288,7 +332,9 @@ export default function SongTypeSelector({
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">导出歌曲列表</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                导出歌曲列表
+              </ModalHeader>
               <ModalBody>
                 <Textarea
                   isReadOnly
@@ -303,7 +349,12 @@ export default function SongTypeSelector({
                 <Button
                   color="primary"
                   onPress={onClose}
-                  onClick={() => navigator.clipboard.writeText(exportFavoriteAsHumanReadableList())}>
+                  onClick={() =>
+                    navigator.clipboard.writeText(
+                      exportFavoriteAsHumanReadableList()
+                    )
+                  }
+                >
                   复制到剪贴板
                 </Button>
               </ModalFooter>
@@ -312,5 +363,5 @@ export default function SongTypeSelector({
         </ModalContent>
       </Modal>
     </>
-  );
+  )
 }
