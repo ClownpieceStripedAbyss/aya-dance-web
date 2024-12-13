@@ -29,7 +29,11 @@ const initialState: CustomListStore = {
   sortBy: SortBy.NATURAL_ORDER,
   version: CUSTOM_LIST_VERSION,
 }
-
+function saveLocalCustomListStore(state: CustomListStore) {
+  SaveToStorage(CUSTOM_LIST_KEY, state)
+  console.log("Saved CustomListStore info to local storage")
+  console.log(state)
+}
 const CustomListStoreSlice = createSlice({
   name: "customListStore",
   initialState,
@@ -48,13 +52,16 @@ const CustomListStoreSlice = createSlice({
       console.log(decompressedData)
       Object.assign(state, decompressedData)
     },
-    saveLocalCustomListStore: (state: CustomListStore) => {
-      SaveToStorage(CUSTOM_LIST_KEY, state)
-      console.log("Saved CustomListStore info to local storage")
-      console.log(state)
-    },
+
     addCustomList: (state: CustomListStore, action) => {
-      state.content.push(action.payload)
+      const { name, description } = action.payload
+      state.content.push({
+        name,
+        description,
+        ids: [],
+      })
+      state.updatedAt = new Date().toISOString()
+      saveLocalCustomListStore(state)
     },
   },
 })
@@ -73,7 +80,7 @@ export const selectCustomListStore = createSelector(
 // 导出 actions 和 reducer
 export const {
   getLocalCustomListStore,
-  saveLocalCustomListStore,
+
   addCustomList,
 } = CustomListStoreSlice.actions
 export default CustomListStoreSlice.reducer

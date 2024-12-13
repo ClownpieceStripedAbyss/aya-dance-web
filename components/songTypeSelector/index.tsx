@@ -1,6 +1,6 @@
 "use client"
 
-import { Key, useEffect, useMemo, useState } from "react"
+import { Key, useEffect, useMemo, useRef, useState } from "react"
 import {
   Accordion,
   AccordionItem,
@@ -27,6 +27,8 @@ import { Button } from "@nextui-org/button"
 import { useDispatch, useSelector } from "react-redux"
 import { addCollection, selectCollection } from "@/store/modules/collection"
 import { ExportIcon } from "@/assets/icon"
+import AddCustomListModal, { ModalRef } from "./components/AddCustomListModal"
+import { selectCustomListStore } from "@/store/modules/customListStore"
 
 interface SongTypeSelectorProps {
   songTypes: GenericVideoGroup[]
@@ -51,6 +53,7 @@ export default function SongTypeSelector({
   loading,
   onSelectionChange,
 }: SongTypeSelectorProps) {
+  const customListStore = useSelector(selectCustomListStore)
   const songTypeOptions = useMemo(() => {
     const option = songTypes.map((group: GenericVideoGroup) => {
       return {
@@ -60,8 +63,14 @@ export default function SongTypeSelector({
       }
     })
 
-    option.unshift({ key: "CustomList", label: "新增歌单", major: "" })
-    option.unshift({ key: "Favorites", label: "喜欢的歌曲", major: "" })
+    // 添加 收藏 和 新增歌单 选项 与 自定义歌单展示选项
+
+    option.push({ key: "Favorites", label: "喜欢的歌曲", major: "" })
+    option.push({ key: "CustomList", label: "新增歌单", major: "" })
+
+    customListStore.content.forEach((list) => {
+      option.push({ key: list.name, label: list.name, major: "" })
+    })
 
     let groups: {
       major: string
@@ -74,7 +83,7 @@ export default function SongTypeSelector({
       })
     })
     return groups
-  }, [songTypes])
+  }, [songTypes, customListStore])
 
   const [selectedKeys, setSelectedKeys] = useState(new Set(["All Songs"]))
 
@@ -143,8 +152,11 @@ export default function SongTypeSelector({
         break
     }
   }
+
+  // 新增歌单
+  const modalRef = useRef<ModalRef>(null)
   function handleAddCustomList() {
-    console.log("新增歌单")
+    modalRef.current?.onOpen()
   }
 
   const makeGroupItem = (item: { key: string; label: string }) => {
@@ -240,6 +252,10 @@ export default function SongTypeSelector({
                   selectedKeys={selectedKeys}
                   selectionMode="single"
                   onSelectionChange={(keys) => {
+                    keys = keys as Set<string>
+                    if (keys.has("CustomList")) {
+                      return
+                    }
                     if (keys instanceof Set && keys.size > 0) {
                       setSelectedKeys(keys as Set<string>)
                     }
@@ -362,6 +378,7 @@ export default function SongTypeSelector({
           )}
         </ModalContent>
       </Modal>
+      <AddCustomListModal ref={modalRef} />
     </>
   )
 }
