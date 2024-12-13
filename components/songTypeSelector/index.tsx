@@ -30,10 +30,12 @@ import { ExportIcon } from "@/assets/icon"
 import AddCustomListModal, { ModalRef } from "./components/AddCustomListModal"
 import { selectCustomListStore } from "@/store/modules/customListStore"
 
+// À la carte
+const CARTE = "À la carte"
 interface SongTypeSelectorProps {
   songTypes: GenericVideoGroup[]
   loading: boolean
-  onSelectionChange: (selectedKey: string) => void
+  onSelectionChange: (selectedKey: string, isCustom: boolean) => void
 }
 
 function groupBy<K, V>(array: V[], grouper: (item: V) => K) {
@@ -78,7 +80,7 @@ export default function SongTypeSelector({
     }[] = []
     groupBy(option, (item) => item.major).forEach((value, major) => {
       groups.push({
-        major: major === "" ? "À la carte" : major,
+        major: major === "" ? CARTE : major,
         items: value.filter((item) => item.key !== "Hide"),
       })
     })
@@ -88,12 +90,22 @@ export default function SongTypeSelector({
   const [selectedKeys, setSelectedKeys] = useState(new Set(["All Songs"]))
 
   useEffect(() => {
-    if (selectedKeys.size === 1) {
-      const selectedKey = Array.from(selectedKeys)[0]
+    if (selectedKeys.size !== 1) return
+    const selectedKey = Array.from(selectedKeys)[0]
 
-      onSelectionChange(selectedKey)
+    const specialCategories = new Set(["CustomList", "Favorites", "All Songs"])
+
+    if (specialCategories.has(selectedKey)) {
+      onSelectionChange(selectedKey, false)
+      return
     }
-  }, [selectedKeys, onSelectionChange])
+
+    const carteItems =
+      songTypeOptions.find((x) => x.major === CARTE)?.items ?? []
+    const isCarte = carteItems.some((item) => item.key === selectedKey)
+
+    onSelectionChange(selectedKey, isCarte)
+  }, [selectedKeys])
 
   const {
     isOpen: isExportOpen,

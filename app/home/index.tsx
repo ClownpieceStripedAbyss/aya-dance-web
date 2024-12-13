@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useSelector } from "react-redux"
 
 import SongShow from "./components/home.songShow"
+import CostomShow from "./components/home.costomShow"
 import PlayList from "./components/home.playList"
 
 import SongTypeSelector from "@/components/songTypeSelector"
@@ -14,11 +15,13 @@ export default function HomeBlock() {
   // 获取redux数据
   const { loading, sortBy, songTypes } = useSelector(selectSongInfo)
 
-  function onSelectionChange(selectedKey: string) {
+  function onSelectionChange(selectedKey: string, isCustom: boolean) {
     setSelectedKey(selectedKey)
+    setIsCustom(isCustom)
   }
 
   const [selectedKey, setSelectedKey] = useState<string>("")
+  const [isCustom, setIsCustom] = useState<boolean>(false)
 
   return (
     <div className="relative flex flex-row items-center justify-center gap-4 py-4 md:py-4 h-full">
@@ -27,12 +30,21 @@ export default function HomeBlock() {
         songTypes={songTypes}
         onSelectionChange={onSelectionChange}
       />
-      <SongShow
-        SortBy={sortBy}
-        loading={loading}
-        selectedKey={selectedKey}
-        songTypes={songTypes}
-      />
+      {!isCustom ? (
+        <SongShow
+          SortBy={sortBy}
+          loading={loading}
+          selectedKey={selectedKey}
+          songTypes={songTypes}
+        />
+      ) : (
+        <CostomShow
+          SortBy={sortBy}
+          loading={loading}
+          selectedKey={selectedKey}
+          songTypes={songTypes}
+        />
+      )}
       <PlayList />
     </div>
   )

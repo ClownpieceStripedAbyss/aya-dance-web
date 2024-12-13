@@ -30,13 +30,27 @@ const AddCustomListModal = forwardRef<ModalRef>((props, ref) => {
   }))
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
+  const [ids, setIds] = useState("")
   function handleAddCustomList() {
     if (name === "") {
       toast.warn("歌单名称不能为空")
       return
     }
 
-    dispatch(addCustomList({ name, description, ids: [] }))
+    dispatch(
+      addCustomList({
+        name,
+        description,
+        ids: Array.from(
+          new Set(
+            ids
+              .split(",")
+              .filter(Boolean)
+              .map((id) => Number(id))
+          )
+        ),
+      })
+    )
     toast.success("歌单添加成功")
     onClose()
     setName("")
@@ -57,6 +71,21 @@ const AddCustomListModal = forwardRef<ModalRef>((props, ref) => {
                 labelPlacement="outside"
                 className="max-w-full"
                 onValueChange={setDescription}
+              />
+              <Textarea
+                label="id 列表"
+                placeholder="id 列表，以逗号分隔"
+                variant="bordered"
+                labelPlacement="outside"
+                className="max-w-full"
+                value={ids}
+                onValueChange={(value) => {
+                  const filtered = value
+                    .replace(/，/g, ",")
+                    .replace(/\s+/g, "")
+                    .replace(/[^0-9,]/g, "")
+                  setIds(filtered)
+                }}
               />
             </ModalBody>
             <ModalFooter>

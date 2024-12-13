@@ -54,11 +54,11 @@ const CustomListStoreSlice = createSlice({
     },
 
     addCustomList: (state: CustomListStore, action) => {
-      const { name, description } = action.payload
+      const { name, description, ids } = action.payload
       state.content.push({
         name,
         description,
-        ids: [],
+        ids,
       })
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)
