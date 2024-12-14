@@ -73,7 +73,7 @@ export default function SongTable({
 
   return (
     <div className={styles.table}>
-      <div className="font-bold text-l text-primary mb-4 leading-snug">{`${genericVideos.length} Videos in ${targetKey}`}</div>
+      <div className="font-bold text-l text-primary mb-4 mt-4 leading-snug">{`${genericVideos.length} Videos in ${targetKey}`}</div>
       <ScrollShadow hideScrollBar className="w-full h-[680px]">
         {items.map((item, index) => (
           <TableItem key={index} song={item} />

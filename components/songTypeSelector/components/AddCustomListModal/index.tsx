@@ -21,13 +21,17 @@ import { AppDispatch } from "@/store"
 export interface ModalRef {
   onOpen: () => void
 }
+interface AddEditCustomListModalProps {
+  isEdit: boolean;
 
-const AddCustomListModal = forwardRef<ModalRef>((props, ref) => {
+}
+const AddEditCustomListModal = forwardRef<ModalRef,AddEditCustomListModalProps>((props, ref) => {
+  const { isEdit } = props
   const { isOpen, onOpen, onClose } = useDisclosure()
   const dispatch = useDispatch<AppDispatch>()
   useImperativeHandle(ref, () => ({
     onOpen,
-  }))
+  })) 
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [ids, setIds] = useState("")
@@ -107,4 +111,4 @@ const AddCustomListModal = forwardRef<ModalRef>((props, ref) => {
   )
 })
 
-export default AddCustomListModal
+export default AddEditCustomListModal

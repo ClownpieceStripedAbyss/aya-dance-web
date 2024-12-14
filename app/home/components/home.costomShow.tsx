@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react"
 
 import SongSearch from "@/components/songSearch"
-import SongTable from "@/components/songTable"
+import TableItem from "@/components/songTable/components/tableItem"
 import {
   allSongsFromGroups,
   GenericVideo,
@@ -14,6 +14,7 @@ import { selectCollection } from "@/store/modules/collection"
 import { useSelector } from "react-redux"
 import videosQuery from "@/utils/videosQuery"
 import { selectCustomListStore } from "@/store/modules/customListStore"
+import { ScrollShadow } from "@nextui-org/react"
 
 interface SongShowProps {
   songTypes: GenericVideoGroup[]
@@ -50,13 +51,17 @@ export default function SongShow({
   }, [SortBy, searchKeyword, selectedKey, songTypes])
 
   return (
-    <div className="flex flex-col justify-between " style={{ width: "50vw" }}>
+    <div className="flex flex-col justify-between " style={{ width: "50vw", height: "100%" }}>
       <SongSearch onSearchSubmit={onSearchSubmit} />
-      <SongTable
-        genericVideos={genericVideos}
-        loading={loading}
-        targetKey={selectedKey}
-      />
+      <>
+      <div className="font-bold text-l text-primary mb-4 mt-4 leading-snug">{`${genericVideos.length} Videos in ${selectedKey}`}</div>
+      <ScrollShadow hideScrollBar className="w-full h-[697px]">
+        {genericVideos.map((item, index) => (
+          <TableItem key={index} song={item} />
+        ))}
+      </ScrollShadow>
+      </>
+      
     </div>
   )
 }
