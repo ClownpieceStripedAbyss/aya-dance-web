@@ -65,7 +65,7 @@ const CustomListStoreSlice = createSlice({
       console.log(decompressedData)
       Object.assign(state, decompressedData)
     },
-    addCustomList: (state: CustomPlayListState, action) => {
+    createCustomList: (state: CustomPlayListState, action) => {
       const { name, description, ids } = action.payload
       const [_, targetIndex] = findTargetList(state, name)
 
@@ -107,7 +107,7 @@ const CustomListStoreSlice = createSlice({
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)
     },
-    addASong(state: CustomPlayListState, action) {
+    addSongToCustomList(state: CustomPlayListState, action) {
       const { name, id } = action.payload
       const [target, targetIndex] = findTargetList(state, name)
       if (targetIndex === -1) {
@@ -124,7 +124,7 @@ const CustomListStoreSlice = createSlice({
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)
     },
-    editSongs(state: CustomPlayListState, action) {
+    editSongsInCustomList(state: CustomPlayListState, action) {
       const { name, ids } = action.payload
       if (ids.length === 0) {
         console.log("No song to delete")
@@ -176,9 +176,9 @@ export const selectCustomListStore = createSelector(
 // 导出 actions 和 reducer
 export const {
   getLocalCustomListStore,
-  addASong,
-  editSongs,
-  addCustomList,
+  addSongToCustomList,
+  editSongsInCustomList,
+  createCustomList,
   editCustomList,
   deleteCustomList,
   exportCustomList,

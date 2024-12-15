@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useCallback, useMemo, useState } from "react";
 import { addCollection, removeCollection, selectCollection } from "@/store/modules/collection";
 import { addPlayList, QueueVideo } from "@/store/modules/playList";
-import { addASong, selectCustomListStore } from "@/store/modules/customPlaylist";
+import { addSongToCustomList, selectCustomListStore } from "@/store/modules/customPlaylist";
 import clsx from "clsx";
 
 interface SongTableProps {
@@ -165,7 +165,7 @@ export default function TableItem({
                       <DropdownItem
                         key={name}
                         onClick={() =>
-                          dispatch(addASong({ name, id: song.id }))
+                          dispatch(addSongToCustomList({ name, id: song.id }))
                         }
                       >
                         {name}

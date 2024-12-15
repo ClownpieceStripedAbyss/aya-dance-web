@@ -7,7 +7,7 @@ import SongTable from "@/components/songTable";
 import videosQuery, { findSongEntries, GenericVideo, GenericVideoGroup, SortBy } from "@/types/video";
 import { selectCollection } from "@/store/modules/collection";
 import { useDispatch, useSelector } from "react-redux";
-import { editSongs, selectCustomListStore } from "@/store/modules/customPlaylist";
+import { editSongsInCustomList, selectCustomListStore } from "@/store/modules/customPlaylist";
 import Sortable from "sortablejs";
 
 interface SongShowProps {
@@ -104,7 +104,7 @@ export default function SongShow({
       // initialize edit mode
       setStagedVideos(genericVideos.map(x => ({ video: x, delete: false }) as EditingVideo));
     } else {
-      dispatch(editSongs({
+      dispatch(editSongsInCustomList({
         name: selectedKey,
         ids: stagedVideos.filter(x => !x.delete).map(x => x.video.id)
       }));

@@ -15,7 +15,7 @@ import {
 } from "@nextui-org/react";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { addCustomList, editCustomList } from "@/store/modules/customPlaylist";
+import { createCustomList, editCustomList } from "@/store/modules/customPlaylist";
 import { AppDispatch } from "@/store";
 
 export interface ModalRef {
@@ -71,7 +71,7 @@ const AddEditCustomListModal = forwardRef<ModalRef>((_, ref) => {
       toast.success("歌单修改成功")
       return close()
     }
-    dispatch(addCustomList(target))
+    dispatch(createCustomList(target))
     toast.success("歌单添加成功")
     close()
   }

@@ -3,6 +3,13 @@ import { addPlayList, nextVideo, nextVideoWithRandom, removePlayList, topSong } 
 import _ from "lodash";
 import channel, { PlayListMessage } from "@/utils/channel";
 import { setLockedRandomGroup } from "@/store/modules/playOptions";
+import {
+  addSongToCustomList,
+  createCustomList,
+  deleteCustomList,
+  editCustomList,
+  editSongsInCustomList
+} from "@/store/modules/customPlaylist";
 
 const sendPlayListMiddleware: Middleware = (store) => (next) => (action) => {
   // 获取执行action前后状态用于比对
@@ -12,16 +19,23 @@ const sendPlayListMiddleware: Middleware = (store) => (next) => (action) => {
   const nextPlayList = store.getState().PlayList?.playList;
   const nextPlayOptions = store.getState().PlayOptions;
 
-  if (
-    isAnyOf(addPlayList, removePlayList, topSong, nextVideo, nextVideoWithRandom, setLockedRandomGroup)(action) &&
+  let resyncIfPlayListChanged = isAnyOf(addPlayList, removePlayList, topSong, nextVideo, nextVideoWithRandom, setLockedRandomGroup)(action) &&
     isAnyOf(previousPlayList &&
       nextPlayList &&
       previousPlayList !== nextPlayList,
       previousPlayOptions &&
       nextPlayOptions &&
       previousPlayOptions !== nextPlayOptions
-    )
-  ) {
+    );
+  let resyncIfCustomPlayListChanged = isAnyOf(
+    addSongToCustomList,
+    editSongsInCustomList,
+    createCustomList,
+    editCustomList,
+    deleteCustomList,
+  )(action)
+
+  if (resyncIfPlayListChanged || resyncIfCustomPlayListChanged) {
     console.log("Shared status changed, re-syncing");
     channel.postMessage({
       action: "currentPlayList",
