@@ -1,19 +1,16 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { useDispatch, useSelector } from "react-redux"
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import {
-  fetchWannaInfoMultidataAction,
-  getLocalSongInfo,
-} from "@/store/modules/songInfo"
-import { getLocalCustomListStore } from "@/store/modules/customListStore"
-import { initCollection } from "@/store/modules/collection"
-import { AppDispatch } from "@/store"
-import { initPlayList, selectPlayList } from "@/store/modules/playList"
-import _ from "lodash"
-import channel, { PlayListMessage } from "@/utils/channel"
-import { initPlayOptions } from "@/store/modules/playOptions"
+import { fetchWannaInfoMultidataAction, getLocalSongInfo } from "@/store/modules/songInfo";
+import { getLocalCustomListStore } from "@/store/modules/customPlaylist";
+import { initCollection } from "@/store/modules/collection";
+import { AppDispatch } from "@/store";
+import { initPlayList, selectPlayList } from "@/store/modules/playList";
+import _ from "lodash";
+import channel, { PlayListMessage } from "@/utils/channel";
+import { initPlayOptions } from "@/store/modules/playOptions";
 
 export function DataInitializer() {
   const dispatch = useDispatch<AppDispatch>()

@@ -1,36 +1,32 @@
-import { createSlice } from "@reduxjs/toolkit"
-import { createSelector } from "reselect"
+import { createSlice } from "@reduxjs/toolkit";
+import { createSelector } from "reselect";
 
-import { RootState } from "../index"
-import { LoadFromStorage, SaveToStorage } from "@/utils/local"
-import { toast } from "react-toastify"
+import { RootState } from "../index";
+import { LoadFromStorage, SaveToStorage } from "@/utils/local";
+import { toast } from "react-toastify";
+import { CustomPlayList } from "@/types/customPlayList";
 
 // local storage key
-const CUSTOM_LIST_KEY = "CustomListStore"
+const CUSTOM_LIST_KEY = "CustomPlayList"
 // local storage format version, bump this if the type `CustomList` changes
 const CUSTOM_LIST_VERSION = 1
 
-export interface CustomListStore {
+export interface CustomPlayListState {
   updatedAt: string
-  content: CustomList[]
+  content: CustomPlayList[]
   version?: number
 }
 
-export interface CustomList {
-  name: string
-  description: string
-  ids: number[]
-}
-
-const initialState: CustomListStore = {
+const initialState: CustomPlayListState = {
   updatedAt: "-1",
   content: [],
   version: CUSTOM_LIST_VERSION,
 }
+
 function findTargetList(
-  state: CustomListStore,
+  state: CustomPlayListState,
   name: string
-): [CustomList, number] {
+): [CustomPlayList, number] {
   const targetIndex = state.content.findIndex((item) => item.name === name)
   if (targetIndex === -1) {
     console.log(`CustomList ${name} not found`)
@@ -45,29 +41,31 @@ function findTargetList(
   }
   return [state.content[targetIndex], targetIndex]
 }
-function saveLocalCustomListStore(state: CustomListStore) {
+
+function saveLocalCustomListStore(state: CustomPlayListState) {
   SaveToStorage(CUSTOM_LIST_KEY, state)
   console.log(state)
 }
+
 const CustomListStoreSlice = createSlice({
   name: "customListStore",
   initialState,
   reducers: {
-    getLocalCustomListStore: (state: CustomListStore) => {
-      const decompressedData = LoadFromStorage<CustomListStore>(CUSTOM_LIST_KEY)
+    getLocalCustomListStore: (state: CustomPlayListState) => {
+      const decompressedData = LoadFromStorage<CustomPlayListState>(CUSTOM_LIST_KEY)
       if (!decompressedData) {
-        console.log("No CustomListStore info in local storage")
+        console.log("No CustomPlayList info in local storage")
         return
       }
       if (decompressedData?.version !== CUSTOM_LIST_VERSION) {
-        console.log("Local CustomListStore info version mismatch, dropping")
+        console.log("Local CustomPlayList info version mismatch, dropping")
         return
       }
-      console.log("Loaded CustomListStore info from local storage")
+      console.log("Loaded CustomPlayList info from local storage")
       console.log(decompressedData)
       Object.assign(state, decompressedData)
     },
-    addCustomList: (state: CustomListStore, action) => {
+    addCustomList: (state: CustomPlayListState, action) => {
       const { name, description, ids } = action.payload
       const [_, targetIndex] = findTargetList(state, name)
 
@@ -82,7 +80,7 @@ const CustomListStoreSlice = createSlice({
       saveLocalCustomListStore(state)
     },
 
-    editCustomList: (state: CustomListStore, action) => {
+    editCustomList: (state: CustomPlayListState, action) => {
       const { name, description, ids, originName } = action.payload
       const [_, targetIndex] = findTargetList(state, name)
 
@@ -96,7 +94,7 @@ const CustomListStoreSlice = createSlice({
       saveLocalCustomListStore(state)
     },
 
-    deleteCustomList: (state: CustomListStore, action) => {
+    deleteCustomList: (state: CustomPlayListState, action) => {
       const name = action.payload
       const [_, targetIndex] = findTargetList(state, name)
 
@@ -109,7 +107,7 @@ const CustomListStoreSlice = createSlice({
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)
     },
-    addASong(state: CustomListStore, action) {
+    addASong(state: CustomPlayListState, action) {
       const { name, id } = action.payload
       const [target, targetIndex] = findTargetList(state, name)
       if (targetIndex === -1) {
@@ -126,7 +124,7 @@ const CustomListStoreSlice = createSlice({
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)
     },
-    editSongs(state: CustomListStore, action) {
+    editSongs(state: CustomPlayListState, action) {
       const { name, ids } = action.payload
       if (ids.length === 0) {
         console.log("No song to delete")
@@ -142,7 +140,7 @@ const CustomListStoreSlice = createSlice({
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)
     },
-    exportCustomList: (state: CustomListStore, action) => {
+    exportCustomList: (state: CustomPlayListState, action) => {
       const name = action.payload
       const target = state.content.find((item) => item.name === name)
       if (!target) {

@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
 // components/AddCustomListModal.tsx
-import React, { forwardRef, useImperativeHandle, useState } from "react"
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 import {
   Button,
   Input,
@@ -11,12 +11,12 @@ import {
   ModalFooter,
   ModalHeader,
   Textarea,
-  useDisclosure,
-} from "@nextui-org/react"
-import { toast } from "react-toastify"
-import { useDispatch } from "react-redux"
-import { addCustomList, editCustomList } from "@/store/modules/customListStore"
-import { AppDispatch } from "@/store"
+  useDisclosure
+} from "@nextui-org/react";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { addCustomList, editCustomList } from "@/store/modules/customPlaylist";
+import { AppDispatch } from "@/store";
 
 export interface ModalRef {
   onOpen: (formModel?: {

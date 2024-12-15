@@ -1,24 +1,16 @@
-"use client"
+"use client";
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react";
 
-import SongSearch from "@/components/songSearch"
-import TableItem from "@/components/songTable/components/tableItem"
-import {
-  allSongsFromGroups,
-  GenericVideo,
-  GenericVideoGroup,
-  SortBy,
-} from "@/types/video"
-import { useDispatch, useSelector } from "react-redux"
-import videosQuery from "@/utils/videosQuery"
-import {
-  editSongs,
-  selectCustomListStore,
-} from "@/store/modules/customListStore"
-import { Button, ScrollShadow } from "@nextui-org/react"
-import { Check, Edit } from "@/assets/icon"
-import Sortable from "sortablejs"
+import SongSearch from "@/components/songSearch";
+import TableItem from "@/components/songTable/components/tableItem";
+import { allSongsFromGroups, GenericVideo, GenericVideoGroup, SortBy } from "@/types/video";
+import { useDispatch, useSelector } from "react-redux";
+import videosQuery from "@/utils/videosQuery";
+import { editSongs, selectCustomListStore } from "@/store/modules/customPlaylist";
+import { Button, ScrollShadow } from "@nextui-org/react";
+import { Check, Edit } from "@/assets/icon";
+import Sortable from "sortablejs";
 
 interface SongShowProps {
   songTypes: GenericVideoGroup[]

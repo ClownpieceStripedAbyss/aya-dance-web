@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Key, useEffect, useMemo, useRef, useState } from "react"
+import { Key, useEffect, useMemo, useRef, useState } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -18,23 +18,17 @@ import {
   ScrollShadow,
   Skeleton,
   Textarea,
-  useDisclosure,
-} from "@nextui-org/react"
+  useDisclosure
+} from "@nextui-org/react";
 
-import styles from "./index.module.css"
-import { findSongById, GenericVideoGroup } from "@/types/video"
-import { Button } from "@nextui-org/button"
-import { useDispatch, useSelector } from "react-redux"
-import { addCollection, selectCollection } from "@/store/modules/collection"
-import { ExportIcon, MoreIcon } from "@/assets/icon"
-import AddCustomListModal, {
-  ModalRef,
-} from "./components/AddEditCustomListModal"
-import {
-  deleteCustomList,
-  exportCustomList,
-  selectCustomListStore,
-} from "@/store/modules/customListStore"
+import styles from "./index.module.css";
+import { findSongById, GenericVideoGroup } from "@/types/video";
+import { Button } from "@nextui-org/button";
+import { useDispatch, useSelector } from "react-redux";
+import { addCollection, selectCollection } from "@/store/modules/collection";
+import { ExportIcon, MoreIcon } from "@/assets/icon";
+import AddCustomListModal, { ModalRef } from "./components/AddEditCustomListModal";
+import { deleteCustomList, exportCustomList, selectCustomListStore } from "@/store/modules/customPlaylist";
 
 // À la carte
 const CARTE = "À la carte"
