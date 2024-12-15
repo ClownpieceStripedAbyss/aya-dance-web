@@ -10,7 +10,6 @@ import {
   GenericVideoGroup,
   SortBy,
 } from "@/types/video"
-import { selectCollection } from "@/store/modules/collection"
 import { useSelector } from "react-redux"
 import videosQuery from "@/utils/videosQuery"
 import { selectCustomListStore } from "@/store/modules/customListStore"
@@ -48,20 +47,22 @@ export default function SongShow({
     const searchEntries = videosQuery(targetEntries, searchKeyword)
 
     setGenericVideos(searchEntries || [])
-  }, [SortBy, searchKeyword, selectedKey, songTypes])
+  }, [searchKeyword, selectedKey, songTypes, customListStore.updatedAt])
 
   return (
-    <div className="flex flex-col justify-between " style={{ width: "50vw", height: "100%" }}>
+    <div
+      className="flex flex-col justify-between "
+      style={{ width: "50vw", height: "100%" }}
+    >
       <SongSearch onSearchSubmit={onSearchSubmit} />
       <>
-      <div className="font-bold text-l text-primary mb-4 mt-4 leading-snug">{`${genericVideos.length} Videos in ${selectedKey}`}</div>
-      <ScrollShadow hideScrollBar className="w-full h-[697px]">
-        {genericVideos.map((item, index) => (
-          <TableItem key={index} song={item} />
-        ))}
-      </ScrollShadow>
+        <div className="font-bold text-l text-primary mb-4 mt-4 leading-snug">{`${genericVideos.length} Videos in ${selectedKey}`}</div>
+        <ScrollShadow hideScrollBar className="w-full h-[697px]">
+          {genericVideos.map((item, index) => (
+            <TableItem key={index} song={item} />
+          ))}
+        </ScrollShadow>
       </>
-      
     </div>
   )
 }

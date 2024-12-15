@@ -26,9 +26,15 @@ import { findSongById, GenericVideoGroup } from "@/types/video"
 import { Button } from "@nextui-org/button"
 import { useDispatch, useSelector } from "react-redux"
 import { addCollection, selectCollection } from "@/store/modules/collection"
-import { ExportIcon } from "@/assets/icon"
-import AddCustomListModal, { ModalRef } from "./components/AddCustomListModal"
-import { selectCustomListStore } from "@/store/modules/customListStore"
+import { ExportIcon, MoreIcon } from "@/assets/icon"
+import AddCustomListModal, {
+  ModalRef,
+} from "./components/AddEditCustomListModal"
+import {
+  deleteCustomList,
+  exportCustomList,
+  selectCustomListStore,
+} from "@/store/modules/customListStore"
 
 // À la carte
 const CARTE = "À la carte"
@@ -100,9 +106,7 @@ export default function SongTypeSelector({
       return
     }
 
-    const carteItems =
-      songTypeOptions.find((x) => x.major === CARTE)?.items ?? []
-    const isCarte = carteItems.some((item) => item.key === selectedKey)
+    const isCarte = customListStore.names.has(selectedKey)
 
     onSelectionChange(selectedKey, isCarte)
   }, [selectedKeys])
@@ -149,7 +153,8 @@ export default function SongTypeSelector({
     }
   }
 
-  const handleDropdownAction = (key: Key) => {
+  const handleDropdownAction = (key: Key, value?: string) => {
+    console.log(key, value)
     switch (key) {
       case "import-favorite":
         onImportOpen()
@@ -159,6 +164,15 @@ export default function SongTypeSelector({
         break
       case "export-favorite-list":
         onExportListOpen()
+        break
+      case "custom-delete":
+        dispatch(deleteCustomList(value))
+        break
+      case "custom-edit":
+        handleEditCustomList(value || "")
+        break
+      case "custom-export":
+        dispatch(exportCustomList(value))
         break
       default:
         break
@@ -170,8 +184,24 @@ export default function SongTypeSelector({
   function handleAddCustomList() {
     modalRef.current?.onOpen()
   }
+  // 修改歌单
+  function handleEditCustomList(name: string) {
+    const target = customListStore.content.find((item) => item.name === name)
+    console.log(target, "target")
+    modalRef.current?.onOpen({
+      name: target?.name || "",
+      description: target?.description || "",
+      ids: target?.ids.join(",") || "",
+    })
+  }
 
-  const makeGroupItem = (item: { key: string; label: string }) => {
+  const makeGroupItem = (
+    item: {
+      key: string
+      label: string
+    },
+    major: string
+  ) => {
     return (
       <ListboxItem
         key={item.key}
@@ -179,39 +209,70 @@ export default function SongTypeSelector({
         className={`${styles.customListboxItem}`}
       >
         {(() => {
-          switch (item.key) {
-            case "Favorites":
-              return (
-                <div className={`${styles.favoriteRow}`}>
-                  {item.label}
-                  <Dropdown>
-                    <DropdownTrigger>
-                      <span>
-                        <ExportIcon size={18} />
-                      </span>
-                    </DropdownTrigger>
-                    <DropdownMenu
-                      variant="light"
-                      hideSelectedIcon
-                      onAction={(e) => handleDropdownAction(e)}
-                    >
-                      <DropdownItem key="export-favorite">
-                        导出收藏
-                      </DropdownItem>
-                      <DropdownItem key="import-favorite">
-                        导入收藏
-                      </DropdownItem>
-                      <DropdownItem key="export-favorite-list">
-                        导出歌曲列表
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
-                </div>
-              )
-            case "CustomList":
-              return <div onClick={handleAddCustomList}>{item.label}</div>
-            default:
-              return item.label
+          if (major === CARTE) {
+            switch (item.key) {
+              case "All Songs":
+                return item.label
+              case "Favorites":
+                return (
+                  <div className={`${styles.favoriteRow}`}>
+                    {item.label}
+                    <Dropdown>
+                      <DropdownTrigger>
+                        <span>
+                          <ExportIcon size={18} />
+                        </span>
+                      </DropdownTrigger>
+                      <DropdownMenu
+                        variant="light"
+                        hideSelectedIcon
+                        onAction={(e) => handleDropdownAction(e)}
+                      >
+                        <DropdownItem key="export-favorite">
+                          导出收藏
+                        </DropdownItem>
+                        <DropdownItem key="import-favorite">
+                          导入收藏
+                        </DropdownItem>
+                        <DropdownItem key="export-favorite-list">
+                          导出歌曲列表
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </div>
+                )
+              case "CustomList":
+                return <div onClick={handleAddCustomList}>{item.label}</div>
+              default:
+                // 自定义歌单
+                return (
+                  <div className={`${styles.favoriteRow}`}>
+                    {item.label}
+                    <Dropdown>
+                      <DropdownTrigger>
+                        <span>
+                          <MoreIcon size={18} />
+                        </span>
+                      </DropdownTrigger>
+                      <DropdownMenu
+                        variant="light"
+                        hideSelectedIcon
+                        onAction={(e) => handleDropdownAction(e, item.key)}
+                      >
+                        <DropdownItem key="custom-delete">
+                          删除歌单
+                        </DropdownItem>
+                        <DropdownItem key="custom-edit">修改歌单</DropdownItem>
+                        <DropdownItem key="custom-export">
+                          导出歌单
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </Dropdown>
+                  </div>
+                )
+            }
+          } else {
+            return item.label
           }
         })()}
       </ListboxItem>
@@ -273,7 +334,7 @@ export default function SongTypeSelector({
                     }
                   }}
                 >
-                  {makeGroupItem}
+                  {(item) => makeGroupItem(item, group.major)}
                 </Listbox>
               </AccordionItem>
             ))}
