@@ -75,8 +75,9 @@ export default function SongTable({
   };
 
   const itemsView = () => {
+    const videos = isEditMode ? genericVideos : items;
     return (
-      items.map((item, index) => (
+      videos.map((item, index) => (
         <TableItem
           key={index}
           song={item}
