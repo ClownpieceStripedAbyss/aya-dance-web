@@ -105,7 +105,7 @@ export default function SongShow({ songTypes, selectedKey }: SongShowProps) {
   return (
     <div
       className="flex flex-col justify-between"
-      style={{ width: "50vw", height: "100%" }}
+      style={{ width: "50vw" }}
     >
       <SongSearch onSearchSubmit={onSearchSubmit} />
       <>

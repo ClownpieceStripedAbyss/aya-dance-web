@@ -77,7 +77,7 @@ export default function SongShow({
   }, [SortBy, searchKeyword, selectedKey, songTypes, collection])
 
   return (
-    <div className="flex flex-col justify-between " style={{ width: "50vw" ,height: "100%"}}>
+    <div className="flex flex-col justify-between " style={{ width: "50vw" }}>
       <SongSearch onSearchSubmit={onSearchSubmit} />
       <SongTable
         genericVideos={genericVideos}
