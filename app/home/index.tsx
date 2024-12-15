@@ -1,15 +1,14 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useSelector } from "react-redux"
+import { useState } from "react";
+import { useSelector } from "react-redux";
 
-import SongShow from "./components/home.songShow"
-import CostomShow from "./components/home.costomShow"
-import PlayList from "./components/home.playList"
+import SongShow from "./components/home.songShow";
+import PlayList from "./components/home.playList";
 
-import SongTypeSelector from "@/components/songTypeSelector"
+import SongTypeSelector from "@/components/songTypeSelector";
 
-import { selectSongInfo } from "@/store/modules/songInfo"
+import { selectSongInfo } from "@/store/modules/songInfo";
 
 export default function HomeBlock() {
   // 获取redux数据
@@ -30,21 +29,13 @@ export default function HomeBlock() {
         songTypes={songTypes}
         onSelectionChange={onSelectionChange}
       />
-      {!isCustom ? (
-        <SongShow
-          SortBy={sortBy}
-          loading={loading}
-          selectedKey={selectedKey}
-          songTypes={songTypes}
-        />
-      ) : (
-        <CostomShow
-          SortBy={sortBy}
-          loading={loading}
-          selectedKey={selectedKey}
-          songTypes={songTypes}
-        />
-      )}
+      <SongShow
+        SortBy={sortBy}
+        loading={loading}
+        selectedKey={selectedKey}
+        songTypes={songTypes}
+        isCustomPlaylist={isCustom}
+      />
       <PlayList />
     </div>
   )

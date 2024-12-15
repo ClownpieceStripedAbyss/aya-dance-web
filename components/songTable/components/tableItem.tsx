@@ -27,32 +27,15 @@ import clsx from "clsx";
 interface SongTableProps {
   song: GenericVideo
   isEdit?: boolean
-  toBeDeleted?: (id: number) => void
+  handleDelete?: (id: GenericVideo) => void
 }
 
 export default function TableItem({
   song,
   isEdit,
-  toBeDeleted,
+  handleDelete,
 }: SongTableProps) {
   var url = `https://api.udon.dance/Api/Songs/play?id=${song.id}`
-  // video
-  // const handleOpenVideo = () => {
-  //   // 设置视频的源
-  //   const win = window.open("", "_blank", "noopener=false") as Window
-  //
-  //   win.document.write(`
-  //     <!DOCTYPE html>
-  //     <html style="width:100%;height:100%;margin:0;padding:0;">
-  //     <body style="width:100%;height:100%;margin:0;padding:0;overflow:hidden;">
-  //       <video style="width:100%;height:100%;object-fit:cover;" autoplay controls>
-  //         <source src="${url}" type="video/mp4">
-  //         您的浏览器不支持 HTML5 video 标签。
-  //       </video>
-  //     </body>
-  //     </html>
-  //   `)
-  // }
   const videoThumbnailUrl = (video: GenericVideo): string => {
     if (!video) return ""
 
@@ -199,7 +182,7 @@ export default function TableItem({
                   aria-label="collection"
                   onClick={() => {
                     setIsDelete(!isDelete)
-                    toBeDeleted && toBeDeleted(song.id)
+                    handleDelete && handleDelete(song)
                   }}
                 >
                   <Delete className="w-6 h-6 text-black dark:text-white" />
