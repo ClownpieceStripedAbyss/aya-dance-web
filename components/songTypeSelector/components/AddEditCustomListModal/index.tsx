@@ -120,6 +120,7 @@ const AddEditCustomListModal = forwardRef<ModalRef>((_, ref) => {
                     .replace(/，/g, ",")
                     .replace(/\s+/g, "")
                     .replace(/[^0-9,]/g, "")
+                    .replace(/,+/g, ",")
                   setIds(filtered)
                 }}
               />
