@@ -10,9 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 import videosQuery from "@/utils/videosQuery";
 import { editSongs, selectCustomListStore } from "@/store/modules/customPlaylist";
 import Sortable from "sortablejs";
-import { Button, ScrollShadow } from "@nextui-org/react";
-import { Check, Edit } from "@/assets/icon";
-import TableItem from "@/components/songTable/components/tableItem";
 
 interface SongShowProps {
   songTypes: GenericVideoGroup[]
@@ -117,21 +114,6 @@ export default function SongShow({
     setIsEditMode(edit);
   };
 
-  const customPlaylistItems = () => {
-    return (
-      <>
-        {genericVideos.map((item, index) => (
-          <TableItem
-            key={index}
-            song={item}
-            isEdit={isEditMode}
-            handleDelete={handleDelete}
-          />
-        ))}
-      </>
-    );
-  };
-
   // General routine for filtering and sorting on the selected key
   useMemo(() => {
     // 收藏逻辑
@@ -150,8 +132,6 @@ export default function SongShow({
       targetEntries = songTypes.find((item) => item.title === selectedKey)?.entries
         || [];
     }
-    // 添加收藏
-
     const searchEntries = videosQuery(targetEntries, searchKeyword);
     const sortedEntries = isCustomPlaylist ? searchEntries : videoSort(searchEntries, SortBy);
 
@@ -161,45 +141,15 @@ export default function SongShow({
   return (
     <div className="flex flex-col justify-between " style={{ width: "50vw" }}>
       <SongSearch onSearchSubmit={onSearchSubmit} />
-      {isCustomPlaylist ? (
-        <>
-          <div className="flex justify-between items-center">
-            <div
-              className="font-bold text-l text-primary mb-4 mt-4 leading-snug">{`${genericVideos.length} Videos in ${selectedKey}`}</div>
-            <Button
-              isIconOnly
-              color="default"
-              variant="light"
-              aria-label="collection"
-              onClick={() => switchEditMode(!isEditMode)}
-            >
-              {isEditMode ? (
-                <Check className="w-6 h-6 text-black dark:text-white" />
-              ) : (
-                <Edit className="w-6 h-6 text-black dark:text-white" />
-              )}
-            </Button>
-          </div>
-          {isEditMode ? (
-            <div className="sortable-list w-full h-[697px]">
-              {customPlaylistItems()}
-            </div>
-          ) : (
-            <ScrollShadow hideScrollBar className="w-full h-[697px]">
-              {customPlaylistItems()}
-            </ScrollShadow>
-          )}
-        </>
-
-      ) : (
-
-        <SongTable
-          genericVideos={genericVideos}
-          loading={loading}
-          targetKey={selectedKey}
-        />
-
-      )}
+      <SongTable
+        genericVideos={genericVideos}
+        loading={loading}
+        targetKey={selectedKey}
+        isCustomPlaylist={isCustomPlaylist}
+        isEditMode={isCustomPlaylist && isEditMode}
+        handleItemDelete={handleDelete}
+        switchEditMode={isCustomPlaylist ? switchEditMode : undefined}
+      />
     </div>
   );
 }
