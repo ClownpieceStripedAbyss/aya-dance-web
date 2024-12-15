@@ -68,7 +68,10 @@ export default function SongTable({
   ];
 
   const handleLockRandom = (locked: boolean) => {
-    dispatch(setLockedRandomGroup(locked ? targetKey : null));
+    dispatch(setLockedRandomGroup(locked
+      ? { group: targetKey, isCustom: isCustomPlaylist }
+      : null
+    ));
   };
 
   const itemsView = () => {
@@ -154,7 +157,7 @@ export default function SongTable({
           )}
           <Checkbox
             className="ml-2"
-            isSelected={targetKey === lockedRandomGroup}
+            isSelected={!!lockedRandomGroup && targetKey === lockedRandomGroup.group && isCustomPlaylist === lockedRandomGroup.isCustom}
             onValueChange={handleLockRandom}
           >
             锁定随机

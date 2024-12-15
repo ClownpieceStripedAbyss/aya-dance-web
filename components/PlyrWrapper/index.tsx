@@ -8,7 +8,9 @@ import styles from "./index.module.css";
 import { selectSongInfo } from "@/store/modules/songInfo";
 import { Spinner } from "@nextui-org/react";
 import { getPlayOptions, selectPlayOptions } from "@/store/modules/playOptions";
-import { GenericVideo } from "@/types/video";
+import { findSongEntries, GenericVideo } from "@/types/video";
+import { selectCollection } from "@/store/modules/collection";
+import { selectCustomListStore } from "@/store/modules/customPlaylist";
 
 enum DoubleWidthShowMode {
   Both, Original, Simplified
@@ -29,17 +31,20 @@ const formatDoubleWidthShowMode = (mode: DoubleWidthShowMode) => {
 };
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
-  const { playList } = useSelector(selectPlayList);
+  const { playList, version } = useSelector(selectPlayList);
   const { songTypes } = useSelector(selectSongInfo);
+  const collection = useSelector(selectCollection);
+  const customList = useSelector(selectCustomListStore);
   const { lockedRandomGroup } = useSelector(selectPlayOptions);
   const dispatch = useDispatch();
+
   const queue = useMemo(() => playList[0] ?? null, [playList]);
-  const lockedRandomGroupOrAll = lockedRandomGroup && songTypes.find(t => t.title === lockedRandomGroup)
-    ? lockedRandomGroup
+  const lockedRandomGroupOrAll = lockedRandomGroup && findSongEntries(songTypes, lockedRandomGroup.group, lockedRandomGroup.isCustom, collection, customList).length > 0
+    ? lockedRandomGroup.group
     : "All Songs";
-  const onVideoEnded = (randomGroup: GenericVideo["group"] | null) => {
+  const onVideoEnded = (randomGroup: GenericVideo[]) => {
     console.log(`OnVideoEnded: Handle next random range: ${randomGroup}`)
-    dispatch(nextVideoWithRandom(songTypes.find(t => t.title === randomGroup)?.entries ?? []));
+    dispatch(nextVideoWithRandom(randomGroup));
   };
   const [doubleWidthShowMode, setDoubleWidthShowMode] = useState<DoubleWidthShowMode>(DoubleWidthShowMode.Original);
 
@@ -78,12 +83,19 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
         // TODO: workaround JavaScript unreasonable capturing behavior
         const options = getPlayOptions();
         const group = options?.lockedRandomGroup ?? null;
-        const groupOrAll = lockedRandomGroup && songTypes.find(t => t.title === group)
-          ? group
-          : "All Songs";
+        let nextEntries: GenericVideo[] = [];
+        const computeAllSongs = () => findSongEntries(songTypes, "All Songs", false, collection, customList);
+        if (lockedRandomGroup) {
+          const lockedRandomEntries = findSongEntries(songTypes, lockedRandomGroup.group, lockedRandomGroup.isCustom, collection, customList);
+          nextEntries = lockedRandomEntries.length > 0
+            ? lockedRandomEntries
+            : computeAllSongs();
+        } else {
+          nextEntries = computeAllSongs();
+        }
         // TODO: end workaround
 
-        onVideoEnded(groupOrAll);
+        onVideoEnded(nextEntries);
         if (spinnerRef.current) spinnerRef.current.style.display = "block";
         setWaitCountDown(MAX_WAIT_COUNT_DOWN);
         internalCounter++;
@@ -138,7 +150,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       if (overlayRef.current) plyrContainer?.append(overlayRef.current);
       if (spinnerRef.current) plyrContainer?.append(spinnerRef.current);
     }
-  }, [videoUrl]);
+  }, [videoUrl, version]);
 
   const muteAndUnmuteAfterDelay = (delay = 1000) => {
     if (plyrInstance.current) {

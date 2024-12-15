@@ -6,7 +6,13 @@ import type { GenericVideo } from "@/types/video";
 export const OPTION_KEY = "play_options"
 
 export interface PlayOptions {
-   lockedRandomGroup: GenericVideo["group"] | null
+  lockedRandomGroup: SetLockedRandomGroupPayload | null,
+}
+
+// I NEED ADT and pattern matching!!!
+export interface SetLockedRandomGroupPayload {
+  group: GenericVideo["group"]
+  isCustom: boolean
 }
 
 const initialState: PlayOptions = {
@@ -40,7 +46,7 @@ const PlayOptionSlice = createSlice({
       const localOptions = getPlayOptions()
       state.lockedRandomGroup = localOptions?.lockedRandomGroup ?? null
     },
-    setLockedRandomGroup: (state, action: PayloadAction<GenericVideo["group"] | null>) => {
+    setLockedRandomGroup: (state, action: PayloadAction<SetLockedRandomGroupPayload | null>) => {
       state.lockedRandomGroup = action.payload
       savePlayOptions(state)
     }

@@ -1,9 +1,9 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { createSelector } from "reselect"
-import type { GenericVideo } from "@/types/video"
-import { toast } from "react-toastify"
-import { RootState } from "@/store"
-import _ from "lodash"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector } from "reselect";
+import type { GenericVideo } from "@/types/video";
+import { toast } from "react-toastify";
+import { RootState } from "@/store";
+import _ from "lodash";
 
 export interface QueueVideo {
   video: GenericVideo
@@ -11,11 +11,13 @@ export interface QueueVideo {
 }
 
 interface PlayListState {
-  playList: QueueVideo[]
+  playList: QueueVideo[],
+  version: number,
 }
 
 const initialState: PlayListState = {
   playList: [],
+  version: 1,
 }
 
 const PlayListSlice = createSlice({
@@ -27,6 +29,7 @@ const PlayListSlice = createSlice({
       if (!playList || playList.length === 0)
         return console.warn("playList is empty")
       state.playList = playList
+      state.version += 1
     },
     addPlayList: (state, action: PayloadAction<QueueVideo>) => {
       const video = action.payload
@@ -37,6 +40,7 @@ const PlayListSlice = createSlice({
         return
       }
       state.playList = [...state.playList, video]
+      state.version += 1
     },
     removePlayList: (state, action: PayloadAction<QueueVideo>) => {
       const video = action.payload
@@ -44,6 +48,7 @@ const PlayListSlice = createSlice({
       state.playList = state.playList.filter(
         (item) => item.video.id !== video.video.id
       )
+      state.version += 1
     },
     topSong: (state, action: PayloadAction<QueueVideo>) => {
       const video = action.payload
@@ -63,6 +68,7 @@ const PlayListSlice = createSlice({
       state.playList.splice(index, 1)
       state.playList.splice(1, 0, video)
       state.playList = _.cloneDeep(state.playList)
+      state.version += 1
     },
     nextVideo: (state) => {
       if (state.playList.length === 0) {
@@ -71,6 +77,7 @@ const PlayListSlice = createSlice({
       }
       state.playList.shift()
       state.playList = _.cloneDeep(state.playList)
+      state.version += 1
     },
     nextVideoWithRandom: (state, action: PayloadAction<GenericVideo[]>) => {
       // the video ended is the last video in the playList,
@@ -83,10 +90,12 @@ const PlayListSlice = createSlice({
         const randomIndex = Math.floor(Math.random() * videos.length)
         const video = videos[randomIndex]
         state.playList = _.cloneDeep([{ video, isRandom: true }])
+        state.version += 1
         return
       }
       state.playList.shift()
       state.playList = _.cloneDeep(state.playList)
+      state.version += 1
     },
   },
 })
@@ -97,6 +106,7 @@ export const selectPlayList = createSelector(
   (PlayList) => {
     return {
       playList: [...PlayList.playList],
+      version: PlayList.version,
     }
   }
 )

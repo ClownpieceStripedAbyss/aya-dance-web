@@ -4,10 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 
 import SongSearch from "@/components/songSearch";
 import SongTable from "@/components/songTable";
-import { allSongsFromGroups, GenericVideo, GenericVideoGroup, SortBy } from "@/types/video";
+import videosQuery, { findSongEntries, GenericVideo, GenericVideoGroup, SortBy } from "@/types/video";
 import { selectCollection } from "@/store/modules/collection";
 import { useDispatch, useSelector } from "react-redux";
-import videosQuery from "@/utils/videosQuery";
 import { editSongs, selectCustomListStore } from "@/store/modules/customPlaylist";
 import Sortable from "sortablejs";
 
@@ -116,22 +115,7 @@ export default function SongShow({
 
   // General routine for filtering and sorting on the selected key
   useMemo(() => {
-    // 收藏逻辑
-    let targetEntries: GenericVideo[] = [];
-    if (isCustomPlaylist) {
-      const allSongs = allSongsFromGroups(songTypes);
-      const playList = customList.content.find(item => item.name === selectedKey) || { ids: [] };
-      const songsMap = new Map(allSongs.map((song) => [song.id, song]));
-      targetEntries = playList.ids.map(id => songsMap.get(id)).filter((item): item is GenericVideo => !!item);
-    } else if (selectedKey === "Favorites") {
-      const allSongs = allSongsFromGroups(songTypes);
-      targetEntries = allSongs.filter((item) => {
-        return collection.includes(item.id);
-      });
-    } else {
-      targetEntries = songTypes.find((item) => item.title === selectedKey)?.entries
-        || [];
-    }
+    const targetEntries = findSongEntries(songTypes, selectedKey, isCustomPlaylist, collection, customList);
     const searchEntries = videosQuery(targetEntries, searchKeyword);
     const sortedEntries = isCustomPlaylist ? searchEntries : videoSort(searchEntries, SortBy);
 
