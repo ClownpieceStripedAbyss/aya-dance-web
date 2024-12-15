@@ -27,9 +27,26 @@ const initialState: CustomListStore = {
   content: [],
   version: CUSTOM_LIST_VERSION,
 }
+function findTargetList(
+  state: CustomListStore,
+  name: string
+): [CustomList, number] {
+  const targetIndex = state.content.findIndex((item) => item.name === name)
+  if (targetIndex === -1) {
+    console.log(`CustomList ${name} not found`)
+    return [
+      {
+        name: "",
+        description: "",
+        ids: [],
+      },
+      -1,
+    ]
+  }
+  return [state.content[targetIndex], targetIndex]
+}
 function saveLocalCustomListStore(state: CustomListStore) {
   SaveToStorage(CUSTOM_LIST_KEY, state)
-  console.log("Saved CustomListStore info to local storage")
   console.log(state)
 }
 const CustomListStoreSlice = createSlice({
@@ -52,9 +69,9 @@ const CustomListStoreSlice = createSlice({
     },
     addCustomList: (state: CustomListStore, action) => {
       const { name, description, ids } = action.payload
-      const exists = state.content.some((item) => item.name === name)
+      const [_, targetIndex] = findTargetList(state, name)
 
-      if (exists) {
+      if (targetIndex != -1) {
         console.log(`CustomList ${name} already exists`)
         toast.warn("歌单已存在")
         return
@@ -67,28 +84,61 @@ const CustomListStoreSlice = createSlice({
 
     editCustomList: (state: CustomListStore, action) => {
       const { name, description, ids, originName } = action.payload
-      const index = state.content.findIndex((item) => item.name === originName)
+      const [_, targetIndex] = findTargetList(state, name)
 
-      if (index === -1) {
+      if (targetIndex === -1) {
         console.log(`CustomList ${originName} not found`)
         return
       }
 
-      state.content[index] = { name, description, ids }
+      state.content[targetIndex] = { name, description, ids }
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)
     },
 
     deleteCustomList: (state: CustomListStore, action) => {
       const name = action.payload
-      const index = state.content.findIndex((item) => item.name === name)
+      const [_, targetIndex] = findTargetList(state, name)
 
-      if (index === -1) {
+      if (targetIndex === -1) {
         console.log(`CustomList ${name} not found`)
         return
       }
 
-      state.content.splice(index, 1)
+      state.content.splice(targetIndex, 1)
+      state.updatedAt = new Date().toISOString()
+      saveLocalCustomListStore(state)
+    },
+    addASong(state: CustomListStore, action) {
+      const { name, id } = action.payload
+      const [target, targetIndex] = findTargetList(state, name)
+      if (targetIndex === -1) {
+        console.log(`CustomList ${name} not found`)
+        return
+      }
+      if (target.ids.includes(id)) {
+        console.log(`CustomList ${name} already has song ${id}`)
+        toast.warn("歌单已有该歌曲")
+        return
+      }
+      target.ids.push(id)
+      toast.success("歌曲添加成功")
+      state.updatedAt = new Date().toISOString()
+      saveLocalCustomListStore(state)
+    },
+    editSongs(state: CustomListStore, action) {
+      const { name, ids } = action.payload
+      if (ids.length === 0) {
+        console.log("No song to delete")
+        return
+      }
+      const [_, targetIndex] = findTargetList(state, name)
+      if (targetIndex === -1) {
+        console.log(`CustomList ${name} not found`)
+        return
+      }
+      state.content[targetIndex].ids = ids
+      toast.success("歌单修改成功")
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)
     },
@@ -128,6 +178,8 @@ export const selectCustomListStore = createSelector(
 // 导出 actions 和 reducer
 export const {
   getLocalCustomListStore,
+  addASong,
+  editSongs,
   addCustomList,
   editCustomList,
   deleteCustomList,

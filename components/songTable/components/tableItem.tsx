@@ -1,22 +1,48 @@
-"use client";
+"use client"
 
-import { Badge, Button, Card, CardBody, Image, Link } from "@nextui-org/react";
+import {
+  Badge,
+  Button,
+  Card,
+  CardBody,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Image,
+  Link,
+} from "@nextui-org/react"
 
-import styles from "./tableItem.module.css";
+import styles from "./tableItem.module.css"
 
-import { Heart, HeartFilled, List } from "@/assets/icon";
-import { formatTag, formatTagColor, GenericVideo } from "@/types/video";
-import { useDispatch, useSelector } from "react-redux";
-import { useCallback, useMemo } from "react";
-import { addCollection, removeCollection, selectCollection } from "@/store/modules/collection";
-import { addPlayList, QueueVideo } from "@/store/modules/playList";
+import { Delete, Heart, HeartFilled, List, Plus } from "@/assets/icon"
+import { formatTag, formatTagColor, GenericVideo } from "@/types/video"
+import { useDispatch, useSelector } from "react-redux"
+import { useCallback, useMemo, useState } from "react"
+import {
+  addCollection,
+  removeCollection,
+  selectCollection,
+} from "@/store/modules/collection"
+import { addPlayList, QueueVideo } from "@/store/modules/playList"
+import {
+  addASong,
+  selectCustomListStore,
+} from "@/store/modules/customListStore"
+import clsx from "clsx"
 
 interface SongTableProps {
   song: GenericVideo
+  isEdit?: boolean
+  toBeDeleted?: (id: number) => void
 }
 
-export default function TableItem({ song }: SongTableProps) {
-  var url = `https://api.udon.dance/Api/Songs/play?id=${song.id}`;
+export default function TableItem({
+  song,
+  isEdit,
+  toBeDeleted,
+}: SongTableProps) {
+  var url = `https://api.udon.dance/Api/Songs/play?id=${song.id}`
   // video
   // const handleOpenVideo = () => {
   //   // 设置视频的源
@@ -68,18 +94,22 @@ export default function TableItem({ song }: SongTableProps) {
   }, [dispatch, isCollection, song.id])
 
   const handleAddPlaylist = useCallback(() => {
-    dispatch(addPlayList({
-      video: song,
-      isRandom: false
-    } as QueueVideo))
+    dispatch(
+      addPlayList({
+        video: song,
+        isRandom: false,
+      } as QueueVideo)
+    )
   }, [song])
 
   const outstandingTag =
     song.tag?.find((tag) => tag === "combined-video") ??
     song.tag?.find((tag) => tag === "new")
+  const customListStore = useSelector(selectCustomListStore)
 
+  const [isDelete, setIsDelete] = useState(false)
   return (
-    <div className={styles.tableItem}>
+    <div className={clsx(styles.tableItem, isDelete && styles.grayscale)}>
       <Card className="w-full h-[110px]" shadow="sm">
         <CardBody>
           <div className="w-full h-full flex justify-between items-center">
@@ -119,15 +149,6 @@ export default function TableItem({ song }: SongTableProps) {
               </div>
             </div>
             <div className={`${styles.operation} flex gap-4 items-center`}>
-              {/* <Button
-                isIconOnly
-                aria-label="play"
-                color="default"
-                variant="light"
-                onClick={handleOpenVideo}
-              >
-                <Play className="w-6 h-6 text-black dark:text-white" />
-              </Button> */}
               <Button
                 isIconOnly
                 aria-label="collection"
@@ -151,6 +172,46 @@ export default function TableItem({ song }: SongTableProps) {
               >
                 <List className="w-6 h-6 text-black dark:text-white" />
               </Button>
+              {customListStore.names.size > 0 && (
+                <Dropdown>
+                  <DropdownTrigger>
+                    <Button
+                      isIconOnly
+                      color="default"
+                      variant="light"
+                      aria-label="collection"
+                    >
+                      <Plus className="w-6 h-6 text-black dark:text-white" />
+                    </Button>
+                  </DropdownTrigger>
+                  <DropdownMenu aria-label="Collection Actions">
+                    {Array.from(customListStore.names).map((name) => (
+                      <DropdownItem
+                        key={name}
+                        onClick={() =>
+                          dispatch(addASong({ name, id: song.id }))
+                        }
+                      >
+                        {name}
+                      </DropdownItem>
+                    ))}
+                  </DropdownMenu>
+                </Dropdown>
+              )}
+              {isEdit && (
+                <Button
+                  isIconOnly
+                  color="default"
+                  variant="light"
+                  aria-label="collection"
+                  onClick={() => {
+                    setIsDelete(!isDelete)
+                    toBeDeleted && toBeDeleted(song.id)
+                  }}
+                >
+                  <Delete className="w-6 h-6 text-black dark:text-white" />
+                </Button>
+              )}
             </div>
           </div>
         </CardBody>
