@@ -111,7 +111,6 @@ export default function SongShow({ songTypes, selectedKey }: SongShowProps) {
       <>
         <div className="flex justify-between items-center">
           <div className="font-bold text-l text-primary mb-4 mt-4 leading-snug">{`${genericVideos.length} Videos in ${selectedKey}`}</div>
-          {toBeDeletedIds}
           {!isEdit ? (
             <Button
               isIconOnly
