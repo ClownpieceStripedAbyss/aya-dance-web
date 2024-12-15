@@ -7,8 +7,8 @@ import { nextVideoWithRandom, selectPlayList } from "@/store/modules/playList";
 import styles from "./index.module.css";
 import { selectSongInfo } from "@/store/modules/songInfo";
 import { Spinner } from "@nextui-org/react";
-import { getPlayOptions, selectPlayOptions } from "@/store/modules/playOptions";
-import { findSongEntries, GenericVideo } from "@/types/video";
+import { selectPlayOptions } from "@/store/modules/playOptions";
+import { computeNextQueueCandidates, findSongEntries, GenericVideo } from "@/types/video";
 import { selectCollection } from "@/store/modules/collection";
 import { selectCustomListStore } from "@/store/modules/customPlaylist";
 
@@ -81,18 +81,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
 
       plyrInstance.current.on("ended", () => {
         // TODO: workaround JavaScript unreasonable capturing behavior
-        const options = getPlayOptions();
-        const group = options?.lockedRandomGroup ?? null;
-        let nextEntries: GenericVideo[] = [];
-        const computeAllSongs = () => findSongEntries(songTypes, "All Songs", false, collection, customList);
-        if (lockedRandomGroup) {
-          const lockedRandomEntries = findSongEntries(songTypes, lockedRandomGroup.group, lockedRandomGroup.isCustom, collection, customList);
-          nextEntries = lockedRandomEntries.length > 0
-            ? lockedRandomEntries
-            : computeAllSongs();
-        } else {
-          nextEntries = computeAllSongs();
-        }
+        let nextEntries = computeNextQueueCandidates(songTypes, collection, customList, lockedRandomGroup);
         // TODO: end workaround
 
         onVideoEnded(nextEntries);

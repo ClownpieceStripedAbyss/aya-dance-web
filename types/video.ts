@@ -1,5 +1,6 @@
 import fetchWithDefaults from "@/utils/service";
 import { CustomPlayListState } from "@/store/modules/customPlaylist";
+import { SetLockedRandomGroupPayload } from "@/store/modules/playOptions";
 
 export interface GenericVideoGroup {
   title: string
@@ -109,6 +110,23 @@ export const findSongEntries = (
     return allSongs.filter(x => favoriteIds.includes(x.id));
   } else {
     return songTypes.find(x => x.title === groupName)?.entries || [];
+  }
+}
+
+export const computeNextQueueCandidates = (
+  songTypes: GenericVideoGroup[],
+  favoriteIds: number[],
+  customList: CustomPlayListState,
+  lockedRandomGroup: SetLockedRandomGroupPayload | null,
+) => {
+  const computeAllSongs = () => findSongEntries(songTypes, "All Songs", false, favoriteIds, customList);
+  if (lockedRandomGroup) {
+    const lockedRandomEntries = findSongEntries(songTypes, lockedRandomGroup.group, lockedRandomGroup.isCustom, favoriteIds, customList);
+    return lockedRandomEntries.length > 0
+      ? lockedRandomEntries
+      : computeAllSongs();
+  } else {
+    return computeAllSongs();
   }
 }
 

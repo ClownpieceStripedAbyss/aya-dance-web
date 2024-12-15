@@ -4,11 +4,13 @@ import { Card, CardBody, CardHeader, Divider, ScrollShadow } from "@nextui-org/r
 import { useCallback } from "react";
 import { nextVideoWithRandom, QueueVideo, selectPlayList, topSong } from "@/store/modules/playList";
 import { useDispatch, useSelector } from "react-redux";
-import { formatGenreColor } from "@/types/video";
+import { computeNextQueueCandidates, formatGenreColor } from "@/types/video";
 import Link from "next/link";
 import { Play } from "@/assets/icon";
 import { selectSongInfo } from "@/store/modules/songInfo";
 import { selectPlayOptions } from "@/store/modules/playOptions";
+import { selectCollection } from "@/store/modules/collection";
+import { selectCustomListStore } from "@/store/modules/customPlaylist";
 
 interface PlyaListProps {}
 
@@ -16,6 +18,8 @@ export default function PlayList({}: PlyaListProps) {
   const { playList } = useSelector(selectPlayList)
   const { songTypes } = useSelector(selectSongInfo)
   const { lockedRandomGroup } = useSelector(selectPlayOptions)
+  const collection = useSelector(selectCollection);
+  const customList = useSelector(selectCustomListStore);
   const dispatch = useDispatch()
   const handleTopSong = useCallback(
     (video: QueueVideo) => () => {
@@ -24,11 +28,8 @@ export default function PlayList({}: PlyaListProps) {
     [dispatch]
   )
   const handleNextSong = useCallback(() => {
-    const group = lockedRandomGroup && songTypes.find(t => t.title === lockedRandomGroup)
-      ? lockedRandomGroup
-      : "All Songs";
-    console.log(`Handle next random range: ${group}, options = ${lockedRandomGroup}`)
-    dispatch(nextVideoWithRandom(songTypes.find(t => t.title === group)?.entries ?? []));
+    let nextEntries = computeNextQueueCandidates(songTypes, collection, customList, lockedRandomGroup);
+    dispatch(nextVideoWithRandom(nextEntries));
   }, [dispatch])
   return (
     <>
