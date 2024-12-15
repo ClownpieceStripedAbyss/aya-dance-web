@@ -11,6 +11,7 @@
 	"dependencies": {
 		"@nextui-org/button": "^2.0.37",
 		"@nextui-org/code": "^2.0.32",
+		"@nextui-org/form": "^2.1.5",
 		"@nextui-org/input": "^2.2.4",
 		"@nextui-org/kbd": "^2.0.33",
 		"@nextui-org/link": "^2.0.34",
@@ -21,7 +22,6 @@
 		"@nextui-org/switch": "^2.0.33",
 		"@nextui-org/system": "^2.2.5",
 		"@nextui-org/theme": "^2.2.9",
-		"@nextui-org/form": "^2.1.5",
 		"@react-aria/ssr": "^3.9.4",
 		"@react-aria/visually-hidden": "3.8.12",
 		"@reduxjs/toolkit": "^2.2.7",
@@ -37,13 +37,16 @@
 		"react-dom": "^18.3.1",
 		"react-redux": "^9.1.2",
 		"react-toastify": "^10.0.5",
-		"reselect": "^5.1.1"
+		"reselect": "^5.1.1",
+		"sortablejs": "^1.15.6"
 	},
 	"devDependencies": {
 		"@types/jsonpack": "^1.1.6",
 		"@types/node": "20.5.7",
 		"@types/react": "18.3.3",
 		"@types/react-dom": "18.3.0",
+		"@types/react-toastify": "^4.0.2",
+		"@types/sortablejs": "^1.15.8",
 		"@typescript-eslint/eslint-plugin": "7.2.0",
 		"@typescript-eslint/parser": "7.2.0",
 		"autoprefixer": "10.4.19",

@@ -1,12 +1,12 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createSelector } from "reselect";
-import type { GenericVideo } from "@/types/video";
-import { toast } from "react-toastify";
-import { RootState } from "@/store";
-import _ from "lodash";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createSelector } from "reselect"
+import type { GenericVideo } from "@/types/video"
+import { toast } from "react-toastify"
+import { RootState } from "@/store"
+import _ from "lodash"
 
 export interface QueueVideo {
-  video: GenericVideo,
+  video: GenericVideo
   isRandom: boolean
 }
 
@@ -32,7 +32,7 @@ const PlayListSlice = createSlice({
       const video = action.payload
       if (!video) return console.warn("video is empty")
       if (state.playList.some((item) => item.video.id === video.video.id)) {
-        toast.warn("视频已在播放列表")
+        toast.warning("视频已在播放列表")
         console.warn("video is already in playList")
         return
       }
@@ -41,12 +41,16 @@ const PlayListSlice = createSlice({
     removePlayList: (state, action: PayloadAction<QueueVideo>) => {
       const video = action.payload
       if (!video) return console.warn("video is empty")
-      state.playList = state.playList.filter((item) => item.video.id !== video.video.id)
+      state.playList = state.playList.filter(
+        (item) => item.video.id !== video.video.id
+      )
     },
     topSong: (state, action: PayloadAction<QueueVideo>) => {
       const video = action.payload
       if (!video) return console.warn("video is empty")
-      const index = state.playList.findIndex((item) => item.video.id === video.video.id)
+      const index = state.playList.findIndex(
+        (item) => item.video.id === video.video.id
+      )
       if (index === -1) return console.warn("video is not in playList")
       if (index === 0) {
         toast.error("正在播放")
@@ -79,11 +83,11 @@ const PlayListSlice = createSlice({
         const randomIndex = Math.floor(Math.random() * videos.length)
         const video = videos[randomIndex]
         state.playList = _.cloneDeep([{ video, isRandom: true }])
-        return;
+        return
       }
       state.playList.shift()
       state.playList = _.cloneDeep(state.playList)
-    }
+    },
   },
 })
 
@@ -98,6 +102,12 @@ export const selectPlayList = createSelector(
 )
 
 // 导出 actions 和 reducer
-export const { initPlayList, addPlayList, removePlayList, topSong, nextVideo, nextVideoWithRandom } =
-  PlayListSlice.actions
+export const {
+  initPlayList,
+  addPlayList,
+  removePlayList,
+  topSong,
+  nextVideo,
+  nextVideoWithRandom,
+} = PlayListSlice.actions
 export default PlayListSlice.reducer

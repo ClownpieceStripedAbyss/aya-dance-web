@@ -73,7 +73,7 @@ const CustomListStoreSlice = createSlice({
 
       if (targetIndex != -1) {
         console.log(`CustomList ${name} already exists`)
-        toast.warn("歌单已存在")
+        toast.warning("歌单已存在")
         return
       }
 
@@ -118,7 +118,7 @@ const CustomListStoreSlice = createSlice({
       }
       if (target.ids.includes(id)) {
         console.log(`CustomList ${name} already has song ${id}`)
-        toast.warn("歌单已有该歌曲")
+        toast.warning("歌单已有该歌曲")
         return
       }
       target.ids.push(id)

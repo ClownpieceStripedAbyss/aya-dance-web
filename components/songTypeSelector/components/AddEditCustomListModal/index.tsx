@@ -50,7 +50,7 @@ const AddEditCustomListModal = forwardRef<ModalRef>((_, ref) => {
   const [ids, setIds] = useState("")
   function handleAddCustomList() {
     if (name === "") {
-      toast.warn("歌单名称不能为空")
+      toast.warning("歌单名称不能为空")
       return
     }
     const target = {

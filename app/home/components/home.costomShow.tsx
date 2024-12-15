@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import SongSearch from "@/components/songSearch"
 import TableItem from "@/components/songTable/components/tableItem"
@@ -18,7 +18,7 @@ import {
 } from "@/store/modules/customListStore"
 import { Button, ScrollShadow } from "@nextui-org/react"
 import { Check, Edit } from "@/assets/icon"
-import { set } from "lodash"
+import Sortable from "sortablejs"
 
 interface SongShowProps {
   songTypes: GenericVideoGroup[]
@@ -45,16 +45,42 @@ export default function SongShow({ songTypes, selectedKey }: SongShowProps) {
   }, [selectedKey, customListStore.updatedAt])
   useMemo(() => {
     const allSongs = allSongsFromGroups(songTypes)
-    const targetEntries = allSongs.filter((item) => ids.includes(item.id))
+    const songsMap = new Map(allSongs.map((song) => [song.id, song]))
+    const targetEntries = ids
+      .map((id) => songsMap.get(id))
+      .filter((item): item is GenericVideo => !!item)
     const searchEntries = videosQuery(targetEntries, searchKeyword)
 
     setGenericVideos(searchEntries || [])
   }, [searchKeyword, selectedKey, songTypes, customListStore.updatedAt, ids])
 
   // edit
+
+  const [videos, setVideos] = useState<GenericVideo[]>([])
   const dispatch = useDispatch()
   const [isEdit, setIsEdit] = useState(false)
   const [toBeDeletedIds, setToBeDeletedIds] = useState<number[]>([])
+  useEffect(() => {
+    if (isEdit) {
+      const element = document.querySelector(".sortable-list")
+      if (element) {
+        new Sortable(element as HTMLElement, {
+          animation: 150,
+          onEnd: (evt) => {
+            const { oldIndex, newIndex } = evt
+            if (oldIndex === newIndex) return
+            if (oldIndex === undefined || newIndex === undefined) return
+            const newVideos = [...videos]
+            const [movedItem] = newVideos.splice(oldIndex, 1)
+            newVideos.splice(newIndex, 0, movedItem)
+
+            setVideos(newVideos)
+          },
+        })
+      }
+    }
+  }, [isEdit])
+
   const handleToBeDeleted = (id: number) => {
     setToBeDeletedIds((prev) => {
       return prev.includes(id)
@@ -65,9 +91,11 @@ export default function SongShow({ songTypes, selectedKey }: SongShowProps) {
   function handleEdit() {
     setIsEdit(true)
     setToBeDeletedIds([])
+    setVideos(genericVideos)
   }
   function handleSubmit() {
     // dispatch(editSongs({ name: selectedKey, ids }))
+    const ids = videos.map((item) => item.id)
     const nextIds = ids.filter((id) => !toBeDeletedIds.includes(id))
     dispatch(editSongs({ name: selectedKey, ids: nextIds }))
     setIsEdit(false)
@@ -110,7 +138,7 @@ export default function SongShow({ songTypes, selectedKey }: SongShowProps) {
             </Button>
           )}
         </div>
-        <ScrollShadow hideScrollBar className="w-full h-[697px]">
+        {/* <ScrollShadow hideScrollBar className="w-full h-[697px]">
           {genericVideos.map((item, index) => (
             <TableItem
               key={index}
@@ -119,7 +147,30 @@ export default function SongShow({ songTypes, selectedKey }: SongShowProps) {
               toBeDeleted={handleToBeDeleted}
             />
           ))}
-        </ScrollShadow>
+        </ScrollShadow> */}
+        {!isEdit ? (
+          <ScrollShadow hideScrollBar className="w-full h-[697px]">
+            {genericVideos.map((item, index) => (
+              <TableItem
+                key={index}
+                song={item}
+                isEdit={isEdit}
+                toBeDeleted={handleToBeDeleted}
+              />
+            ))}
+          </ScrollShadow>
+        ) : (
+          <div className="sortable-list w-full h-[697px]">
+            {genericVideos.map((item, index) => (
+              <TableItem
+                key={index}
+                song={item}
+                isEdit={isEdit}
+                toBeDeleted={handleToBeDeleted}
+              />
+            ))}
+          </div>
+        )}
       </>
     </div>
   )
