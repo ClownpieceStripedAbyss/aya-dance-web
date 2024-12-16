@@ -59,8 +59,10 @@ export default function RootLayout({
               position="top-center"
               draggable
               draggablePercent={60}
+              autoClose={1000}
               transition={Slide}
               closeButton={false}
+              limit={2}
             />
           </div>
         </Providers>

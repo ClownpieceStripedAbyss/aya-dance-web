@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
 // components/AddCustomListModal.tsx
-import React, { forwardRef, useImperativeHandle, useState } from "react";
+import React, { forwardRef, useImperativeHandle, useState } from "react"
 import {
   Button,
   Input,
@@ -11,12 +11,15 @@ import {
   ModalFooter,
   ModalHeader,
   Textarea,
-  useDisclosure
-} from "@nextui-org/react";
-import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
-import { createCustomList, editCustomList } from "@/store/modules/customPlaylist";
-import { AppDispatch } from "@/store";
+  useDisclosure,
+} from "@nextui-org/react"
+import { toast } from "react-toastify"
+import { useDispatch } from "react-redux"
+import {
+  createCustomList,
+  editCustomList,
+} from "@/store/modules/customPlaylist"
+import { AppDispatch } from "@/store"
 
 export interface ModalRef {
   onOpen: (formModel?: {
@@ -109,7 +112,7 @@ const AddEditCustomListModal = forwardRef<ModalRef>((_, ref) => {
                 onValueChange={setDescription}
               />
               <Textarea
-                label="id 列表"
+                label="id 列表(可选)"
                 placeholder="id 列表，以逗号分隔"
                 variant="bordered"
                 labelPlacement="outside"

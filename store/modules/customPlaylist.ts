@@ -1,10 +1,10 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { createSelector } from "reselect";
+import { createSlice } from "@reduxjs/toolkit"
+import { createSelector } from "reselect"
 
-import { RootState } from "../index";
-import { LoadFromStorage, SaveToStorage } from "@/utils/local";
-import { toast } from "react-toastify";
-import { CustomPlayList } from "@/types/customPlayList";
+import { RootState } from "../index"
+import { LoadFromStorage, SaveToStorage } from "@/utils/local"
+import { toast } from "react-toastify"
+import { CustomPlayList } from "@/types/customPlayList"
 
 // local storage key
 const CUSTOM_LIST_KEY = "CustomPlayList"
@@ -52,7 +52,8 @@ const CustomListStoreSlice = createSlice({
   initialState,
   reducers: {
     getLocalCustomListStore: (state: CustomPlayListState) => {
-      const decompressedData = LoadFromStorage<CustomPlayListState>(CUSTOM_LIST_KEY)
+      const decompressedData =
+        LoadFromStorage<CustomPlayListState>(CUSTOM_LIST_KEY)
       if (!decompressedData) {
         console.log("No CustomPlayList info in local storage")
         return
@@ -140,25 +141,6 @@ const CustomListStoreSlice = createSlice({
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)
     },
-    exportCustomList: (state: CustomPlayListState, action) => {
-      const name = action.payload
-      const target = state.content.find((item) => item.name === name)
-      if (!target) {
-        console.log(`CustomList ${name} not found`)
-        return
-      }
-      // copy to clipboard
-      const text = JSON.stringify(target)
-      navigator.clipboard.writeText(text).then(
-        () => {
-          console.log("Copied to clipboard")
-          toast.success("已复制到剪贴板")
-        },
-        (err) => {
-          console.error("Copy failed", err)
-        }
-      )
-    },
   },
 })
 
@@ -168,6 +150,7 @@ export const selectCustomListStore = createSelector(
   (CustomListStore) => ({
     updatedAt: CustomListStore.updatedAt,
     content: CustomListStore.content,
+    findTargetList: (name: string) => findTargetList(CustomListStore, name),
     version: CustomListStore.version,
     names: new Set(CustomListStore.content.map((item) => item.name)),
   })
@@ -181,6 +164,5 @@ export const {
   createCustomList,
   editCustomList,
   deleteCustomList,
-  exportCustomList,
 } = CustomListStoreSlice.actions
 export default CustomListStoreSlice.reducer

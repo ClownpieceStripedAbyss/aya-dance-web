@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Key, useEffect, useMemo, useRef, useState } from "react";
+import { Key, useEffect, useMemo, useRef, useState } from "react"
 import {
   Accordion,
   AccordionItem,
@@ -18,17 +18,25 @@ import {
   ScrollShadow,
   Skeleton,
   Textarea,
-  useDisclosure
-} from "@nextui-org/react";
+  useDisclosure,
+} from "@nextui-org/react"
 
-import styles from "./index.module.css";
-import { findSongById, GenericVideoGroup } from "@/types/video";
-import { Button } from "@nextui-org/button";
-import { useDispatch, useSelector } from "react-redux";
-import { addCollection, selectCollection } from "@/store/modules/collection";
-import { ExportIcon, MoreIcon } from "@/assets/icon";
-import AddCustomListModal, { ModalRef } from "./components/AddEditCustomListModal";
-import { deleteCustomList, exportCustomList, selectCustomListStore } from "@/store/modules/customPlaylist";
+import styles from "./index.module.css"
+import { findSongById, GenericVideoGroup } from "@/types/video"
+import { Button } from "@nextui-org/button"
+import { useDispatch, useSelector } from "react-redux"
+import { addCollection, selectCollection } from "@/store/modules/collection"
+import { ExportIcon, MoreIcon } from "@/assets/icon"
+import AddCustomListModal, {
+  ModalRef as AddCustomListModalRef,
+} from "./components/AddEditCustomListModal"
+import {
+  deleteCustomList,
+  selectCustomListStore,
+} from "@/store/modules/customPlaylist"
+import ExportCustom, {
+  ModalRef as ExportCustomModalRef,
+} from "./components/ExportCustom"
 
 // À la carte
 const CARTE = "À la carte"
@@ -166,7 +174,7 @@ export default function SongTypeSelector({
         handleEditCustomList(value || "")
         break
       case "custom-export":
-        dispatch(exportCustomList(value))
+        exportCustomList(value || "")
         break
       default:
         break
@@ -174,19 +182,24 @@ export default function SongTypeSelector({
   }
 
   // 新增歌单
-  const modalRef = useRef<ModalRef>(null)
+  const addModalRef = useRef<AddCustomListModalRef>(null)
   function handleAddCustomList() {
-    modalRef.current?.onOpen()
+    addModalRef.current?.onOpen()
   }
   // 修改歌单
   function handleEditCustomList(name: string) {
     const target = customListStore.content.find((item) => item.name === name)
     console.log(target, "target")
-    modalRef.current?.onOpen({
+    addModalRef.current?.onOpen({
       name: target?.name || "",
       description: target?.description || "",
       ids: target?.ids.join(",") || "",
     })
+  }
+  // 导出歌单
+  const exportModalRef = useRef<ExportCustomModalRef>(null)
+  function exportCustomList(name: string) {
+    exportModalRef.current?.onOpen(name)
   }
 
   const makeGroupItem = (
@@ -445,7 +458,8 @@ export default function SongTypeSelector({
           )}
         </ModalContent>
       </Modal>
-      <AddCustomListModal ref={modalRef} />
+      <AddCustomListModal ref={addModalRef} />
+      <ExportCustom ref={exportModalRef} />
     </>
   )
 }

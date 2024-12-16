@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import {
   Badge,
@@ -10,19 +10,26 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Image,
-  Link
-} from "@nextui-org/react";
+  Link,
+} from "@nextui-org/react"
 
-import styles from "./tableItem.module.css";
+import styles from "./tableItem.module.css"
 
-import { Delete, Heart, HeartFilled, List, Plus } from "@/assets/icon";
-import { formatTag, formatTagColor, GenericVideo } from "@/types/video";
-import { useDispatch, useSelector } from "react-redux";
-import { useCallback, useMemo, useState } from "react";
-import { addCollection, removeCollection, selectCollection } from "@/store/modules/collection";
-import { addPlayList, QueueVideo } from "@/store/modules/playList";
-import { addSongToCustomList, selectCustomListStore } from "@/store/modules/customPlaylist";
-import clsx from "clsx";
+import { Delete, Grid, Heart, HeartFilled, List, Plus } from "@/assets/icon"
+import { formatTag, formatTagColor, GenericVideo } from "@/types/video"
+import { useDispatch, useSelector } from "react-redux"
+import { useCallback, useMemo, useState } from "react"
+import {
+  addCollection,
+  removeCollection,
+  selectCollection,
+} from "@/store/modules/collection"
+import { addPlayList, QueueVideo } from "@/store/modules/playList"
+import {
+  addSongToCustomList,
+  selectCustomListStore,
+} from "@/store/modules/customPlaylist"
+import clsx from "clsx"
 
 interface SongTableProps {
   song: GenericVideo
@@ -89,6 +96,7 @@ export default function TableItem({
       <Card className="w-full h-[110px]" shadow="sm">
         <CardBody>
           <div className="w-full h-full flex justify-between items-center">
+            {isEdit && <Grid className="w-4 h-4 text-black dark:text-white" />}
             <a
               href={url}
               style={{ display: "inline-block" }}
