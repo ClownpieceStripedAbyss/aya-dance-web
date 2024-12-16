@@ -138,7 +138,7 @@ const AddEditCustomListModal = forwardRef<ModalRef>((_, ref) => {
         {() => (
           <>
             <ModalHeader className="flex flex-col gap-1">
-              {isEdit ? "修改歌单" : "新增歌单"}
+              {isEdit ? "修改歌单" : isImport ? "导入歌单" : "新增歌单"}
             </ModalHeader>
             <ModalBody>
               <Input
@@ -161,6 +161,7 @@ const AddEditCustomListModal = forwardRef<ModalRef>((_, ref) => {
                   variant="bordered"
                   labelPlacement="outside"
                   className="max-w-full mb-2"
+                  placeholder={`格式例如: WannaCustom:1,2,3`}
                   onValueChange={(value) => {
                     setCustomStr(value)
                   }}
