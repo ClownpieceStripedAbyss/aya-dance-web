@@ -63,21 +63,22 @@ export default function SongTypeSelector({
         key: group.title,
         label: group.title,
         major: group.major,
+        isCustomPlaylist: false,
       }
     })
 
     // 添加 收藏 和 新增歌单 选项 与 自定义歌单展示选项
 
-    option.push({ key: GROUP_FAVORITE, label: "喜欢的歌曲", major: "" })
-    option.push({ key: GROUP_CREATE_CUSTOM, label: "新增歌单", major: "" }) // TODO: remove it
+    option.push({ key: GROUP_FAVORITE, label: "喜欢的歌曲", major: "", isCustomPlaylist: false })
+    option.push({ key: GROUP_CREATE_CUSTOM, label: "新增歌单", major: "", isCustomPlaylist: false }) // TODO: remove it
 
     customListStore.content.forEach((list) => {
-      option.push({ key: list.name, label: list.name, major: "" })
+      option.push({ key: list.name, label: list.name, major: "", isCustomPlaylist: true })
     })
 
     let groups: {
       major: string
-      items: { key: string; label: string }[]
+      items: { key: string; label: string, isCustomPlaylist: boolean }[]
     }[] = []
     groupBy(option, (item) => item.major).forEach((value, major) => {
       groups.push({
@@ -189,82 +190,80 @@ export default function SongTypeSelector({
     item: {
       key: string
       label: string
+      isCustomPlaylist: boolean
     },
     major: string
   ) => {
+    const make = () => {
+      if (item.isCustomPlaylist) {
+        return (
+          <div className={`${styles.favoriteRow}`}>
+            {item.label}
+            <Dropdown>
+              <DropdownTrigger>
+                        <span>
+                          <MoreIcon size={18} />
+                        </span>
+              </DropdownTrigger>
+              <DropdownMenu
+                variant="light"
+                hideSelectedIcon
+                onAction={(e) => handleDropdownAction(e, item.key)}
+              >
+                <DropdownItem key="custom-delete">
+                  删除歌单
+                </DropdownItem>
+                <DropdownItem key="custom-edit">修改歌单</DropdownItem>
+                <DropdownItem key="custom-export">
+                  导出歌单
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        )
+      }
+      if (item.key === GROUP_CREATE_CUSTOM) {
+        return <div onClick={handleAddCustomList}>{item.label}</div>;
+      }
+      if (item.key === GROUP_FAVORITE) {
+        return (
+          <div className={`${styles.favoriteRow}`}>
+            {item.label}
+            <Dropdown>
+              <DropdownTrigger>
+                        <span>
+                          <ExportIcon size={18} />
+                        </span>
+              </DropdownTrigger>
+              <DropdownMenu
+                variant="light"
+                hideSelectedIcon
+                onAction={(e) => handleDropdownAction(e)}
+              >
+                <DropdownItem key="export-favorite">
+                  导出收藏
+                </DropdownItem>
+                <DropdownItem key="import-favorite">
+                  导入收藏
+                </DropdownItem>
+                <DropdownItem key="export-favorite-list">
+                  导出歌曲列表
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+        )
+      }
+      return item.label
+    }
+
     return (
       <ListboxItem
         key={item.key}
         hideSelectedIcon
         className={`${styles.customListboxItem}`}
       >
-        {(() => {
-          if (major === CARTE) {
-            switch (item.key) {
-              case GROUP_ALL_SONGS:
-                return item.label
-              case GROUP_FAVORITE:
-                return (
-                  <div className={`${styles.favoriteRow}`}>
-                    {item.label}
-                    <Dropdown>
-                      <DropdownTrigger>
-                        <span>
-                          <ExportIcon size={18} />
-                        </span>
-                      </DropdownTrigger>
-                      <DropdownMenu
-                        variant="light"
-                        hideSelectedIcon
-                        onAction={(e) => handleDropdownAction(e)}
-                      >
-                        <DropdownItem key="export-favorite">
-                          导出收藏
-                        </DropdownItem>
-                        <DropdownItem key="import-favorite">
-                          导入收藏
-                        </DropdownItem>
-                        <DropdownItem key="export-favorite-list">
-                          导出歌曲列表
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                  </div>
-                )
-              case GROUP_CREATE_CUSTOM:
-                return <div onClick={handleAddCustomList}>{item.label}</div>
-              default:
-                // 自定义歌单
-                return (
-                  <div className={`${styles.favoriteRow}`}>
-                    {item.label}
-                    <Dropdown>
-                      <DropdownTrigger>
-                        <span>
-                          <MoreIcon size={18} />
-                        </span>
-                      </DropdownTrigger>
-                      <DropdownMenu
-                        variant="light"
-                        hideSelectedIcon
-                        onAction={(e) => handleDropdownAction(e, item.key)}
-                      >
-                        <DropdownItem key="custom-delete">
-                          删除歌单
-                        </DropdownItem>
-                        <DropdownItem key="custom-edit">修改歌单</DropdownItem>
-                        <DropdownItem key="custom-export">
-                          导出歌单
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                  </div>
-                )
-            }
-          } else {
-            return item.label
-          }
-        })()}
+        {make()}
       </ListboxItem>
     )
   }
