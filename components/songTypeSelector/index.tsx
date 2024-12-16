@@ -4,10 +4,6 @@ import { Key, useEffect, useMemo, useRef, useState } from "react";
 import {
   Accordion,
   AccordionItem,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
   Listbox,
   ListboxItem,
   Modal,
@@ -22,14 +18,15 @@ import {
 } from "@nextui-org/react";
 
 import styles from "./index.module.css";
-import { findSongById, GenericVideoGroup, GROUP_ALL_SONGS, GROUP_CREATE_CUSTOM, GROUP_FAVORITE } from "@/types/video";
+import { findSongById, GenericVideoGroup, GROUP_ALL_SONGS, GROUP_FAVORITE } from "@/types/video";
 import { Button } from "@nextui-org/button";
 import { useDispatch, useSelector } from "react-redux";
 import { addCollection, selectCollection } from "@/store/modules/collection";
-import { ExportIcon, MoreIcon } from "@/assets/icon";
+import { ExportIcon, Star } from "@/assets/icon";
 import AddCustomListModal, { ModalRef as AddCustomListModalRef } from "./components/AddEditCustomListModal";
 import { deleteCustomList, selectCustomListStore } from "@/store/modules/customPlaylist";
 import ExportCustom, { ModalRef as ExportCustomModalRef } from "./components/ExportCustom";
+import MakeDropdown from "@/components/makeDropdown";
 
 // À la carte
 const CARTE = "À la carte"
@@ -70,7 +67,6 @@ export default function SongTypeSelector({
     // 添加 收藏 和 新增歌单 选项 与 自定义歌单展示选项
 
     option.push({ key: GROUP_FAVORITE, label: "喜欢的歌曲", major: "", isCustomPlaylist: false })
-    option.push({ key: GROUP_CREATE_CUSTOM, label: "新增歌单", major: "", isCustomPlaylist: false }) // TODO: remove it
 
     customListStore.content.forEach((list) => {
       option.push({ key: list.name, label: list.name, major: "", isCustomPlaylist: true })
@@ -160,6 +156,13 @@ export default function SongTypeSelector({
       case "custom-export":
         exportCustomList(value || "")
         break
+      case "make-custom-list":
+        handleAddCustomList()
+        break
+      case "export-custom-list":
+        // TODO 导入歌单 空函数
+        handleExportCustomList()
+        break
       default:
         break
     }
@@ -180,6 +183,8 @@ export default function SongTypeSelector({
       ids: target?.ids.join(",") || "",
     })
   }
+  // 导入歌单
+  function handleExportCustomList() {}
   // 导出歌单
   const exportModalRef = useRef<ExportCustomModalRef>(null)
   function exportCustomList(name: string) {
@@ -199,64 +204,39 @@ export default function SongTypeSelector({
         return (
           <div className={`${styles.favoriteRow}`}>
             {item.label}
-            <Dropdown>
-              <DropdownTrigger>
-                        <span>
-                          <MoreIcon size={18} />
-                        </span>
-              </DropdownTrigger>
-              <DropdownMenu
-                variant="light"
-                hideSelectedIcon
-                onAction={(e) => handleDropdownAction(e, item.key)}
-              >
-                <DropdownItem key="custom-delete">
-                  删除歌单
-                </DropdownItem>
-                <DropdownItem key="custom-edit">修改歌单</DropdownItem>
-                <DropdownItem key="custom-export">
-                  导出歌单
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+            <MakeDropdown
+              items={[
+                { key: "custom-delete", label: "删除歌单" },
+                { key: "custom-edit", label: "修改歌单" },
+                { key: "custom-export", label: "导出歌单" },
+              ]}
+              onAction={(key) => handleDropdownAction(key, item.key)}
+            />
           </div>
         )
       }
-      if (item.key === GROUP_CREATE_CUSTOM) {
-        return <div onClick={handleAddCustomList}>{item.label}</div>;
-      }
-      if (item.key === GROUP_FAVORITE) {
+
+      if (item.key == GROUP_FAVORITE) {
         return (
           <div className={`${styles.favoriteRow}`}>
             {item.label}
-            <Dropdown>
-              <DropdownTrigger>
-                        <span>
-                          <ExportIcon size={18} />
-                        </span>
-              </DropdownTrigger>
-              <DropdownMenu
-                variant="light"
-                hideSelectedIcon
-                onAction={(e) => handleDropdownAction(e)}
-              >
-                <DropdownItem key="export-favorite">
-                  导出收藏
-                </DropdownItem>
-                <DropdownItem key="import-favorite">
-                  导入收藏
-                </DropdownItem>
-                <DropdownItem key="export-favorite-list">
-                  导出歌曲列表
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+            <MakeDropdown
+              items={[
+                { key: "export-favorite", label: "导出收藏" },
+                { key: "import-favorite", label: "导入收藏" },
+                { key: "export-favorite-list", label: "导出歌曲列表" },
+              ]}
+              onAction={(key) => handleDropdownAction(key)}
+              icon={
+                <ExportIcon className="w-4 h-4 text-black dark:text-white" />
+              }
+            />
           </div>
         )
       }
-      return item.label
-    }
 
+      return item.label;
+    }
     return (
       <ListboxItem
         key={item.key}
@@ -266,6 +246,54 @@ export default function SongTypeSelector({
         {make()}
       </ListboxItem>
     )
+  }
+  // 展开自定义歌单功能 位于 À la carte
+  const makeAccordionTitle = (major: string) => {
+    if (major === CARTE) {
+      return (
+        <div className="flex justify-between align-middle">
+          <div className="flex items-center">{CARTE}</div>
+          <MakeDropdown
+            items={[
+              { key: "make-custom-list", label: "新增歌单" },
+              { key: "export-custom-list", label: "导入歌单" },
+            ]}
+            onAction={(key) => handleDropdownAction(key)}
+            icon={<Star className="w-4 h-4 text-black dark:text-white" />}
+          />
+        </div>
+      )
+    }
+
+    return major
+  }
+
+  const makeSongTypeOptions = () => {
+    return songTypeOptions.map((group) => (
+      <AccordionItem
+        key={group.major}
+        title={makeAccordionTitle(group.major)}
+        aria-label={group.major}
+      >
+        <Listbox
+          aria-label="songType"
+          classNames={{
+            base: `${styles.listbox}`,
+          }}
+          items={group.items}
+          selectedKeys={selectedKeys}
+          selectionMode="single"
+          onSelectionChange={(keys) => {
+            keys = keys as Set<string>
+            if (keys instanceof Set && keys.size > 0) {
+              setSelectedKeys(keys as Set<string>)
+            }
+          }}
+        >
+          {(item) => makeGroupItem(item, group.major)}
+        </Listbox>
+      </AccordionItem>
+    ))
   }
 
   return (
@@ -299,34 +327,7 @@ export default function SongTypeSelector({
               title: `${styles.accordionTitle} font-bold text-sm`,
             }}
           >
-            {songTypeOptions.map((group) => (
-              <AccordionItem
-                key={group.major}
-                title={group.major}
-                aria-label={group.major}
-              >
-                <Listbox
-                  aria-label="songType"
-                  classNames={{
-                    base: `${styles.listbox}`,
-                  }}
-                  items={group.items}
-                  selectedKeys={selectedKeys}
-                  selectionMode="single"
-                  onSelectionChange={(keys) => {
-                    keys = keys as Set<string>
-                    if (keys.has(GROUP_CREATE_CUSTOM)) {
-                      return
-                    }
-                    if (keys instanceof Set && keys.size > 0) {
-                      setSelectedKeys(keys as Set<string>)
-                    }
-                  }}
-                >
-                  {(item) => makeGroupItem(item, group.major)}
-                </Listbox>
-              </AccordionItem>
-            ))}
+            {makeSongTypeOptions()}
           </Accordion>
         </ScrollShadow>
       )}
