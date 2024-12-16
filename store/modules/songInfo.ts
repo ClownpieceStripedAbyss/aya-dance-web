@@ -1,13 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { createSelector } from "reselect"
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector } from "reselect";
 
-import { RootState } from "../index"
-import {
-  GenericVideo,
-  GenericVideoGroup,
-  SortBy,
-  WannaData,
-} from "@/types/video"
+import { RootState } from "../index";
+import { GenericVideo, GenericVideoGroup, GROUP_ALL_SONGS, SortBy, WannaData } from "@/types/video";
 
 // local storage key
 const SONG_INFO_KEY = "songInfo"
@@ -157,7 +152,7 @@ const getNewState = (saveState: SongInfo, allSongEntries: GenericVideo[]) => {
   const { songTypes } = saveState
   saveState.songTypes = [
     {
-      title: "All Songs",
+      title: GROUP_ALL_SONGS,
       entries: allSongEntries,
       major: "",
     } as GenericVideoGroup,

@@ -8,7 +8,7 @@ import styles from "./index.module.css";
 import { selectSongInfo } from "@/store/modules/songInfo";
 import { Spinner } from "@nextui-org/react";
 import { selectPlayOptions } from "@/store/modules/playOptions";
-import { computeNextQueueCandidates, findSongEntries, GenericVideo } from "@/types/video";
+import { computeNextQueueCandidates, findSongEntries, GenericVideo, GROUP_ALL_SONGS } from "@/types/video";
 import { selectCollection } from "@/store/modules/collection";
 import { selectCustomListStore } from "@/store/modules/customPlaylist";
 
@@ -41,7 +41,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const queue = useMemo(() => playList[0] ?? null, [playList]);
   const lockedRandomGroupOrAll = lockedRandomGroup && findSongEntries(songTypes, lockedRandomGroup.group, lockedRandomGroup.isCustom, collection, customList).length > 0
     ? lockedRandomGroup.group
-    : "All Songs";
+    : GROUP_ALL_SONGS;
   const onVideoEnded = (randomGroup: GenericVideo[]) => {
     console.log(`OnVideoEnded: Handle next random range: ${randomGroup}`)
     dispatch(nextVideoWithRandom(randomGroup));

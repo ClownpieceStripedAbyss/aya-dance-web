@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
 // components/AddCustomListModal.tsx
-import React, { forwardRef, useImperativeHandle, useState } from "react"
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 import {
   Button,
   Input,
@@ -11,15 +11,13 @@ import {
   ModalFooter,
   ModalHeader,
   Textarea,
-  useDisclosure,
-} from "@nextui-org/react"
-import { toast } from "react-toastify"
-import { useDispatch } from "react-redux"
-import {
-  createCustomList,
-  editCustomList,
-} from "@/store/modules/customPlaylist"
-import { AppDispatch } from "@/store"
+  useDisclosure
+} from "@nextui-org/react";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { createCustomList, editCustomList } from "@/store/modules/customPlaylist";
+import { AppDispatch } from "@/store";
+import { isBuiltinGroup } from "@/types/video";
 
 export interface ModalRef {
   onOpen: (formModel?: {
@@ -54,6 +52,10 @@ const AddEditCustomListModal = forwardRef<ModalRef>((_, ref) => {
   function handleAddCustomList() {
     if (name === "") {
       toast.warning("歌单名称不能为空")
+      return
+    }
+    if (isBuiltinGroup(name)) {
+      toast.warning("歌单名称不能为内置名称")
       return
     }
     const target = {

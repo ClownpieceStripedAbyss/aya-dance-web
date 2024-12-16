@@ -2,6 +2,13 @@ import fetchWithDefaults from "@/utils/service";
 import { CustomPlayListState } from "@/store/modules/customPlaylist";
 import { SetLockedRandomGroupPayload } from "@/store/modules/playOptions";
 
+export const GROUP_FAVORITE = "Favorites"
+export const GROUP_ALL_SONGS = "All Songs"
+export const GROUP_CREATE_CUSTOM = "Create Custom Playlist" // TODO: remove it
+
+export const BUILTIN_GROUP_NAMES = [GROUP_FAVORITE, GROUP_ALL_SONGS, GROUP_CREATE_CUSTOM]
+export const isBuiltinGroup = (name: string) => BUILTIN_GROUP_NAMES.includes(name)
+
 export interface GenericVideoGroup {
   title: string
   entries: GenericVideo[]
@@ -82,7 +89,7 @@ export const formatGenreColor = (genre: string): string | undefined => {
 export const allSongsFromGroups = (
   songTypes: GenericVideoGroup[]
 ): GenericVideo[] => {
-  return songTypes.find((item) => item.title === "All Songs")?.entries || []
+  return songTypes.find((item) => item.title === GROUP_ALL_SONGS)?.entries || []
 }
 
 export const findSongById = (
@@ -105,7 +112,7 @@ export const findSongEntries = (
     const playList = customList.content.find(x => x.name === groupName) || { ids: [] };
     const songsMap = new Map(allSongs.map((song) => [song.id, song]));
     return playList.ids.map(id => songsMap.get(id)).filter((x): x is GenericVideo => !!x);
-  } else if (groupName === "Favorites") {
+  } else if (groupName === GROUP_FAVORITE) {
     const allSongs = allSongsFromGroups(songTypes);
     return allSongs.filter(x => favoriteIds.includes(x.id));
   } else {
@@ -119,7 +126,7 @@ export const computeNextQueueCandidates = (
   customList: CustomPlayListState,
   lockedRandomGroup: SetLockedRandomGroupPayload | null,
 ) => {
-  const computeAllSongs = () => findSongEntries(songTypes, "All Songs", false, favoriteIds, customList);
+  const computeAllSongs = () => findSongEntries(songTypes, GROUP_ALL_SONGS, false, favoriteIds, customList);
   if (lockedRandomGroup) {
     const lockedRandomEntries = findSongEntries(songTypes, lockedRandomGroup.group, lockedRandomGroup.isCustom, favoriteIds, customList);
     return lockedRandomEntries.length > 0

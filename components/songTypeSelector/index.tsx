@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Key, useEffect, useMemo, useRef, useState } from "react"
+import { Key, useEffect, useMemo, useRef, useState } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -18,25 +18,18 @@ import {
   ScrollShadow,
   Skeleton,
   Textarea,
-  useDisclosure,
-} from "@nextui-org/react"
+  useDisclosure
+} from "@nextui-org/react";
 
-import styles from "./index.module.css"
-import { findSongById, GenericVideoGroup } from "@/types/video"
-import { Button } from "@nextui-org/button"
-import { useDispatch, useSelector } from "react-redux"
-import { addCollection, selectCollection } from "@/store/modules/collection"
-import { ExportIcon, MoreIcon } from "@/assets/icon"
-import AddCustomListModal, {
-  ModalRef as AddCustomListModalRef,
-} from "./components/AddEditCustomListModal"
-import {
-  deleteCustomList,
-  selectCustomListStore,
-} from "@/store/modules/customPlaylist"
-import ExportCustom, {
-  ModalRef as ExportCustomModalRef,
-} from "./components/ExportCustom"
+import styles from "./index.module.css";
+import { findSongById, GenericVideoGroup, GROUP_ALL_SONGS, GROUP_CREATE_CUSTOM, GROUP_FAVORITE } from "@/types/video";
+import { Button } from "@nextui-org/button";
+import { useDispatch, useSelector } from "react-redux";
+import { addCollection, selectCollection } from "@/store/modules/collection";
+import { ExportIcon, MoreIcon } from "@/assets/icon";
+import AddCustomListModal, { ModalRef as AddCustomListModalRef } from "./components/AddEditCustomListModal";
+import { deleteCustomList, selectCustomListStore } from "@/store/modules/customPlaylist";
+import ExportCustom, { ModalRef as ExportCustomModalRef } from "./components/ExportCustom";
 
 // À la carte
 const CARTE = "À la carte"
@@ -75,8 +68,8 @@ export default function SongTypeSelector({
 
     // 添加 收藏 和 新增歌单 选项 与 自定义歌单展示选项
 
-    option.push({ key: "Favorites", label: "喜欢的歌曲", major: "" })
-    option.push({ key: "CustomList", label: "新增歌单", major: "" })
+    option.push({ key: GROUP_FAVORITE, label: "喜欢的歌曲", major: "" })
+    option.push({ key: GROUP_CREATE_CUSTOM, label: "新增歌单", major: "" }) // TODO: remove it
 
     customListStore.content.forEach((list) => {
       option.push({ key: list.name, label: list.name, major: "" })
@@ -95,22 +88,12 @@ export default function SongTypeSelector({
     return groups
   }, [songTypes, customListStore])
 
-  const [selectedKeys, setSelectedKeys] = useState(new Set(["All Songs"]))
+  const [selectedKeys, setSelectedKeys] = useState(new Set([GROUP_ALL_SONGS]))
 
   useEffect(() => {
     if (selectedKeys.size !== 1) return
     const selectedKey = Array.from(selectedKeys)[0]
-
-    const specialCategories = new Set(["CustomList", "Favorites", "All Songs"])
-
-    if (specialCategories.has(selectedKey)) {
-      onSelectionChange(selectedKey, false)
-      return
-    }
-
-    const isCarte = customListStore.names.has(selectedKey)
-
-    onSelectionChange(selectedKey, isCarte)
+    onSelectionChange(selectedKey, customListStore.names.has(selectedKey))
   }, [selectedKeys])
 
   const {
@@ -218,9 +201,9 @@ export default function SongTypeSelector({
         {(() => {
           if (major === CARTE) {
             switch (item.key) {
-              case "All Songs":
+              case GROUP_ALL_SONGS:
                 return item.label
-              case "Favorites":
+              case GROUP_FAVORITE:
                 return (
                   <div className={`${styles.favoriteRow}`}>
                     {item.label}
@@ -248,7 +231,7 @@ export default function SongTypeSelector({
                     </Dropdown>
                   </div>
                 )
-              case "CustomList":
+              case GROUP_CREATE_CUSTOM:
                 return <div onClick={handleAddCustomList}>{item.label}</div>
               default:
                 // 自定义歌单
@@ -333,7 +316,7 @@ export default function SongTypeSelector({
                   selectionMode="single"
                   onSelectionChange={(keys) => {
                     keys = keys as Set<string>
-                    if (keys.has("CustomList")) {
+                    if (keys.has(GROUP_CREATE_CUSTOM)) {
                       return
                     }
                     if (keys instanceof Set && keys.size > 0) {
