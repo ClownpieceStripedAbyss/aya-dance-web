@@ -1,5 +1,11 @@
-import { MoreIcon } from "@/assets/icon";
-import { Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@nextui-org/react";
+import { MoreIcon } from "@/assets/icon"
+import {
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@nextui-org/react"
 
 interface DropdownItem {
   key: string
@@ -24,7 +30,7 @@ const MakeDropdown: React.FC<MakeDropdownProps> = ({
   return (
     <Dropdown>
       <DropdownTrigger>
-        <Button isIconOnly variant="light" size="sm">
+        <Button as="div" isIconOnly variant="light" size="sm">
           {icon}
         </Button>
       </DropdownTrigger>

@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { Key, useEffect, useMemo, useRef, useState } from "react";
+import { Key, useEffect, useMemo, useRef, useState } from "react"
 import {
   Accordion,
   AccordionItem,
@@ -14,19 +14,34 @@ import {
   ScrollShadow,
   Skeleton,
   Textarea,
-  useDisclosure
-} from "@nextui-org/react";
+  useDisclosure,
+  Button,
+} from "@nextui-org/react"
 
-import styles from "./index.module.css";
-import { findSongById, GenericVideoGroup, GROUP_ALL_SONGS, GROUP_FAVORITE } from "@/types/video";
-import { Button } from "@nextui-org/button";
-import { useDispatch, useSelector } from "react-redux";
-import { addCollection, selectCollection } from "@/store/modules/collection";
-import { ExportIcon, Star } from "@/assets/icon";
-import AddCustomListModal, { ModalRef as AddCustomListModalRef } from "./components/AddEditCustomListModal";
-import { deleteCustomList, selectCustomListStore } from "@/store/modules/customPlaylist";
-import ExportCustom, { ModalRef as ExportCustomModalRef } from "./components/ExportCustom";
-import MakeDropdown from "@/components/makeDropdown";
+import styles from "./index.module.css"
+import {
+  findSongById,
+  GenericVideoGroup,
+  GROUP_ALL_SONGS,
+  GROUP_FAVORITE,
+} from "@/types/video"
+import { useDispatch, useSelector } from "react-redux"
+import { addCollection, selectCollection } from "@/store/modules/collection"
+import { ExportIcon, Star } from "@/assets/icon"
+import AddCustomListModal, {
+  ModalRef as AddCustomListModalRef,
+} from "./components/AddEditCustomListModal"
+import {
+  deleteCustomList,
+  selectCustomListStore,
+} from "@/store/modules/customPlaylist"
+import ExportCustom, {
+  ModalRef as ExportCustomModalRef,
+} from "./components/ExportCustom"
+import ImportCustom, {
+  ModalRef as ImportCustomModalRef,
+} from "./components/ImportCustom"
+import MakeDropdown from "@/components/makeDropdown"
 
 // À la carte
 const CARTE = "À la carte"
@@ -66,15 +81,25 @@ export default function SongTypeSelector({
 
     // 添加 收藏 和 新增歌单 选项 与 自定义歌单展示选项
 
-    option.push({ key: GROUP_FAVORITE, label: "喜欢的歌曲", major: "", isCustomPlaylist: false })
+    option.push({
+      key: GROUP_FAVORITE,
+      label: "喜欢的歌曲",
+      major: "",
+      isCustomPlaylist: false,
+    })
 
     customListStore.content.forEach((list) => {
-      option.push({ key: list.name, label: list.name, major: "", isCustomPlaylist: true })
+      option.push({
+        key: list.name,
+        label: list.name,
+        major: "",
+        isCustomPlaylist: true,
+      })
     })
 
     let groups: {
       major: string
-      items: { key: string; label: string, isCustomPlaylist: boolean }[]
+      items: { key: string; label: string; isCustomPlaylist: boolean }[]
     }[] = []
     groupBy(option, (item) => item.major).forEach((value, major) => {
       groups.push({
@@ -159,9 +184,8 @@ export default function SongTypeSelector({
       case "make-custom-list":
         handleAddCustomList()
         break
-      case "export-custom-list":
-        // TODO 导入歌单 空函数
-        handleExportCustomList()
+      case "import-custom-list":
+        handleImportCustomList()
         break
       default:
         break
@@ -184,7 +208,10 @@ export default function SongTypeSelector({
     })
   }
   // 导入歌单
-  function handleExportCustomList() {}
+  const importModalRef = useRef<ImportCustomModalRef>(null)
+  function handleImportCustomList() {
+    importModalRef.current?.onOpen("")
+  }
   // 导出歌单
   const exportModalRef = useRef<ExportCustomModalRef>(null)
   function exportCustomList(name: string) {
@@ -235,7 +262,7 @@ export default function SongTypeSelector({
         )
       }
 
-      return item.label;
+      return item.label
     }
     return (
       <ListboxItem
@@ -256,7 +283,7 @@ export default function SongTypeSelector({
           <MakeDropdown
             items={[
               { key: "make-custom-list", label: "新增歌单" },
-              { key: "export-custom-list", label: "导入歌单" },
+              { key: "import-custom-list", label: "导入歌单" },
             ]}
             onAction={(key) => handleDropdownAction(key)}
             icon={<Star className="w-4 h-4 text-black dark:text-white" />}
@@ -443,6 +470,7 @@ export default function SongTypeSelector({
       </Modal>
       <AddCustomListModal ref={addModalRef} />
       <ExportCustom ref={exportModalRef} />
+      <ImportCustom ref={importModalRef} />
     </>
   )
 }
