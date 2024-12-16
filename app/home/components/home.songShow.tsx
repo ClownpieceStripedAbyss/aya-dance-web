@@ -79,11 +79,17 @@ export default function SongShow({
         const { oldIndex, newIndex } = evt;
         if (oldIndex === newIndex) return;
         if (oldIndex === undefined || newIndex === undefined) return;
-        const newVideos = [...stagedVideos];
-        const [movedItem] = newVideos.splice(oldIndex, 1);
-        newVideos.splice(newIndex, 0, movedItem);
-
-        setStagedVideos(newVideos);
+        setStagedVideos((stagedVideos) => {
+          // move the element in oldIndex to newIndex, and shift other elements accordingly
+          const newVideos = [...stagedVideos];
+          const [removed] = newVideos.splice(oldIndex, 1);
+          if (oldIndex < newIndex) {
+            newVideos.splice(newIndex - 1, 0, removed);
+          } else {
+            newVideos.splice(newIndex, 0, removed);
+          }
+          return newVideos;
+        });
       }
     });
   }, [isEditMode]);
@@ -102,8 +108,10 @@ export default function SongShow({
   const switchEditMode = (edit: boolean) => {
     if (edit) {
       // initialize edit mode
+      console.log("initialize edit mode", genericVideos.map(x => x.id));
       setStagedVideos(genericVideos.map(x => ({ video: x, delete: false }) as EditingVideo));
     } else {
+      console.log("exit edit mode", stagedVideos.map(x => x.video.id));
       dispatch(editSongsInCustomList({
         name: selectedKey,
         ids: stagedVideos.filter(x => !x.delete).map(x => x.video.id)
