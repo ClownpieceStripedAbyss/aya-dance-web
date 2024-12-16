@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
 // components/AddCustomListModal.tsx
-import React, { forwardRef, useImperativeHandle, useState } from "react"
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 import {
   Button,
   Input,
@@ -11,17 +11,14 @@ import {
   ModalFooter,
   ModalHeader,
   Textarea,
-  useDisclosure,
-} from "@nextui-org/react"
-import { toast } from "react-toastify"
-import { useDispatch } from "react-redux"
-import {
-  createCustomList,
-  editCustomList,
-} from "@/store/modules/customPlaylist"
-import { AppDispatch } from "@/store"
-import { isBuiltinGroup } from "@/types/video"
-import { CustomPlayList } from "@/types/customPlayList"
+  useDisclosure
+} from "@nextui-org/react";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { createCustomList, editCustomList } from "@/store/modules/customPlaylist";
+import { AppDispatch } from "@/store";
+import { isBuiltinGroup } from "@/types/video";
+import { CustomPlayList } from "@/types/customPlayList";
 
 export interface ModalRef {
   onOpen: (
@@ -83,7 +80,6 @@ const AddEditCustomListModal = forwardRef<ModalRef>((_, ref) => {
       ),
       originName,
     }
-    if (isImport) return importSubmit(target)
     if (isEdit) return editSubmit(target)
     addSubmit(target)
   }
@@ -99,23 +95,18 @@ const AddEditCustomListModal = forwardRef<ModalRef>((_, ref) => {
     close()
   }
 
-  const validateCustomFormat = (str: string) => {
-    const regex = /^WannaCustom:\d+(,\d+)*$/
-    return regex.test(str)
-  }
-
-  function importSubmit(target: CustomPlayList) {
-    const cleanStr = customStr.replace(/^["']|["']$/g, "")
-    if (!validateCustomFormat(cleanStr)) {
-      toast.warning(`请输入符合标准的歌单内容 例如 "WannaCustom:1,2,3"`)
+  function handleImportSubmit() {
+    if (!customStr.startsWith("WannaShare:")) {
+      toast.warning(`请输入符合标准的歌单内容 例如 "WannaShare:{...}"`)
       return
     }
 
+    // only split into 2 parts
+    const cleanStr = customStr.split("WannaShare:")[1]
+    const sharedCustom: CustomPlayList = JSON.parse(cleanStr)
+
     dispatch(
-      createCustomList({
-        ...target,
-        ids: cleanStr.split(":")[1].split(",").map(Number),
-      })
+      createCustomList(sharedCustom)
     )
     toast.success("歌单添加成功")
     close()
@@ -141,55 +132,57 @@ const AddEditCustomListModal = forwardRef<ModalRef>((_, ref) => {
               {isEdit ? "修改歌单" : isImport ? "导入歌单" : "新增歌单"}
             </ModalHeader>
             <ModalBody>
-              <Input
-                label="歌单名称"
-                value={name}
-                onValueChange={setName}
-                maxLength={12}
-              />
-              <Textarea
-                label="歌单描述(可选)"
-                variant="bordered"
-                labelPlacement="outside"
-                className="max-w-full"
-                value={description}
-                onValueChange={setDescription}
-              />
               {isImport ? (
                 <Textarea
                   label="请粘贴歌单内容"
                   variant="bordered"
                   labelPlacement="outside"
                   className="max-w-full mb-2"
-                  placeholder={`格式例如: WannaCustom:1,2,3`}
+                  placeholder={`格式例如: WannaShare:{...}`}
                   onValueChange={(value) => {
                     setCustomStr(value)
                   }}
                 />
               ) : (
-                <Textarea
-                  label="id 列表(可选)"
-                  placeholder="id 列表，以逗号分隔"
-                  variant="bordered"
-                  labelPlacement="outside"
-                  className="max-w-full"
-                  value={ids}
-                  onValueChange={(value) => {
-                    const filtered = value
+                <>
+                  <Input
+                    label="歌单名称"
+                    value={name}
+                    onValueChange={setName}
+                    maxLength={12}
+                  />
+                  <Textarea
+                    label="歌单描述(可选)"
+                    variant="bordered"
+                    labelPlacement="outside"
+                    className="max-w-full"
+                    value={description}
+                    onValueChange={setDescription}
+                  />
+                  <Textarea
+                    label="id 列表(可选)"
+                    placeholder="id 列表，以逗号分隔"
+                    variant="bordered"
+                    labelPlacement="outside"
+                    className="max-w-full"
+                    value={ids}
+                    onValueChange={(value) => {
+                      const filtered = value
                       .replace(/，/g, ",")
                       .replace(/\s+/g, "")
                       .replace(/[^0-9,]/g, "")
                       .replace(/,+/g, ",")
-                    setIds(filtered)
-                  }}
-                />
+                      setIds(filtered)
+                    }}
+                  />
+                </>
               )}
             </ModalBody>
             <ModalFooter>
               <Button color="danger" variant="light" onPress={close}>
                 取消
               </Button>
-              <Button color="primary" onClick={handleSubmit}>
+              <Button color="primary" onClick={isImport ? handleImportSubmit : handleSubmit}>
                 确认
               </Button>
             </ModalFooter>

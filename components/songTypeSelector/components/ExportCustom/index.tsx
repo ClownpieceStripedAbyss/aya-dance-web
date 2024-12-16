@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
 // components/ExportCustom.tsx
-import React, { forwardRef, useImperativeHandle, useState } from "react"
+import React, { forwardRef, useImperativeHandle, useState } from "react";
 import {
   Button,
   Modal,
@@ -11,16 +11,16 @@ import {
   ModalHeader,
   ScrollShadow,
   Textarea,
-  useDisclosure,
-} from "@nextui-org/react"
-import { toast } from "react-toastify"
-import { useSelector } from "react-redux"
-import { selectCustomListStore } from "@/store/modules/customPlaylist"
+  useDisclosure
+} from "@nextui-org/react";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { selectCustomListStore } from "@/store/modules/customPlaylist";
 
-import { CustomPlayList } from "@/types/customPlayList"
+import { CustomPlayList } from "@/types/customPlayList";
 
-import { GenericVideo, findSongEntries } from "@/types/video"
-import { selectSongInfo } from "@/store/modules/songInfo"
+import { findSongEntries, GenericVideo } from "@/types/video";
+import { selectSongInfo } from "@/store/modules/songInfo";
 
 export interface ModalRef {
   onOpen: (name: string) => void
@@ -54,8 +54,7 @@ const ExportCustom = forwardRef<ModalRef>((_, ref) => {
   }))
 
   function handleCopy() {
-    const text = JSON.stringify(exportCustom())
-    navigator.clipboard.writeText(text)
+    navigator.clipboard.writeText(exportCustom())
     toast.success("已复制到剪贴板")
   }
   function close() {
@@ -68,7 +67,7 @@ const ExportCustom = forwardRef<ModalRef>((_, ref) => {
     onClose()
   }
   const exportCustom = () => {
-    return `WannaCustom:${customList.ids.join(",")}`
+    return `WannaShare:${JSON.stringify(customList)}`
   }
   return (
     <Modal size="md" isOpen={isOpen} onClose={close}>
