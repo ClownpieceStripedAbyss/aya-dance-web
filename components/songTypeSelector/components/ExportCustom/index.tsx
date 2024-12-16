@@ -91,7 +91,7 @@ const ExportCustom = forwardRef<ModalRef>((_, ref) => {
                 <div className="text-sm pb-2">列表展示</div>
                 {songList.map((song) => {
                   return (
-                    <div className="flex justify-between">
+                    <div className="flex justify-between" key={song.id}>
                       <div className="text-sm w-[6%]">{song.id}</div>
                       <div
                         className="text-sm w-[85%] truncate hover:cursor-pointer"

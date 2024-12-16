@@ -28,9 +28,9 @@ import {
 import { useDispatch, useSelector } from "react-redux"
 import { addCollection, selectCollection } from "@/store/modules/collection"
 import { ExportIcon, Star } from "@/assets/icon"
-import AddCustomListModal, {
-  ModalRef as AddCustomListModalRef,
-} from "./components/AddEditCustomListModal"
+import CustomListOperationModal, {
+  ModalRef,
+} from "./components/CustomListOperationModal"
 import {
   deleteCustomList,
   selectCustomListStore,
@@ -38,9 +38,7 @@ import {
 import ExportCustom, {
   ModalRef as ExportCustomModalRef,
 } from "./components/ExportCustom"
-import ImportCustom, {
-  ModalRef as ImportCustomModalRef,
-} from "./components/ImportCustom"
+
 import MakeDropdown from "@/components/makeDropdown"
 
 // À la carte
@@ -193,24 +191,30 @@ export default function SongTypeSelector({
   }
 
   // 新增歌单
-  const addModalRef = useRef<AddCustomListModalRef>(null)
+  const modalRef = useRef<ModalRef>(null)
   function handleAddCustomList() {
-    addModalRef.current?.onOpen()
+    modalRef.current?.onOpen()
   }
   // 修改歌单
   function handleEditCustomList(name: string) {
     const target = customListStore.content.find((item) => item.name === name)
     console.log(target, "target")
-    addModalRef.current?.onOpen({
+    modalRef.current?.onOpen({
       name: target?.name || "",
       description: target?.description || "",
       ids: target?.ids.join(",") || "",
     })
   }
   // 导入歌单
-  const importModalRef = useRef<ImportCustomModalRef>(null)
   function handleImportCustomList() {
-    importModalRef.current?.onOpen("")
+    modalRef.current?.onOpen(
+      {
+        name: "",
+        description: "",
+        ids: "",
+      },
+      true
+    )
   }
   // 导出歌单
   const exportModalRef = useRef<ExportCustomModalRef>(null)
@@ -218,14 +222,11 @@ export default function SongTypeSelector({
     exportModalRef.current?.onOpen(name)
   }
 
-  const makeGroupItem = (
-    item: {
-      key: string
-      label: string
-      isCustomPlaylist: boolean
-    },
-    major: string
-  ) => {
+  const makeGroupItem = (item: {
+    key: string
+    label: string
+    isCustomPlaylist: boolean
+  }) => {
     const make = () => {
       if (item.isCustomPlaylist) {
         return (
@@ -317,7 +318,7 @@ export default function SongTypeSelector({
             }
           }}
         >
-          {(item) => makeGroupItem(item, group.major)}
+          {(item) => makeGroupItem(item)}
         </Listbox>
       </AccordionItem>
     ))
@@ -468,9 +469,8 @@ export default function SongTypeSelector({
           )}
         </ModalContent>
       </Modal>
-      <AddCustomListModal ref={addModalRef} />
+      <CustomListOperationModal ref={modalRef} />
       <ExportCustom ref={exportModalRef} />
-      <ImportCustom ref={importModalRef} />
     </>
   )
 }

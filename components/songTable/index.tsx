@@ -164,19 +164,18 @@ export default function SongTable({
               ))}
             </Autocomplete>
           )}
-          {!isCustomPlaylist && (
-            <Checkbox
-              className="ml-2"
-              isSelected={
-                !!lockedRandomGroup &&
-                targetKey === lockedRandomGroup.group &&
-                isCustomPlaylist === lockedRandomGroup.isCustom
-              }
-              onValueChange={handleLockRandom}
-            >
-              锁定随机
-            </Checkbox>
-          )}
+
+          <Checkbox
+            className="ml-2"
+            isSelected={
+              !!lockedRandomGroup &&
+              targetKey === lockedRandomGroup.group &&
+              isCustomPlaylist === lockedRandomGroup.isCustom
+            }
+            onValueChange={handleLockRandom}
+          >
+            锁定随机
+          </Checkbox>
         </div>
 
         {!isEditMode && (
