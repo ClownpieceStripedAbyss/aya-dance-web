@@ -51,6 +51,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const combinedVideoOptions = [
     { value: `${DoubleWidthShowMode.Original}`, label: "原版" },
     { value: `${DoubleWidthShowMode.Simplified}`, label: "简化" },
+    { value: `${DoubleWidthShowMode.Both}`, label: "全部" }
   ]
 
   // IMPORTANT: use `http`, so our self-hosted CDN can serve the video locally! DONT USE `https`!
