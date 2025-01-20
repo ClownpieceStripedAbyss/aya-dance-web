@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { nextVideoWithRandom, selectPlayList } from "@/store/modules/playList";
 import styles from "./index.module.css";
 import { selectSongInfo } from "@/store/modules/songInfo";
-import { Spinner } from "@nextui-org/react";
+import { Autocomplete, AutocompleteItem, Spinner } from "@nextui-org/react";
 import { selectPlayOptions } from "@/store/modules/playOptions";
 import { computeNextQueueCandidates, findSongEntries, GenericVideo, GROUP_ALL_SONGS } from "@/types/video";
 import { selectCollection } from "@/store/modules/collection";
@@ -46,7 +46,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
     console.log(`OnVideoEnded: Handle next random range: ${randomGroup}`)
     dispatch(nextVideoWithRandom(randomGroup));
   };
+
   const [doubleWidthShowMode, setDoubleWidthShowMode] = useState<DoubleWidthShowMode>(DoubleWidthShowMode.Original);
+  const combinedVideoOptions = [
+    { value: `${DoubleWidthShowMode.Original}`, label: "原版" },
+    { value: `${DoubleWidthShowMode.Simplified}`, label: "简化" },
+  ]
 
   // IMPORTANT: use `http`, so our self-hosted CDN can serve the video locally! DONT USE `https`!
   const videoUrl = queue ? `http://api.udon.dance/Api/Songs/play?id=${queue.video.id}` : "";
@@ -130,7 +135,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       });
 
       muteAndUnmuteAfterDelay();
-      applyScreenEffect();
+      applyScreenEffect(doubleWidthShowMode);
       // This enforces the video to reload when the videoUrl changes
       videoRef.current.load();
 
@@ -153,7 +158,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
     }
   };
 
-  const applyScreenEffect = () => {
+  const applyScreenEffect = (doubleWidthShowMode: DoubleWidthShowMode) => {
     if (videoRef.current) {
       const wrapper = videoRef.current.closest(
         ".plyr__video-wrapper"
@@ -203,6 +208,28 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
         <source src={videoUrl} type="video/mp4" className=" w-full h-full" />
       </video>
       <span>Flip: {flip ? "true" : "false"}, Combined: {doubleWidth ? "true" : "false"}, Locked Random: {lockedRandomGroupOrAll}</span>
+      <br />
+      <Autocomplete
+        aria-label="change rows per page"
+        className="w-[130px]"
+        defaultItems={combinedVideoOptions}
+        isClearable={false}
+        selectedKey={`${doubleWidthShowMode}`}
+        onSelectionChange={(key) => {
+          console.log("DoubleWidthShowMode changed to", key);
+          if (key !== null) {
+            let mode = Number(key) as DoubleWidthShowMode;
+            setDoubleWidthShowMode(mode);
+            applyScreenEffect(mode);
+          }
+        }}
+      >
+        {combinedVideoOptions.map((option) => (
+          <AutocompleteItem key={option.value} value={option.value}>
+            {option.label}
+          </AutocompleteItem>
+        ))}
+      </Autocomplete>
     </div>
   );
 };
