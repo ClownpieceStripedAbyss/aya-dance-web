@@ -1,15 +1,15 @@
-import { createSlice } from "@reduxjs/toolkit"
-import { createSelector } from "reselect"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector } from "reselect";
 
-import { RootState } from "../index"
-import { LoadFromStorage, SaveToStorage } from "@/utils/local"
-import { toast } from "react-toastify"
-import { CustomPlayList } from "@/types/customPlayList"
+import { RootState } from "../index";
+import { LoadFromStorage, SaveToStorage } from "@/utils/local";
+import { toast } from "react-toastify";
+import { AddSongToCustomList, CustomPlayList, EditCustomPlayList, EditSongsInCustomList } from "@/types/customPlayList";
 
 // local storage key
 const CUSTOM_LIST_KEY = "CustomPlayList"
 // local storage format version, bump this if the type `CustomList` changes
-const CUSTOM_LIST_VERSION = 1
+const CUSTOM_LIST_VERSION = 2
 
 export interface CustomPlayListState {
   updatedAt: string
@@ -34,7 +34,7 @@ function findTargetList(
       {
         name: "",
         description: "",
-        ids: [],
+        danceIds: [],
       },
       -1,
     ]
@@ -66,8 +66,8 @@ const CustomListStoreSlice = createSlice({
       console.log(decompressedData)
       Object.assign(state, decompressedData)
     },
-    createCustomList: (state: CustomPlayListState, action) => {
-      const { name, description, ids } = action.payload
+    createCustomList: (state: CustomPlayListState, action: PayloadAction<CustomPlayList>) => {
+      const { name, description, danceIds } = action.payload
       const [_, targetIndex] = findTargetList(state, name)
 
       if (targetIndex != -1) {
@@ -76,26 +76,26 @@ const CustomListStoreSlice = createSlice({
         return
       }
 
-      state.content.push({ name, description, ids })
+      state.content.push({ name, description, danceIds })
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)
     },
 
-    editCustomList: (state: CustomPlayListState, action) => {
-      const { name, description, ids, originName } = action.payload
-      const [_, targetIndex] = findTargetList(state, name)
+    editCustomList: (state: CustomPlayListState, action: PayloadAction<EditCustomPlayList>) => {
+      const { edited, originName } = action.payload
+      const [_, targetIndex] = findTargetList(state, originName)
 
       if (targetIndex === -1) {
         console.log(`CustomList ${originName} not found`)
         return
       }
 
-      state.content[targetIndex] = { name, description, ids }
+      state.content[targetIndex] = edited
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)
     },
 
-    deleteCustomList: (state: CustomPlayListState, action) => {
+    deleteCustomList: (state: CustomPlayListState, action: PayloadAction<string>) => {
       const name = action.payload
       const [_, targetIndex] = findTargetList(state, name)
 
@@ -108,35 +108,31 @@ const CustomListStoreSlice = createSlice({
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)
     },
-    addSongToCustomList(state: CustomPlayListState, action) {
-      const { name, id } = action.payload
-      const [target, targetIndex] = findTargetList(state, name)
+    addSongToCustomList(state: CustomPlayListState, action: PayloadAction<AddSongToCustomList>) {
+      const { customListName, danceId } = action.payload
+      const [target, targetIndex] = findTargetList(state, customListName)
       if (targetIndex === -1) {
-        console.log(`CustomList ${name} not found`)
+        console.log(`CustomList ${customListName} not found`)
         return
       }
-      if (target.ids.includes(id)) {
-        console.log(`CustomList ${name} already has song ${id}`)
+      if (target.danceIds.includes(danceId)) {
+        console.log(`CustomList ${customListName} already has song ${danceId}`)
         toast.warning("歌单已有该歌曲")
         return
       }
-      target.ids.push(id)
+      target.danceIds.push(danceId)
       toast.success("歌曲添加成功")
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)
     },
-    editSongsInCustomList(state: CustomPlayListState, action) {
-      const { name, ids } = action.payload
-      if (ids.length === 0) {
-        console.log("No song to delete")
-        return
-      }
-      const [_, targetIndex] = findTargetList(state, name)
+    editSongsInCustomList(state: CustomPlayListState, action: PayloadAction<EditSongsInCustomList>) {
+      const { customListName, danceIds } = action.payload
+      const [_, targetIndex] = findTargetList(state, customListName)
       if (targetIndex === -1) {
-        console.log(`CustomList ${name} not found`)
+        console.log(`CustomList ${customListName} not found`)
         return
       }
-      state.content[targetIndex].ids = ids
+      state.content[targetIndex].danceIds = danceIds
       toast.success("歌单修改成功")
       state.updatedAt = new Date().toISOString()
       saveLocalCustomListStore(state)

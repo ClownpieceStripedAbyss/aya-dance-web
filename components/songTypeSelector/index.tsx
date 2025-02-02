@@ -1,9 +1,10 @@
-"use client"
+"use client";
 
-import { Key, useEffect, useMemo, useRef, useState } from "react"
+import { Key, useEffect, useMemo, useRef, useState } from "react";
 import {
   Accordion,
   AccordionItem,
+  Button,
   Listbox,
   ListboxItem,
   Modal,
@@ -14,32 +15,19 @@ import {
   ScrollShadow,
   Skeleton,
   Textarea,
-  useDisclosure,
-  Button,
-} from "@nextui-org/react"
+  useDisclosure
+} from "@nextui-org/react";
 
-import styles from "./index.module.css"
-import {
-  findSongById,
-  GenericVideoGroup,
-  GROUP_ALL_SONGS,
-  GROUP_FAVORITE,
-} from "@/types/video"
-import { useDispatch, useSelector } from "react-redux"
-import { addCollection, selectCollection } from "@/store/modules/collection"
-import { ExportIcon, Star } from "@/assets/icon"
-import CustomListOperationModal, {
-  ModalRef,
-} from "./components/CustomListOperationModal"
-import {
-  deleteCustomList,
-  selectCustomListStore,
-} from "@/store/modules/customPlaylist"
-import ExportCustom, {
-  ModalRef as ExportCustomModalRef,
-} from "./components/ExportCustom"
+import styles from "./index.module.css";
+import { findSongById, GenericVideoGroup, GROUP_ALL_SONGS, GROUP_FAVORITE } from "@/types/video";
+import { useDispatch, useSelector } from "react-redux";
+import { addCollection, selectCollection } from "@/store/modules/collection";
+import { ExportIcon, Star } from "@/assets/icon";
+import CustomListOperationModal, { ModalRef } from "./components/CustomListOperationModal";
+import { deleteCustomList, selectCustomListStore } from "@/store/modules/customPlaylist";
+import ExportCustom, { ModalRef as ExportCustomModalRef } from "./components/ExportCustom";
 
-import MakeDropdown from "@/components/makeDropdown"
+import MakeDropdown from "@/components/makeDropdown";
 
 // À la carte
 const CARTE = "À la carte"
@@ -202,7 +190,7 @@ export default function SongTypeSelector({
     modalRef.current?.onOpen({
       name: target?.name || "",
       description: target?.description || "",
-      ids: target?.ids.join(",") || "",
+      danceIds: target?.danceIds.join(",") || "",
     })
   }
   // 导入歌单
@@ -211,7 +199,7 @@ export default function SongTypeSelector({
       {
         name: "",
         description: "",
-        ids: "",
+        danceIds: "",
       },
       true
     )

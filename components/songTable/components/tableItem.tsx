@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Badge,
@@ -10,26 +10,20 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Image,
-  Link,
-} from "@nextui-org/react"
+  Link
+} from "@nextui-org/react";
 
-import styles from "./tableItem.module.css"
+import styles from "./tableItem.module.css";
 
-import { Delete, Grid, Heart, HeartFilled, List, Plus } from "@/assets/icon"
-import { formatTag, formatTagColor, GenericVideo } from "@/types/video"
-import { useDispatch, useSelector } from "react-redux"
-import { useCallback, useMemo, useState } from "react"
-import {
-  addCollection,
-  removeCollection,
-  selectCollection,
-} from "@/store/modules/collection"
-import { addPlayList, QueueVideo } from "@/store/modules/playList"
-import {
-  addSongToCustomList,
-  selectCustomListStore,
-} from "@/store/modules/customPlaylist"
-import clsx from "clsx"
+import { Delete, Grid, Heart, HeartFilled, List, Plus } from "@/assets/icon";
+import { formatTag, formatTagColor, GenericVideo } from "@/types/video";
+import { useDispatch, useSelector } from "react-redux";
+import { useCallback, useMemo, useState } from "react";
+import { addCollection, removeCollection, selectCollection } from "@/store/modules/collection";
+import { addPlayList, QueueVideo } from "@/store/modules/playList";
+import { addSongToCustomList, selectCustomListStore } from "@/store/modules/customPlaylist";
+import clsx from "clsx";
+import { AddSongToCustomList } from "@/types/customPlayList";
 
 interface SongTableProps {
   song: GenericVideo
@@ -173,7 +167,10 @@ export default function TableItem({
                       <DropdownItem
                         key={name}
                         onClick={() =>
-                          dispatch(addSongToCustomList({ name, id: song.id }))
+                          dispatch(addSongToCustomList({
+                            customListName: name,
+                            danceId: song.id
+                          } as AddSongToCustomList))
                         }
                       >
                         {name}

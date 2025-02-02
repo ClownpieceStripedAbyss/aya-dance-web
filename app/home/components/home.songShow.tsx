@@ -9,6 +9,7 @@ import { selectCollection } from "@/store/modules/collection";
 import { useDispatch, useSelector } from "react-redux";
 import { editSongsInCustomList, selectCustomListStore } from "@/store/modules/customPlaylist";
 import Sortable from "sortablejs";
+import { EditSongsInCustomList } from "@/types/customPlayList";
 
 interface SongShowProps {
   songTypes: GenericVideoGroup[]
@@ -109,9 +110,9 @@ export default function SongShow({
     } else {
       console.log("exit edit mode", stagedVideos.map(x => x.video.id));
       dispatch(editSongsInCustomList({
-        name: selectedKey,
-        ids: stagedVideos.filter(x => !x.delete).map(x => x.video.id)
-      }));
+        customListName: selectedKey,
+        danceIds: stagedVideos.filter(x => !x.delete).map(x => x.video.id)
+      } as EditSongsInCustomList));
       setStagedVideos([]);
     }
     setIsEditMode(edit);

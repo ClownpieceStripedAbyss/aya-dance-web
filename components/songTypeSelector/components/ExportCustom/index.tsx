@@ -33,7 +33,7 @@ const ExportCustom = forwardRef<ModalRef>((_, ref) => {
   const [customList, setCustomList] = useState({
     name: "",
     description: "",
-    ids: [],
+    danceIds: [],
   } as CustomPlayList)
   const [songList, setSongList] = useState<GenericVideo[]>([])
   useImperativeHandle(ref, () => ({
@@ -43,7 +43,7 @@ const ExportCustom = forwardRef<ModalRef>((_, ref) => {
         songTypes,
         name,
         true,
-        target.ids,
+        target.danceIds,
         customListStore
       )
       setSongList(allSong)
@@ -61,8 +61,8 @@ const ExportCustom = forwardRef<ModalRef>((_, ref) => {
     setCustomList({
       name: "",
       description: "",
-      ids: [],
-    })
+      danceIds: [],
+    } as CustomPlayList)
     setSongList([])
     onClose()
   }

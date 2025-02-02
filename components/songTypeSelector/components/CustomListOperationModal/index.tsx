@@ -18,14 +18,14 @@ import { useDispatch } from "react-redux";
 import { createCustomList, editCustomList } from "@/store/modules/customPlaylist";
 import { AppDispatch } from "@/store";
 import { isBuiltinGroup } from "@/types/video";
-import { CustomPlayList } from "@/types/customPlayList";
+import { CustomPlayList, EditCustomPlayList } from "@/types/customPlayList";
 
 export interface ModalRef {
   onOpen: (
     formModel?: {
       name: string
       description: string
-      ids: string
+      danceIds: string
     },
     isImportBool?: boolean
   ) => void
@@ -48,7 +48,7 @@ const AddEditCustomListModal = forwardRef<ModalRef>((_, ref) => {
         setName(formModel.name)
         setOriginName(formModel.name)
         setDescription(formModel.description)
-        setIds(formModel.ids)
+        setIds(formModel.danceIds)
         setIsImport(false)
       }
       // 新增
@@ -70,17 +70,19 @@ const AddEditCustomListModal = forwardRef<ModalRef>((_, ref) => {
     const target = {
       name,
       description,
-      ids: Array.from(
+      danceIds: Array.from(
         new Set(
           ids
             .split(",")
             .filter(Boolean)
             .map((id) => Number(id))
         )
-      ),
-      originName,
-    }
-    if (isEdit) return editSubmit(target)
+      )
+    } as CustomPlayList
+    if (isEdit) return editSubmit({
+      edited: target,
+      originName: originName,
+    } as EditCustomPlayList)
     addSubmit(target)
   }
   function addSubmit(target: CustomPlayList) {
@@ -89,7 +91,7 @@ const AddEditCustomListModal = forwardRef<ModalRef>((_, ref) => {
     close()
   }
 
-  function editSubmit(target: CustomPlayList) {
+  function editSubmit(target: EditCustomPlayList) {
     dispatch(editCustomList(target))
     toast.success("歌单修改成功")
     close()

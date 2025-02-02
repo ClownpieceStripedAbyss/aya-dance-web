@@ -109,9 +109,9 @@ export const findSongEntries = (
 ) : GenericVideo[] => {
   if (isCustomPlaylist) {
     const allSongs = allSongsFromGroups(songTypes);
-    const playList = customList.content.find(x => x.name === groupName) || { ids: [] };
+    const playList = customList.content.find(x => x.name === groupName) || { danceIds: [] };
     const songsMap = new Map(allSongs.map((song) => [song.id, song]));
-    return playList.ids.map(id => songsMap.get(id)).filter((x): x is GenericVideo => !!x);
+    return playList.danceIds.map(id => songsMap.get(id)).filter((x): x is GenericVideo => !!x);
   } else if (groupName === GROUP_FAVORITE) {
     const allSongs = allSongsFromGroups(songTypes);
     return allSongs.filter(x => favoriteIds.includes(x.id));
