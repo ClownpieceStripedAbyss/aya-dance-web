@@ -83,11 +83,7 @@ export default function SongShow({
           // move the element in oldIndex to newIndex, and shift other elements accordingly
           const newVideos = [...stagedVideos];
           const [removed] = newVideos.splice(oldIndex, 1);
-          if (oldIndex < newIndex) {
-            newVideos.splice(newIndex - 1, 0, removed);
-          } else {
-            newVideos.splice(newIndex, 0, removed);
-          }
+          newVideos.splice(newIndex, 0, removed)
           return newVideos;
         });
       }
