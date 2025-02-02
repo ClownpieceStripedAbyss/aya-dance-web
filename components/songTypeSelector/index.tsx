@@ -159,7 +159,7 @@ export default function SongTypeSelector({
         onExportListOpen()
         break
       case "custom-delete":
-        dispatch(deleteCustomList(value))
+        if (value != undefined) dispatch(deleteCustomList(value))
         break
       case "custom-edit":
         handleEditCustomList(value || "")
