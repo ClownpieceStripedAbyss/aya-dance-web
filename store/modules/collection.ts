@@ -1,9 +1,11 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { createAsyncThunk,createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { createSelector } from "reselect"
+import { openDB } from "idb"
 import { RootState } from "../index"
 import type { GenericVideo } from "@/types/video"
+import { COLLECT_NAME,initDB } from "@/utils/local";
 
-const COLLECTION_INFO_KEY = "collection_info"
+const STORE_NAME = COLLECT_NAME
 
 interface CollectionState {
   collection: GenericVideo["id"][]
@@ -13,49 +15,57 @@ const initialState: CollectionState = {
   collection: [],
 }
 
-// 从 localStorage 获取本地收藏
-const getLocalCollection = (): GenericVideo["id"][] => {
-  const localCollectionIds: string | null =
-    localStorage.getItem(COLLECTION_INFO_KEY)
-
-  if (!localCollectionIds) return []
-
-  try {
-    return JSON.parse(localCollectionIds).map((id: string) => Number(id))
-  } catch (error) {
-    console.error("获取local Ids失败:", error)
-    return []
-  }
+const getLocalCollection = async (): Promise<GenericVideo["id"][]> => {
+  const db = await initDB()
+  
+  const items = await db.getAll(STORE_NAME)
+  return items.map((item) => item.id)
 }
+
 
 // 保存到 localStorage
-const saveLocalCollection = (collection: GenericVideo["id"][]) => {
-  localStorage.setItem(COLLECTION_INFO_KEY, JSON.stringify(collection))
+const saveLocalCollection = async (id: GenericVideo["id"]) => {
+  const db = await initDB()
+  await db.put(STORE_NAME, { id })
 }
 
+// 移除收藏
+const removeLocalCollection = async (id: GenericVideo["id"]) => {
+  const db = await initDB()
+  await db.delete(STORE_NAME, id)
+}
+
+export const initCollection = createAsyncThunk(
+  'collection/initCollection',
+  async () => {
+    return await getLocalCollection(); // 返回获取的集合
+  }
+);
+// Redux Slice
 const CollectionSlice = createSlice({
   name: "collection",
   initialState,
   reducers: {
-    initCollection: (state) => {
-      const localCollectionIds = getLocalCollection()
-      state.collection = localCollectionIds
-    },
+    
     addCollection: (state, action: PayloadAction<GenericVideo["id"]>) => {
-      const id = action.payload
-      // 去重
+      const id = action.payload;
       if (!state.collection.includes(id)) {
-        state.collection.push(id)
-        saveLocalCollection(state.collection)
+        state.collection.push(id);
+        saveLocalCollection(id);
       }
     },
     removeCollection: (state, action: PayloadAction<GenericVideo["id"]>) => {
-      const id = action.payload
-      state.collection = state.collection.filter((item) => item !== id)
-      saveLocalCollection(state.collection)
-    },
+      const id = action.payload;
+      state.collection = state.collection.filter((item) => item !== id);
+      removeLocalCollection(id);
+    }
   },
-})
+  extraReducers: (builder) => {
+    builder.addCase(initCollection.fulfilled, (state, action) => {
+      state.collection = action.payload; 
+    });
+  }
+});
 
 // 选择器函数
 export const selectCollection = createSelector(
@@ -64,6 +74,6 @@ export const selectCollection = createSelector(
 )
 
 // 导出 actions 和 reducer
-export const { initCollection, addCollection, removeCollection } =
+export const {  addCollection, removeCollection } =
   CollectionSlice.actions
 export default CollectionSlice.reducer
