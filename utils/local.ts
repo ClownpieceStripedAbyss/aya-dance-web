@@ -1,16 +1,16 @@
 import { openDB } from "idb"
 
 const DB_NAME = "videoCollectionDB"
-export const GROUP_NAME = "groups"
+export const DEFAULT_NAME = "default"
 export const COLLECT_NAME = "collections"
 export const OPTIONS_NAME = "options"
 export const SONG_NAME = "songInfo"
 
 export  const initDB = async () => {
-  return openDB(DB_NAME, 11, {
+  return openDB(DB_NAME, 14, {
     upgrade(db) {
-      if (!db.objectStoreNames.contains(GROUP_NAME)) {
-        db.createObjectStore(GROUP_NAME, { keyPath: "key" })
+      if (!db.objectStoreNames.contains(DEFAULT_NAME)) {
+        db.createObjectStore(DEFAULT_NAME, { keyPath: "key" })
       }
       if (!db.objectStoreNames.contains(COLLECT_NAME)) {
         db.createObjectStore(COLLECT_NAME,{ keyPath: "id" })
@@ -29,7 +29,7 @@ export async function SaveToStorage<T>(key: string, data: T): Promise<void> {
   try {
     const jsonData = JSON.stringify(data)
     const db = await initDB()
-    await db.put(GROUP_NAME, { key, value:jsonData })
+    await db.put(DEFAULT_NAME, { key, value:jsonData })
   } catch (error) {
     console.error("Save to IndexedDB error:", error)
   }
@@ -37,10 +37,9 @@ export async function SaveToStorage<T>(key: string, data: T): Promise<void> {
 
 export async function LoadFromStorage<T>(key: string): Promise<T | null> {
   try {
-    console.log("----")
+   
     const db = await initDB()
-    const result = await db.get(GROUP_NAME, key)
-    console.log(result)
+    const result = await db.get(DEFAULT_NAME, key)
     return result ? JSON.parse(result.value) as T : null
   } catch (error) {
     console.error("Load from IndexedDB error:", error)
@@ -51,7 +50,7 @@ export async function LoadFromStorage<T>(key: string): Promise<T | null> {
 export async function RemoveFromStorage(key: string): Promise<void> {
   try {
     const db = await initDB()
-    await db.delete(GROUP_NAME, key)
+    await db.delete(DEFAULT_NAME, key)
   } catch (error) {
     console.error("Remove from IndexedDB error:", error)
   }

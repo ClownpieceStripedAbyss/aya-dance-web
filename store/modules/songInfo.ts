@@ -27,8 +27,9 @@ const initialState: SongInfo = {
 }
 
 const saveToLocalStorage = async (data: SongInfo) => {
+  const jsonData = JSON.stringify(data)
   const db = await initDB()
-  await db.put(STORE_NAME, { key: SONG_INFO_KEY, value: data })
+  await db.put(STORE_NAME, { key: SONG_INFO_KEY, value: jsonData })
 }
 
 
@@ -36,7 +37,11 @@ const saveToLocalStorage = async (data: SongInfo) => {
 const getSongInfo = async (): Promise<SongInfo | null> => {
   const db = await initDB()
   const result = await db.get(STORE_NAME, SONG_INFO_KEY)
-  return result ? result.value : null
+  if (!result) return null
+  const saveState: SongInfo = JSON.parse(result.value)
+  const allSongEntries = getAllSongEntries(saveState)
+    const newState = getNewState(saveState, allSongEntries)
+    return newState
 }
 
 
@@ -79,12 +84,16 @@ const handleFetchWannaMultidata = (builder: any) => {
   builder.addCase(getLocalSongInfo.fulfilled, (state: SongInfo, action:PayloadAction<SongInfo>) => {
     const dbData = action.payload;
     if (!dbData) return
+    
     if (dbData.version !== SONG_INFO_VERSION) {
+    
       return;
     }
+    
     Object.assign(state, dbData)
   })
     .addCase(fetchWannaInfoMultidataAction.pending, (state: SongInfo) => {
+      
       if (state.updatedAt !== "-1") return // 已有数据 不判断为首次更新
       // 开始获取数据
       state.loading = true
@@ -92,13 +101,16 @@ const handleFetchWannaMultidata = (builder: any) => {
     .addCase(
       fetchWannaInfoMultidataAction.fulfilled,
       (state: SongInfo, action: PayloadAction<WannaData["data"]>) => {
-        console.log("wanna fulfilled")
+        
+        
         const { groups, time } = action.payload
         if (time === state.updatedAt) {
           state.loading = false
+          
           return
         } // 无需更新
-        console.log("init SongInfo")
+        
+        
         const saveState = initSongInfo(groups, time)
         // 保存到 localStorage
         saveToLocalStorage(saveState)
@@ -111,8 +123,9 @@ const handleFetchWannaMultidata = (builder: any) => {
     .addCase(
       fetchWannaInfoMultidataAction.rejected,
       (state: SongInfo, action: any) => {
+        
         state.loading = false
-        console.log("aya rejected")
+        
         if (action.error) {
           console.error(action.error.message)
         }

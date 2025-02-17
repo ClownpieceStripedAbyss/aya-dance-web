@@ -25,10 +25,11 @@ const initialState: PlayOptions = {
 
 const getPlayOptions = async (): Promise<PlayOptions | null> => {
   const db = await initDB()
-  const opts: string | null = await db.get(STORE_NAME, OPTION_KEY)
+  const opts = await db.get(STORE_NAME, OPTION_KEY)
   if (!opts) return null
   try {
-    return JSON.parse(opts)
+    console.log(opts.value)
+    return JSON.parse(opts.value)
   } catch (error) {
     console.error("获取 play options 失败:", error)
     return null
