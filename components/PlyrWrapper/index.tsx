@@ -30,7 +30,9 @@ const formatDoubleWidthShowMode = (mode: DoubleWidthShowMode) => {
   }
 };
 
-const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
+
+
+const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
   const { playList, version } = useSelector(selectPlayList);
   const { songTypes } = useSelector(selectSongInfo);
   const collection = useSelector(selectCollection);
@@ -56,6 +58,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
 
   // IMPORTANT: use `http`, so our self-hosted CDN can serve the video locally! DONT USE `https`!
   const videoUrl = queue ? `http://api.udon.dance/Api/Songs/play?id=${queue.video.id}` : "";
+
   const flip = queue?.video.flip ?? false;
   const doubleWidth = queue?.video.doubleWidth ?? false;
   const volume = queue?.video.volume ?? 0.514;
@@ -72,79 +75,91 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
 
   let internalCounter = 0;
 
+  const prevVideoUrlRef = useRef<string>("");
+
   useEffect(() => {
     if (videoUrl === "") return;
 
     console.log("Got new video url", videoUrl);
-    if (videoRef.current) {
-      plyrInstance.current = new Plyr(videoRef.current, {
-        // IMPORTANT: no autoplay/autopause here, we will handle it manually,
-        // or race condition happens when the first video is loaded:
-        // the video starts to play, and seconds later the video is paused.
-        autoplay: false,
-        autopause: false
-      });
+    // Check if video component is null
+    if (!videoRef.current) return;
 
-      plyrInstance.current.on("ended", () => {
-        // TODO: workaround JavaScript unreasonable capturing behavior
-        let nextEntries = computeNextQueueCandidates(songTypes, collection, customList, lockedRandomGroup);
-        // TODO: end workaround
-
-        onVideoEnded(nextEntries);
-        if (spinnerRef.current) spinnerRef.current.style.display = "block";
-        setWaitCountDown(MAX_WAIT_COUNT_DOWN);
-        internalCounter++;
-      });
-      plyrInstance.current.on("playing", () => {
-        if (spinnerRef.current) spinnerRef.current.style.display = "none";
-      });
-      plyrInstance.current.on("loadeddata", () => {
-        // This enforces the video to play when the video is loaded;
-        // the "autoplay" option works only on the first video,
-        // for videos that are loaded after the first one, we need to call play() manually
-
-        // SetTimeout is not reliable, let's compute Date on our own
-        const now = Date.now();
-        // The Y-combinator
-        // const Y = (f: any) => (g => g(g))((g: any) => f((x: any) => g(g)(x)))
-
-        // capture by value
-        const counterCopy = internalCounter;
-        const resumePlay = () => {
-          if (counterCopy !== internalCounter) {
-            console.log("Resume video counter mismatch, aborting this count down");
-            return;
-          }
-          const elapsed = Date.now() - now;
-          console.log(`Elapsed: ${elapsed}, waitCountDown: ${Math.max(0, MAX_WAIT_COUNT_DOWN - Math.floor(elapsed / 1000))}`);
-          setWaitCountDown(Math.max(0, MAX_WAIT_COUNT_DOWN - Math.floor(elapsed / 1000)));
-          if (elapsed >= MAX_WAIT_COUNT_DOWN * 1000) {
-            plyrInstance.current?.play();
-          } else {
-            // WOW! Dynamic scoping! No Y-combinator needed!
-            delay(resumePlay, 1000);
-          }
-        };
-
-        delay(resumePlay, 1000);
-      });
-      plyrInstance.current.on("enterfullscreen", () => {
-        if (overlayRef.current) overlayRef.current.style.display = "block";
-      });
-      plyrInstance.current.on("exitfullscreen", () => {
-        if (overlayRef.current) overlayRef.current.style.display = "none";
-      });
-
-      muteAndUnmuteAfterDelay();
-      applyScreenEffect(doubleWidthShowMode);
-      // This enforces the video to reload when the videoUrl changes
-      videoRef.current.load();
-
-      // setup the loading spinner and fullscreen info overlay
-      const plyrContainer = videoRef.current?.parentElement?.parentElement;
-      if (overlayRef.current) plyrContainer?.append(overlayRef.current);
-      if (spinnerRef.current) plyrContainer?.append(spinnerRef.current);
+    // Compare video IDs for equality
+    console.log(prevVideoUrlRef.current, videoUrl, 'prevVideoUrlRef.current, videoUrl')
+    if (prevVideoUrlRef.current === videoUrl) {
+      console.log(prevVideoUrlRef.current, videoUrl, 'prevVideoUrlRef.current === videoUrl')
+      console.log("Same video URL, skipping initialization");
+      return;
     }
+    prevVideoUrlRef.current = videoUrl;
+    plyrInstance.current = new Plyr(videoRef.current, {
+      // IMPORTANT: no autoplay/autopause here, we will handle it manually,
+      // or race condition happens when the first video is loaded:
+      // the video starts to play, and seconds later the video is paused.
+      autoplay: false,
+      autopause: false
+    });
+
+    plyrInstance.current.on("ended", () => {
+      // TODO: workaround JavaScript unreasonable capturing behavior
+      let nextEntries = computeNextQueueCandidates(songTypes, collection, customList, lockedRandomGroup);
+      // TODO: end workaround
+
+      onVideoEnded(nextEntries);
+      if (spinnerRef.current) spinnerRef.current.style.display = "block";
+      setWaitCountDown(MAX_WAIT_COUNT_DOWN);
+      internalCounter++;
+    });
+    plyrInstance.current.on("playing", () => {
+      if (spinnerRef.current) spinnerRef.current.style.display = "none";
+    });
+    plyrInstance.current.on("loadeddata", () => {
+      // This enforces the video to play when the video is loaded;
+      // the "autoplay" option works only on the first video,
+      // for videos that are loaded after the first one, we need to call play() manually
+
+      // SetTimeout is not reliable, let's compute Date on our own
+      const now = Date.now();
+      // The Y-combinator
+      // const Y = (f: any) => (g => g(g))((g: any) => f((x: any) => g(g)(x)))
+
+      // capture by value
+      const counterCopy = internalCounter;
+      const resumePlay = () => {
+        if (counterCopy !== internalCounter) {
+          console.log("Resume video counter mismatch, aborting this count down");
+          return;
+        }
+        const elapsed = Date.now() - now;
+        console.log(`Elapsed: ${elapsed}, waitCountDown: ${Math.max(0, MAX_WAIT_COUNT_DOWN - Math.floor(elapsed / 1000))}`);
+        setWaitCountDown(Math.max(0, MAX_WAIT_COUNT_DOWN - Math.floor(elapsed / 1000)));
+        if (elapsed >= MAX_WAIT_COUNT_DOWN * 1000) {
+          plyrInstance.current?.play();
+        } else {
+          // WOW! Dynamic scoping! No Y-combinator needed!
+          delay(resumePlay, 1000);
+        }
+      };
+
+      delay(resumePlay, 1000);
+    });
+    plyrInstance.current.on("enterfullscreen", () => {
+      if (overlayRef.current) overlayRef.current.style.display = "block";
+    });
+    plyrInstance.current.on("exitfullscreen", () => {
+      if (overlayRef.current) overlayRef.current.style.display = "none";
+    });
+
+    muteAndUnmuteAfterDelay();
+    applyScreenEffect(doubleWidthShowMode);
+    // This enforces the video to reload when the videoUrl changes
+    videoRef.current.load();
+
+    // setup the loading spinner and fullscreen info overlay
+    const plyrContainer = videoRef.current?.parentElement?.parentElement;
+    if (overlayRef.current) plyrContainer?.append(overlayRef.current);
+    if (spinnerRef.current) plyrContainer?.append(spinnerRef.current);
+
   }, [videoUrl, version]);
 
   const muteAndUnmuteAfterDelay = (delay = 1000) => {
@@ -193,11 +208,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
         {videoInfo}
       </h1>
       <div ref={overlayRef}
-           className={`${styles.overlay} text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
+        className={`${styles.overlay} text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
         <h1>{videoInfo}</h1>
       </div>
       <div ref={spinnerRef}
-           className={`${styles.overlay} text-center leading-none tracking-tight w-full h-full bg-black bg-opacity-90 hidden`}>
+        className={`${styles.overlay} text-center leading-none tracking-tight w-full h-full bg-black bg-opacity-90 hidden`}>
         <div
           className={`${styles.overlay} text-6xl font-extrabold text-center leading-none tracking-tight bg-black text-white`}>
           <h1>{videoInfo}</h1>
