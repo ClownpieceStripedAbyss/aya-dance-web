@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk,createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
 
 import { RootState } from "../index";
@@ -46,26 +46,18 @@ function saveLocalCustomListStore(state: CustomPlayListState) {
   SaveToStorage(CUSTOM_LIST_KEY, state)
   console.log(state)
 }
+export const getLocalCustomListStore = createAsyncThunk(
+  'customList/getLocalCustomListStore',
+  async () => {
+    return await LoadFromStorage<CustomPlayListState>(CUSTOM_LIST_KEY); // 返回获取的数据
+  }
+);
 
 const CustomListStoreSlice = createSlice({
   name: "customListStore",
   initialState,
   reducers: {
-    getLocalCustomListStore: (state: CustomPlayListState) => {
-      const decompressedData =
-        LoadFromStorage<CustomPlayListState>(CUSTOM_LIST_KEY)
-      if (!decompressedData) {
-        console.log("No CustomPlayList info in local storage")
-        return
-      }
-      if (decompressedData?.version !== CUSTOM_LIST_VERSION) {
-        console.log("Local CustomPlayList info version mismatch, dropping")
-        return
-      }
-      console.log("Loaded CustomPlayList info from local storage")
-      console.log(decompressedData)
-      Object.assign(state, decompressedData)
-    },
+   
     createCustomList: (state: CustomPlayListState, action: PayloadAction<CustomPlayList>) => {
       const { name, description, danceIds } = action.payload
       const [_, targetIndex] = findTargetList(state, name)
@@ -138,6 +130,20 @@ const CustomListStoreSlice = createSlice({
       saveLocalCustomListStore(state)
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(getLocalCustomListStore.fulfilled, (state, action) => {
+      const decompressedData = action.payload; // 获取从 thunk 返回的数据
+      if (!decompressedData) {
+        console.log("No CustomPlayList info in local storage");
+        return;
+      }
+      if (decompressedData.version !== CUSTOM_LIST_VERSION) {
+        console.log("Local CustomPlayList info version mismatch, dropping");
+        return;
+      }
+      Object.assign(state, decompressedData); // 更新状态
+    });
+  }
 })
 
 // 选择器fn
@@ -154,7 +160,6 @@ export const selectCustomListStore = createSelector(
 
 // 导出 actions 和 reducer
 export const {
-  getLocalCustomListStore,
   addSongToCustomList,
   editSongsInCustomList,
   createCustomList,

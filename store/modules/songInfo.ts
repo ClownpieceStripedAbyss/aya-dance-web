@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
-
+import { openDB } from "idb"
 import { RootState } from "../index";
 import { GenericVideo, GenericVideoGroup, GROUP_ALL_SONGS, SortBy, WannaData } from "@/types/video";
-
+import { SONG_NAME,initDB } from "@/utils/local";
 // local storage key
 const SONG_INFO_KEY = "songInfo"
+const STORE_NAME = SONG_NAME
 // local storage format version, bump this if the type `SongInfo` changes
 const SONG_INFO_VERSION = 10
 
@@ -25,52 +26,41 @@ const initialState: SongInfo = {
   version: SONG_INFO_VERSION,
 }
 
-// State保存到 localStorage
-function saveToLocalStorage(data: SongInfo) {
-  const jsonData = JSON.stringify(data)
-  localStorage.setItem(SONG_INFO_KEY, jsonData)
+const saveToLocalStorage = async (data: SongInfo) => {
+  const db = await initDB()
+  await db.put(STORE_NAME, { key: SONG_INFO_KEY, value: data })
 }
 
-// 从 localStorage 解压缩State
-function loadFromLocalStorage(): SongInfo | null {
-  const localSongInfo: string | null = localStorage.getItem(SONG_INFO_KEY)
-  if (!localSongInfo) return null
-  try {
-    const saveState: SongInfo = JSON.parse(localSongInfo)
-    const allSongEntries = getAllSongEntries(saveState)
-    const newState = getNewState(saveState, allSongEntries)
-    return newState
-  } catch (error) {
-    console.log("loadFromLocalStorage error", error)
-    return null
+
+
+const getSongInfo = async (): Promise<SongInfo | null> => {
+  const db = await initDB()
+  const result = await db.get(STORE_NAME, SONG_INFO_KEY)
+  return result ? result.value : null
+}
+
+
+export const getLocalSongInfo = createAsyncThunk(
+  'songInfo/getLocalSongInfo',
+  async () => {
+    return await getSongInfo()
   }
-}
-
+)
 const SongInfoSlice = createSlice({
   name: "SongInfo",
   initialState,
   reducers: {
     setSortBy: (state: SongInfo, action: PayloadAction<SortBy>) => {
-      console.log(action.payload, "setSortBy")
       state.sortBy = action.payload
-      // saveToLocalStorage(state) // 更新本地存储
-    },
-    getLocalSongInfo: (state: SongInfo) => {
-      const decompressedData = loadFromLocalStorage()
-      if (!decompressedData) return
-      if (decompressedData?.version !== SONG_INFO_VERSION) {
-        console.log("Local song info version mismatch, dropping")
-        return
-      }
-      console.log("Loaded song info from local storage")
-      console.log(decompressedData)
-      Object.assign(state, decompressedData)
-    },
+      saveToLocalStorage(state)
+    }
+   
   },
   extraReducers: (builder) => {
     handleFetchWannaMultidata(builder)
-  },
+  }
 })
+
 
 // 获取歌曲信息异步Thunk
 export const fetchWannaInfoMultidataAction = createAsyncThunk(
@@ -86,7 +76,14 @@ export const fetchWannaInfoMultidataAction = createAsyncThunk(
 )
 
 const handleFetchWannaMultidata = (builder: any) => {
-  builder
+  builder.addCase(getLocalSongInfo.fulfilled, (state: SongInfo, action:PayloadAction<SongInfo>) => {
+    const dbData = action.payload;
+    if (!dbData) return
+    if (dbData.version !== SONG_INFO_VERSION) {
+      return;
+    }
+    Object.assign(state, dbData)
+  })
     .addCase(fetchWannaInfoMultidataAction.pending, (state: SongInfo) => {
       if (state.updatedAt !== "-1") return // 已有数据 不判断为首次更新
       // 开始获取数据
@@ -173,5 +170,5 @@ export const selectSongInfo = createSelector(
 )
 
 // 导出 actions 和 reducer
-export const { getLocalSongInfo, setSortBy } = SongInfoSlice.actions
+export const {  setSortBy } = SongInfoSlice.actions
 export default SongInfoSlice.reducer
