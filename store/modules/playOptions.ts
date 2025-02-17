@@ -1,9 +1,9 @@
-import { createAsyncThunk,createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
 import { openDB } from "idb";
 import { RootState } from "../index";
 import type { GenericVideo } from "@/types/video";
-import { OPTIONS_NAME,initDB } from "@/utils/local";
+import { OPTIONS_NAME, initDB } from "@/utils/local";
 export const OPTION_KEY = "play_options"
 const STORE_NAME = OPTIONS_NAME
 export interface PlayOptions {
@@ -25,10 +25,10 @@ const initialState: PlayOptions = {
 
 const getPlayOptions = async (): Promise<PlayOptions | null> => {
   const db = await initDB()
-  const opts: string | null = await db.get(STORE_NAME, OPTION_KEY)
-  if (!opts) return null
+  const opts: { key: string, value: string } | null = await db.get(STORE_NAME, OPTION_KEY)
+  if (!opts || !opts.value) return null
   try {
-    return JSON.parse(opts)
+    return JSON.parse(opts.value)
   } catch (error) {
     console.error("获取 play options 失败:", error)
     return null
@@ -39,14 +39,14 @@ const getPlayOptions = async (): Promise<PlayOptions | null> => {
 const savePlayOptions = async (options: PlayOptions) => {
   const data = JSON.stringify(options)
   const db = await initDB()
-  await db.put(STORE_NAME, { key: OPTION_KEY, value:data })
+  await db.put(STORE_NAME, { key: OPTION_KEY, value: data })
 }
 
 
 export const initPlayOptions = createAsyncThunk(
   'playOptions/initPlayOptions',
   async () => {
-    return await getPlayOptions(); 
+    return await getPlayOptions();
   }
 );
 
@@ -78,6 +78,6 @@ export const selectPlayOptions = createSelector(
 )
 
 // 导出 actions 和 reducer
-export const {  setLockedRandomGroup } =
+export const { setLockedRandomGroup } =
   PlayOptionSlice.actions
 export default PlayOptionSlice.reducer
