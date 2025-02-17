@@ -12,9 +12,9 @@ import { selectPlayOptions } from "@/store/modules/playOptions";
 import { selectCollection } from "@/store/modules/collection";
 import { selectCustomListStore } from "@/store/modules/customPlaylist";
 
-interface PlyaListProps {}
+interface PlyaListProps { }
 
-export default function PlayList({}: PlyaListProps) {
+export default function PlayList({ }: PlyaListProps) {
   const { playList } = useSelector(selectPlayList)
   const { songTypes } = useSelector(selectSongInfo)
   const { lockedRandomGroup } = useSelector(selectPlayOptions)
@@ -30,7 +30,7 @@ export default function PlayList({}: PlyaListProps) {
   const handleNextSong = useCallback(() => {
     let nextEntries = computeNextQueueCandidates(songTypes, collection, customList, lockedRandomGroup);
     dispatch(nextVideoWithRandom(nextEntries));
-  }, [dispatch])
+  }, [dispatch, songTypes, collection, customList, lockedRandomGroup])
   return (
     <>
       {playList.length > 0 && (
