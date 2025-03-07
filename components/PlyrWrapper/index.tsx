@@ -77,30 +77,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
 
   const prevVideoUrlRef = useRef<string>("");
 
-  useEffect(() => {
-    if (videoUrl === "") return;
+  const setupLoadingSpinner = () => {
+    const plyrContainer = videoRef.current?.parentElement?.parentElement;
+    if (overlayRef.current) plyrContainer?.append(overlayRef.current);
+    if (spinnerRef.current) plyrContainer?.append(spinnerRef.current);
+  }
 
-    console.log("Got new video url", videoUrl);
-    // Check if video component is null
-    if (!videoRef.current) return;
-
-    // Compare video IDs for equality
-    console.log(prevVideoUrlRef.current, videoUrl, 'prevVideoUrlRef.current, videoUrl')
-    if (prevVideoUrlRef.current === videoUrl) {
-      console.log(prevVideoUrlRef.current, videoUrl, 'prevVideoUrlRef.current === videoUrl')
-      console.log("Same video URL, skipping initialization");
-      return;
-    }
-    prevVideoUrlRef.current = videoUrl;
-    plyrInstance.current = new Plyr(videoRef.current, {
-      // IMPORTANT: no autoplay/autopause here, we will handle it manually,
-      // or race condition happens when the first video is loaded:
-      // the video starts to play, and seconds later the video is paused.
-      autoplay: false,
-      autopause: false
-    });
-
-    plyrInstance.current.on("ended", () => {
+  const setupPlyrInstance = (plyr: Plyr) => {
+    plyr.on("ended", () => {
       // TODO: workaround JavaScript unreasonable capturing behavior
       let nextEntries = computeNextQueueCandidates(songTypes, collection, customList, lockedRandomGroup);
       // TODO: end workaround
@@ -110,10 +94,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
       setWaitCountDown(MAX_WAIT_COUNT_DOWN);
       internalCounter++;
     });
-    plyrInstance.current.on("playing", () => {
+    plyr.on("playing", () => {
       if (spinnerRef.current) spinnerRef.current.style.display = "none";
     });
-    plyrInstance.current.on("loadeddata", () => {
+    plyr.on("loadeddata", () => {
       // This enforces the video to play when the video is loaded;
       // the "autoplay" option works only on the first video,
       // for videos that are loaded after the first one, we need to call play() manually
@@ -140,15 +124,43 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
           delay(resumePlay, 1000);
         }
       };
-
       delay(resumePlay, 1000);
     });
-    plyrInstance.current.on("enterfullscreen", () => {
+    plyr.on("enterfullscreen", () => {
       if (overlayRef.current) overlayRef.current.style.display = "block";
     });
-    plyrInstance.current.on("exitfullscreen", () => {
+    plyr.on("exitfullscreen", () => {
       if (overlayRef.current) overlayRef.current.style.display = "none";
     });
+  }
+
+  useEffect(() => {
+    if (videoUrl === "") return;
+
+    console.log("Got new video url", videoUrl);
+    // Check if video component is null
+    if (!videoRef.current) return;
+
+    // Compare video IDs for equality
+    console.log(prevVideoUrlRef.current, videoUrl, 'prevVideoUrlRef.current, videoUrl')
+    if (prevVideoUrlRef.current === videoUrl) {
+      console.log(prevVideoUrlRef.current, videoUrl, 'prevVideoUrlRef.current === videoUrl')
+      console.log("Same video URL, skipping initialization");
+      if (plyrInstance.current) setupPlyrInstance(plyrInstance.current);
+      setupLoadingSpinner();
+      return;
+    }
+    prevVideoUrlRef.current = videoUrl;
+
+    // Now create a new Plyr instance for different video urls
+    plyrInstance.current = new Plyr(videoRef.current, {
+      // IMPORTANT: no autoplay/autopause here, we will handle it manually,
+      // or race condition happens when the first video is loaded:
+      // the video starts to play, and seconds later the video is paused.
+      autoplay: false,
+      autopause: false
+    });
+    setupPlyrInstance(plyrInstance.current);
 
     muteAndUnmuteAfterDelay();
     applyScreenEffect(doubleWidthShowMode);
@@ -156,9 +168,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
     videoRef.current.load();
 
     // setup the loading spinner and fullscreen info overlay
-    const plyrContainer = videoRef.current?.parentElement?.parentElement;
-    if (overlayRef.current) plyrContainer?.append(overlayRef.current);
-    if (spinnerRef.current) plyrContainer?.append(spinnerRef.current);
+    setupLoadingSpinner();
 
   }, [videoUrl, version]);
 
