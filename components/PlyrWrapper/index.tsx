@@ -73,8 +73,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
   const MAX_WAIT_COUNT_DOWN = 15;
   const [waitCountDown, setWaitCountDown] = useState(MAX_WAIT_COUNT_DOWN);
 
-  let internalCounter = 0;
-
+  const resumePlayCounter = useRef<number>(0);
   const prevVideoUrlRef = useRef<string>("");
 
   const setupLoadingSpinner = () => {
@@ -90,9 +89,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
       // TODO: end workaround
 
       onVideoEnded(nextEntries);
-      if (spinnerRef.current) spinnerRef.current.style.display = "block";
-      setWaitCountDown(MAX_WAIT_COUNT_DOWN);
-      internalCounter++;
     });
     plyr.on("playing", () => {
       if (spinnerRef.current) spinnerRef.current.style.display = "none";
@@ -108,9 +104,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
       // const Y = (f: any) => (g => g(g))((g: any) => f((x: any) => g(g)(x)))
 
       // capture by value
-      const counterCopy = internalCounter;
+      const counterCopy = resumePlayCounter.current;
       const resumePlay = () => {
-        if (counterCopy !== internalCounter) {
+        if (counterCopy !== resumePlayCounter.current) {
           console.log("Resume video counter mismatch, aborting this count down");
           return;
         }
@@ -161,6 +157,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
       autopause: false
     });
     setupPlyrInstance(plyrInstance.current);
+
+    // For a new video, show the spinner and reset resume timer to 15s,
+    // and increment the resume counter.
+    // NOTE: don't do this in "ended" event, because the "ended" event is not fired
+    // then the video is directly skipped to the next one.
+    if (spinnerRef.current) spinnerRef.current.style.display = "block";
+    setWaitCountDown(MAX_WAIT_COUNT_DOWN);
+    resumePlayCounter.current++;
 
     muteAndUnmuteAfterDelay();
     applyScreenEffect(doubleWidthShowMode);
