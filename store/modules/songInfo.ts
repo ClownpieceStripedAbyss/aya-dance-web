@@ -1,13 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
-
 import { RootState } from "../index";
 import { GenericVideo, GenericVideoGroup, GROUP_ALL_SONGS, SortBy, WannaData } from "@/types/video";
-
 // local storage key
 const SONG_INFO_KEY = "songInfo"
 // local storage format version, bump this if the type `SongInfo` changes
-const SONG_INFO_VERSION = 10
+const SONG_INFO_VERSION = 12
 
 export interface SongInfo {
   loading: boolean

@@ -34,6 +34,10 @@ export interface GenericVideo {
   doubleWidth: boolean
   originalUrl: string[]
   checksum: string | null
+  shaderMotion: string[]
+  rpe: number
+  disablePublic: boolean
+  skipRandom: boolean
 }
 
 export interface WannaData {
@@ -185,5 +189,5 @@ export default function videosQuery(
 }
 
 export async function fetchWannaSongs(): Promise<WannaData[]> {
-  return await fetchWithDefaults("https://x.kiva.moe/api/wanna/songs")
+  return await fetchWithDefaults("https://x.kiva.moe/api/v2/wanna/songs")
 }
