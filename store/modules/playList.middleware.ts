@@ -14,18 +14,18 @@ import {
 const sendPlayListMiddleware: Middleware = (store) => (next) => (action) => {
   // 获取执行action前后状态用于比对
   const previousPlayList = store.getState().PlayList?.playList;
-  const previousPlayOptions = store.getState().PlayOptions;
+  const previousLockedRandom = store.getState().PlayOptions.lockedRandomGroup;
   const result = next(action);
   const nextPlayList = store.getState().PlayList?.playList;
-  const nextPlayOptions = store.getState().PlayOptions;
+  const nextLockedRandom = store.getState().PlayOptions.lockedRandomGroup;
 
   let resyncIfPlayListChanged = isAnyOf(addPlayList, removePlayList, topSong, nextVideo, nextVideoWithRandom, setLockedRandomGroup)(action) &&
     isAnyOf(previousPlayList &&
       nextPlayList &&
       previousPlayList !== nextPlayList,
-      previousPlayOptions &&
-      nextPlayOptions &&
-      previousPlayOptions !== nextPlayOptions
+      previousLockedRandom &&
+      nextLockedRandom &&
+      previousLockedRandom !== nextLockedRandom
     );
   let resyncIfCustomPlayListChanged = isAnyOf(
     addSongToCustomList,
@@ -42,7 +42,8 @@ const sendPlayListMiddleware: Middleware = (store) => (next) => (action) => {
       playList: _.cloneDeep(nextPlayList)
     } as PlayListMessage);
     channel.postMessage({
-      action: "currentPlayOptions"
+      action: "currentPlayOptions",
+      lockedRandomGroup: nextLockedRandom
     } as PlayListMessage);
   }
 

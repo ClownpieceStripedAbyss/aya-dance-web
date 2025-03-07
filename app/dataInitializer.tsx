@@ -10,7 +10,7 @@ import { AppDispatch } from "@/store";
 import { initPlayList, selectPlayList } from "@/store/modules/playList";
 import _ from "lodash";
 import channel, { PlayListMessage } from "@/utils/channel";
-import { initPlayOptions } from "@/store/modules/playOptions";
+import { copyPlayOptionsInternal, initPlayOptions } from "@/store/modules/playOptions";
 
 export function DataInitializer() {
   const dispatch = useDispatch<AppDispatch>()
@@ -34,7 +34,7 @@ export function DataInitializer() {
     } else if (event.data.action === "currentPlayOptions") {
       // 如果收到当前播放选项，更新本地播放选项
       console.log("收到当前播放选项", event.data)
-      dispatch(initPlayOptions())
+      dispatch(copyPlayOptionsInternal({ lockedRandomGroup: event.data.lockedRandomGroup ?? null }))
     }
   }
   // 初始化
