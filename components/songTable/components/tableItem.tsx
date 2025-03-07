@@ -93,6 +93,7 @@ export default function TableItem({
             {isEdit && <Grid className="w-4 h-4 text-black dark:text-white" />}
             <a
               href={url}
+              target="_blank"
               style={{ display: "inline-block" }}
               // onClick={handleOpenVideo}
             >
@@ -117,6 +118,7 @@ export default function TableItem({
                 className={styles.hoverUnderline}
                 color="foreground"
                 href={url}
+                target="_blank"
                 // onClick={handleOpenVideo}
               >
                 {song.composedTitle}
