@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { nextVideoWithRandom, selectPlayList } from "@/store/modules/playList";
 import styles from "./index.module.css";
 import { selectSongInfo } from "@/store/modules/songInfo";
-import { Autocomplete, AutocompleteItem, Spinner } from "@nextui-org/react";
+import { Autocomplete, AutocompleteItem, Checkbox, Spinner } from "@nextui-org/react";
 import { selectPlayOptions } from "@/store/modules/playOptions";
 import { computeNextQueueCandidates, findSongEntries, GenericVideo, GROUP_ALL_SONGS } from "@/types/video";
 import { selectCollection } from "@/store/modules/collection";
@@ -31,8 +31,7 @@ const formatDoubleWidthShowMode = (mode: DoubleWidthShowMode) => {
 };
 
 
-
-const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
+const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const { playList, version } = useSelector(selectPlayList);
   const { songTypes } = useSelector(selectSongInfo);
   const collection = useSelector(selectCollection);
@@ -45,7 +44,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
     ? lockedRandomGroup.group
     : GROUP_ALL_SONGS;
   const onVideoEnded = (randomGroup: GenericVideo[]) => {
-    console.log(`OnVideoEnded: Handle next random range: ${randomGroup}`)
+    console.log(`OnVideoEnded: Handle next random range: ${randomGroup}`);
     dispatch(nextVideoWithRandom(randomGroup));
   };
 
@@ -54,7 +53,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
     { value: `${DoubleWidthShowMode.Original}`, label: "原版" },
     { value: `${DoubleWidthShowMode.Simplified}`, label: "简化" },
     { value: `${DoubleWidthShowMode.Both}`, label: "全部" }
-  ]
+  ];
+
+  const [hasSM, setHasSM] = useState(queue?.video.shaderMotion.length > 0 ?? false);
 
   // IMPORTANT: use `http`, so our self-hosted CDN can serve the video locally! DONT USE `https`!
   const videoUrl = queue ? `http://api.udon.dance/Api/Songs/play?id=${queue.video.id}` : "";
@@ -80,7 +81,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
     const plyrContainer = videoRef.current?.parentElement?.parentElement;
     if (overlayRef.current) plyrContainer?.append(overlayRef.current);
     if (spinnerRef.current) plyrContainer?.append(spinnerRef.current);
-  }
+  };
 
   const setupPlyrInstance = (plyr: Plyr) => {
     plyr.on("ended", () => {
@@ -128,7 +129,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
     plyr.on("exitfullscreen", () => {
       if (overlayRef.current) overlayRef.current.style.display = "none";
     });
-  }
+  };
 
   useEffect(() => {
     if (videoUrl === "") return;
@@ -138,9 +139,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
     if (!videoRef.current) return;
 
     // Compare video IDs for equality
-    console.log(prevVideoUrlRef.current, videoUrl, 'prevVideoUrlRef.current, videoUrl')
+    console.log(prevVideoUrlRef.current, videoUrl, "prevVideoUrlRef.current, videoUrl");
     if (prevVideoUrlRef.current === videoUrl) {
-      console.log(prevVideoUrlRef.current, videoUrl, 'prevVideoUrlRef.current === videoUrl')
+      console.log(prevVideoUrlRef.current, videoUrl, "prevVideoUrlRef.current === videoUrl");
       console.log("Same video URL, skipping initialization");
       if (plyrInstance.current) setupPlyrInstance(plyrInstance.current);
       setupLoadingSpinner();
@@ -167,7 +168,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
     resumePlayCounter.current++;
 
     muteAndUnmuteAfterDelay();
-    applyScreenEffect(doubleWidthShowMode);
+    applyScreenEffect(doubleWidthShowMode, hasSM);
     // This enforces the video to reload when the videoUrl changes
     videoRef.current.load();
 
@@ -188,16 +189,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
     }
   };
 
-  const applyScreenEffect = (doubleWidthShowMode: DoubleWidthShowMode) => {
-    if (videoRef.current) {
-      const wrapper = videoRef.current.closest(
-        ".plyr__video-wrapper"
-      ) as HTMLElement;
-      if (wrapper) {
-        console.log(`Applying screen effect for flip=${flip}, doubleWidth=${doubleWidth}, doubleWidthShowMode=${doubleWidthShowMode}`);
-        let scaleX = flip ? -1 : 1;
-        let scaleY = 1;
-        let translateX = 0;
+  const applyScreenEffect = (doubleWidthShowMode: DoubleWidthShowMode, hasSM: boolean) => {
+    if (!videoRef.current) return;
+    const wrapper = videoRef.current.closest(
+      ".plyr__video-wrapper"
+    ) as HTMLElement;
+    if (wrapper) {
+      console.log(`Applying screen effect for flip=${flip}, doubleWidth=${doubleWidth}, doubleWidthShowMode=${doubleWidthShowMode}, hasSM=${hasSM}`);
+      let scaleX = flip ? -1 : 1;
+      let scaleY = 1;
+      let translateX = 0;
+      if (!hasSM) {
         if (doubleWidth && doubleWidthShowMode === DoubleWidthShowMode.Original) {
           scaleX = flip ? -2 : 2;
           translateX = 25;
@@ -209,9 +211,30 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
         if (doubleWidth && doubleWidthShowMode === DoubleWidthShowMode.Both) {
           scaleY = 0.5;
         }
-
-        wrapper.style.transform = `scaleX(${scaleX}) scaleY(${scaleY}) translateX(${translateX}%)`;
+      } else {
+        if (doubleWidth) {
+          // 48:9 video
+          if (doubleWidthShowMode === DoubleWidthShowMode.Original) {
+            translateX = 33.3;
+            scaleX = flip ? -3 : 3;
+            scaleY = 3;
+          } else if (doubleWidthShowMode === DoubleWidthShowMode.Simplified) {
+            translateX = 0;
+            scaleX = flip ? -3 : 3;
+            scaleY = 3;
+          } else if (doubleWidthShowMode === DoubleWidthShowMode.Both) {
+            translateX = 16.65;
+            scaleX = flip ? -1.5 : 1.5;
+            scaleY = 1.5;
+          }
+        } else {
+          // show the original video
+          scaleX = flip ? -2 : 2;
+          translateX = 25;
+        }
       }
+
+      wrapper.style.transform = `scaleX(${scaleX}) scaleY(${scaleY}) translateX(${translateX}%)`;
     }
   };
 
@@ -222,11 +245,11 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
         {videoInfo}
       </h1>
       <div ref={overlayRef}
-        className={`${styles.overlay} text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
+           className={`${styles.overlay} text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
         <h1>{videoInfo}</h1>
       </div>
       <div ref={spinnerRef}
-        className={`${styles.overlay} text-center leading-none tracking-tight w-full h-full bg-black bg-opacity-90 hidden`}>
+           className={`${styles.overlay} text-center leading-none tracking-tight w-full h-full bg-black bg-opacity-90 hidden`}>
         <div
           className={`${styles.overlay} text-6xl font-extrabold text-center leading-none tracking-tight bg-black text-white`}>
           <h1>{videoInfo}</h1>
@@ -237,7 +260,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
       <video ref={videoRef} controls className="plyr__video-embed">
         <source src={videoUrl} type="video/mp4" className=" w-full h-full" />
       </video>
-      <span>Flip: {flip ? "true" : "false"}, Combined: {doubleWidth ? "true" : "false"}, Locked Random: {lockedRandomGroupOrAll}</span>
+      <span>Flip: {flip ? "true" : "false"}, Combined: {doubleWidth ? "true" : "false"}, Locked Random: {lockedRandomGroupOrAll}, ShaderMotion: {queue?.video.shaderMotion.join(", ") ?? ""}</span>
       <br />
       <Autocomplete
         aria-label="change rows per page"
@@ -250,7 +273,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
           if (key !== null) {
             let mode = Number(key) as DoubleWidthShowMode;
             setDoubleWidthShowMode(mode);
-            applyScreenEffect(mode);
+            applyScreenEffect(mode, hasSM);
           }
         }}
       >
@@ -260,6 +283,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ }) => {
           </AutocompleteItem>
         ))}
       </Autocomplete>
+      <span>ShaderMotion Video Legalizer: </span>
+      <Checkbox
+        checked={hasSM}
+        onChange={value => {
+          const checked = value.target.checked;
+          setHasSM(checked);
+          applyScreenEffect(doubleWidthShowMode, checked);
+        }}
+      />
     </div>
   );
 };

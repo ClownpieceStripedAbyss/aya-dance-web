@@ -7,7 +7,7 @@ import { initDB, SONG_NAME } from "@/utils/local";
 const SONG_INFO_KEY = "songInfo"
 const STORE_NAME = SONG_NAME
 // local storage format version, bump this if the type `SongInfo` changes
-const SONG_INFO_VERSION = 12
+const SONG_INFO_VERSION = 13
 
 export interface SongInfo {
   loading: boolean
