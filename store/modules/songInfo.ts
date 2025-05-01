@@ -5,7 +5,7 @@ import { GenericVideo, GenericVideoGroup, GROUP_ALL_SONGS, SortBy, WannaData } f
 // local storage key
 const SONG_INFO_KEY = "songInfo"
 // local storage format version, bump this if the type `SongInfo` changes
-const SONG_INFO_VERSION = 12
+const SONG_INFO_VERSION = 13
 
 export interface SongInfo {
   loading: boolean

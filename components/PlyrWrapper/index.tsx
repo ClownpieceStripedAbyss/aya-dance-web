@@ -54,6 +54,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
     { value: `${DoubleWidthShowMode.Both}`, label: "全部" }
   ]
 
+  const hasSM = queue?.video.shaderMotion.length > 0 ?? false;
+
   // IMPORTANT: use `http`, so our self-hosted CDN can serve the video locally! DONT USE `https`!
   const videoUrl = queue ? `http://api.udon.dance/Api/Songs/play?id=${queue.video.id}` : "";
   const flip = queue?.video.flip ?? false;
@@ -136,7 +138,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       });
 
       muteAndUnmuteAfterDelay();
-      applyScreenEffect(doubleWidthShowMode);
+      applyScreenEffect(doubleWidthShowMode, hasSM);
       // This enforces the video to reload when the videoUrl changes
       videoRef.current.load();
 
@@ -159,16 +161,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
     }
   };
 
-  const applyScreenEffect = (doubleWidthShowMode: DoubleWidthShowMode) => {
-    if (videoRef.current) {
-      const wrapper = videoRef.current.closest(
-        ".plyr__video-wrapper"
-      ) as HTMLElement;
-      if (wrapper) {
-        console.log(`Applying screen effect for flip=${flip}, doubleWidth=${doubleWidth}, doubleWidthShowMode=${doubleWidthShowMode}`);
-        let scaleX = flip ? -1 : 1;
-        let scaleY = 1;
-        let translateX = 0;
+  const applyScreenEffect = (doubleWidthShowMode: DoubleWidthShowMode, hasSM: boolean) => {
+    if (!videoRef.current) return;
+    const wrapper = videoRef.current.closest(
+      ".plyr__video-wrapper"
+    ) as HTMLElement;
+    if (wrapper) {
+      console.log(`Applying screen effect for flip=${flip}, doubleWidth=${doubleWidth}, doubleWidthShowMode=${doubleWidthShowMode}, hasSM=${hasSM}`);
+      let scaleX = flip ? -1 : 1;
+      let scaleY = 1;
+      let translateX = 0;
+      if (!hasSM) {
         if (doubleWidth && doubleWidthShowMode === DoubleWidthShowMode.Original) {
           scaleX = flip ? -2 : 2;
           translateX = 25;
@@ -180,9 +183,30 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
         if (doubleWidth && doubleWidthShowMode === DoubleWidthShowMode.Both) {
           scaleY = 0.5;
         }
-
-        wrapper.style.transform = `scaleX(${scaleX}) scaleY(${scaleY}) translateX(${translateX}%)`;
+      } else {
+        if (doubleWidth) {
+          // 48:9 video
+          if (doubleWidthShowMode === DoubleWidthShowMode.Original) {
+            translateX = 33.3;
+            scaleX = flip ? -3 : 3;
+            scaleY = 3;
+          } else if (doubleWidthShowMode === DoubleWidthShowMode.Simplified) {
+            translateX = 0;
+            scaleX = flip ? -3 : 3;
+            scaleY = 3;
+          } else if (doubleWidthShowMode === DoubleWidthShowMode.Both) {
+            translateX = 16.65;
+            scaleX = flip ? -1.5 : 1.5;
+            scaleY = 1.5;
+          }
+        } else {
+          // show the original video
+          scaleX = flip ? -2 : 2;
+          translateX = 25;
+        }
       }
+
+      wrapper.style.transform = `scaleX(${scaleX}) scaleY(${scaleY}) translateX(${translateX}%)`;
     }
   };
 
@@ -208,7 +232,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       <video ref={videoRef} controls className="plyr__video-embed">
         <source src={videoUrl} type="video/mp4" className=" w-full h-full" />
       </video>
-      <span>Flip: {flip ? "true" : "false"}, Combined: {doubleWidth ? "true" : "false"}, Locked Random: {lockedRandomGroupOrAll}</span>
+      <span>Flip: {flip ? "true" : "false"}, Combined: {doubleWidth ? "true" : "false"}, Locked Random: {lockedRandomGroupOrAll}, ShaderMotion: {queue?.video.shaderMotion.join(", ") ?? ""}</span>
       <br />
       <Autocomplete
         aria-label="change rows per page"
@@ -221,7 +245,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
           if (key !== null) {
             let mode = Number(key) as DoubleWidthShowMode;
             setDoubleWidthShowMode(mode);
-            applyScreenEffect(mode);
+            applyScreenEffect(mode, hasSM);
           }
         }}
       >
@@ -231,6 +255,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
           </AutocompleteItem>
         ))}
       </Autocomplete>
+      <span>ShaderMotion Video Legalizer: {hasSM}</span>
+      {/*<Checkbox*/}
+      {/*  checked={hasSM}*/}
+      {/*  onChange={value => {*/}
+      {/*    const checked = value.target.checked;*/}
+      {/*    setHasSM(checked);*/}
+      {/*    applyScreenEffect(doubleWidthShowMode, checked);*/}
+      {/*  }}*/}
+      {/*/>*/}
     </div>
   );
 };
