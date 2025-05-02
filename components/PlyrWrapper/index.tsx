@@ -75,7 +75,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const resumePlayCounter = useRef<number>(0);
   const prevVideoUrlRef = useRef<string>("");
 
-  const [progress, setProgress] = useState(0.3);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     if (videoUrl === "") return;
