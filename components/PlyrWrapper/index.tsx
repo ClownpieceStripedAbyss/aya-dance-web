@@ -75,6 +75,8 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const resumePlayCounter = useRef<number>(0);
   const prevVideoUrlRef = useRef<string>("");
 
+  const [progress, setProgress] = useState(0.3);
+
   useEffect(() => {
     if (videoUrl === "") return;
 
@@ -138,12 +140,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
 
       delay(resumePlay, 1000);
     });
-    plyrInstance.current.on("enterfullscreen", () => {
-      if (overlayRef.current) overlayRef.current.style.display = "block";
+    // Setup inline progress bar
+    plyrInstance.current.on("timeupdate", () => {
+      if (videoRef.current) {
+        const currentTime = videoRef.current.currentTime;
+        const duration = videoRef.current.duration;
+        setProgress(currentTime / duration);
+      }
     });
-    plyrInstance.current.on("exitfullscreen", () => {
-      if (overlayRef.current) overlayRef.current.style.display = "none";
-    });
+    if (overlayRef.current) overlayRef.current.style.display = "block";
 
     // For a new video, show the spinner and reset resume timer to 15s,
     // and increment the resume counter.
@@ -227,13 +232,37 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
 
   return (
     <div className="w-full h-full">
-      <h1
-        className="mb-4 text-4xl font-extrabold text-center leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-        {videoInfo}
-      </h1>
-      <div ref={overlayRef}
-           className={`${styles.overlay} text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>
-        <h1>{videoInfo}</h1>
+      {/*<h1*/}
+      {/*  className="mb-4 text-4xl font-extrabold text-center leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">*/}
+      {/*  {videoInfo}*/}
+      {/*</h1>*/}
+      {/*<div ref={overlayRef}*/}
+      {/*     className={`${styles.overlay} text-4xl font-extrabold text-center leading-none tracking-tight bg-gray-500 bg-opacity-50 text-white hidden`}>*/}
+      {/*  <h1>{videoInfo}</h1>*/}
+      {/*</div>*/}
+      <div
+        ref={overlayRef}
+        className={`
+          ${styles.overlay}
+          relative inline-block overflow-hidden         
+          text-4xl font-extrabold text-center leading-none tracking-tight
+          bg-gray-500 bg-opacity-50 text-white
+        `}
+      >
+        {/* —— 进度条背景 —— */}
+        <div
+          className="
+            absolute top-0 left-0 h-full
+            bg-blue-300 opacity-50
+            transition-all duration-300 ease-linear
+          "
+          style={{ width: `${(progress * 100)}%` }}
+        />
+
+        {/* —— 标题文字 —— */}
+        <h1 className="relative z-10">
+          {videoInfo}
+        </h1>
       </div>
       <div ref={spinnerRef}
            className={`${styles.overlay} text-center leading-none tracking-tight w-full h-full bg-black bg-opacity-90 hidden`}>
