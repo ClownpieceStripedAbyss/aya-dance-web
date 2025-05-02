@@ -72,81 +72,94 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const MAX_WAIT_COUNT_DOWN = 15;
   const [waitCountDown, setWaitCountDown] = useState(MAX_WAIT_COUNT_DOWN);
 
-  let internalCounter = 0;
+  const resumePlayCounter = useRef<number>(0);
 
   useEffect(() => {
     if (videoUrl === "") return;
 
     console.log("Got new video url", videoUrl);
-    if (videoRef.current) {
-      plyrInstance.current = new Plyr(videoRef.current, {
-        // IMPORTANT: no autoplay/autopause here, we will handle it manually,
-        // or race condition happens when the first video is loaded:
-        // the video starts to play, and seconds later the video is paused.
-        autoplay: false,
-        autopause: false
-      });
 
-      plyrInstance.current.on("ended", () => {
-        // TODO: workaround JavaScript unreasonable capturing behavior
-        let nextEntries = computeNextQueueCandidates(songTypes, collection, customList, lockedRandomGroup);
-        // TODO: end workaround
-
-        onVideoEnded(nextEntries);
-        if (spinnerRef.current) spinnerRef.current.style.display = "block";
-        setWaitCountDown(MAX_WAIT_COUNT_DOWN);
-        internalCounter++;
-      });
-      plyrInstance.current.on("playing", () => {
-        if (spinnerRef.current) spinnerRef.current.style.display = "none";
-      });
-      plyrInstance.current.on("loadeddata", () => {
-        // This enforces the video to play when the video is loaded;
-        // the "autoplay" option works only on the first video,
-        // for videos that are loaded after the first one, we need to call play() manually
-
-        // SetTimeout is not reliable, let's compute Date on our own
-        const now = Date.now();
-        // The Y-combinator
-        // const Y = (f: any) => (g => g(g))((g: any) => f((x: any) => g(g)(x)))
-
-        // capture by value
-        const counterCopy = internalCounter;
-        const resumePlay = () => {
-          if (counterCopy !== internalCounter) {
-            console.log("Resume video counter mismatch, aborting this count down");
-            return;
-          }
-          const elapsed = Date.now() - now;
-          console.log(`Elapsed: ${elapsed}, waitCountDown: ${Math.max(0, MAX_WAIT_COUNT_DOWN - Math.floor(elapsed / 1000))}`);
-          setWaitCountDown(Math.max(0, MAX_WAIT_COUNT_DOWN - Math.floor(elapsed / 1000)));
-          if (elapsed >= MAX_WAIT_COUNT_DOWN * 1000) {
-            plyrInstance.current?.play();
-          } else {
-            // WOW! Dynamic scoping! No Y-combinator needed!
-            delay(resumePlay, 1000);
-          }
-        };
-
-        delay(resumePlay, 1000);
-      });
-      plyrInstance.current.on("enterfullscreen", () => {
-        if (overlayRef.current) overlayRef.current.style.display = "block";
-      });
-      plyrInstance.current.on("exitfullscreen", () => {
-        if (overlayRef.current) overlayRef.current.style.display = "none";
-      });
-
-      muteAndUnmuteAfterDelay();
-      applyScreenEffect(doubleWidthShowMode, hasSM);
-      // This enforces the video to reload when the videoUrl changes
-      videoRef.current.load();
-
-      // setup the loading spinner and fullscreen info overlay
+    const setupLoadingSpinner = () => {
       const plyrContainer = videoRef.current?.parentElement?.parentElement;
       if (overlayRef.current) plyrContainer?.append(overlayRef.current);
       if (spinnerRef.current) plyrContainer?.append(spinnerRef.current);
     }
+
+    if (!videoRef.current) {
+      console.log("VideoRef is null, do not creating Plyr instance");
+      return;
+    }
+
+    // Now create a new Plyr instance for different video urls
+    plyrInstance.current = new Plyr(videoRef.current, {
+      // IMPORTANT: no autoplay/autopause here, we will handle it manually,
+      // or race condition happens when the first video is loaded:
+      // the video starts to play, and seconds later the video is paused.
+      autoplay: false,
+      autopause: false
+    });
+    plyrInstance.current.on("ended", () => {
+      // TODO: workaround JavaScript unreasonable capturing behavior
+      let nextEntries = computeNextQueueCandidates(songTypes, collection, customList, lockedRandomGroup);
+      // TODO: end workaround
+
+      onVideoEnded(nextEntries);
+    });
+    plyrInstance.current.on("playing", () => {
+      if (spinnerRef.current) spinnerRef.current.style.display = "none";
+    });
+    plyrInstance.current.on("loadeddata", () => {
+      // This enforces the video to play when the video is loaded;
+      // the "autoplay" option works only on the first video,
+      // for videos that are loaded after the first one, we need to call play() manually
+
+      // SetTimeout is not reliable, let's compute Date on our own
+      const now = Date.now();
+      // The Y-combinator
+      // const Y = (f: any) => (g => g(g))((g: any) => f((x: any) => g(g)(x)))
+
+      // capture by value
+      const counterCopy = resumePlayCounter.current;
+      const resumePlay = () => {
+        if (counterCopy !== resumePlayCounter.current) {
+          console.log("Resume video counter mismatch, aborting this count down");
+          return;
+        }
+        const elapsed = Date.now() - now;
+        console.log(`Elapsed: ${elapsed}, waitCountDown: ${Math.max(0, MAX_WAIT_COUNT_DOWN - Math.floor(elapsed / 1000))}`);
+        setWaitCountDown(Math.max(0, MAX_WAIT_COUNT_DOWN - Math.floor(elapsed / 1000)));
+        if (elapsed >= MAX_WAIT_COUNT_DOWN * 1000) {
+          plyrInstance.current?.play();
+        } else {
+          // WOW! Dynamic scoping! No Y-combinator needed!
+          delay(resumePlay, 1000);
+        }
+      };
+
+      delay(resumePlay, 1000);
+    });
+    plyrInstance.current.on("enterfullscreen", () => {
+      if (overlayRef.current) overlayRef.current.style.display = "block";
+    });
+    plyrInstance.current.on("exitfullscreen", () => {
+      if (overlayRef.current) overlayRef.current.style.display = "none";
+    });
+
+    // For a new video, show the spinner and reset resume timer to 15s,
+    // and increment the resume counter.
+    // NOTE: don't do this in "ended" event, because the "ended" event is not fired
+    // then the video is directly skipped to the next one.
+    if (spinnerRef.current) spinnerRef.current.style.display = "block";
+    setWaitCountDown(MAX_WAIT_COUNT_DOWN);
+    resumePlayCounter.current++;
+
+    muteAndUnmuteAfterDelay();
+    applyScreenEffect(doubleWidthShowMode, hasSM);
+    // This enforces the video to reload when the videoUrl changes
+    videoRef.current.load();
+
+    // setup the loading spinner and fullscreen info overlay
+    setupLoadingSpinner();
   }, [videoUrl, version]);
 
   const muteAndUnmuteAfterDelay = (delay = 1000) => {
@@ -255,7 +268,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
           </AutocompleteItem>
         ))}
       </Autocomplete>
-      <span>ShaderMotion Video Legalizer: {hasSM}</span>
+      {/*<span>ShaderMotion Video Legalizer: {hasSM}</span>*/}
       {/*<Checkbox*/}
       {/*  checked={hasSM}*/}
       {/*  onChange={value => {*/}
