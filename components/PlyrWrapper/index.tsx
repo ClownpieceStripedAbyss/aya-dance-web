@@ -43,7 +43,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
     ? lockedRandomGroup.group
     : GROUP_ALL_SONGS;
   const onVideoEnded = (randomGroup: GenericVideo[]) => {
-    console.log(`OnVideoEnded: Handle next random range: ${randomGroup}`)
+    console.log(`OnVideoEnded: Handle next random range`);
     dispatch(nextVideoWithRandom(randomGroup));
   };
 
@@ -52,7 +52,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
     { value: `${DoubleWidthShowMode.Original}`, label: "原版" },
     { value: `${DoubleWidthShowMode.Simplified}`, label: "简化" },
     { value: `${DoubleWidthShowMode.Both}`, label: "全部" }
-  ]
+  ];
 
   const hasSM = queue?.video.shaderMotion.length > 0 ?? false;
 
@@ -73,17 +73,17 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
   const [waitCountDown, setWaitCountDown] = useState(MAX_WAIT_COUNT_DOWN);
 
   const resumePlayCounter = useRef<number>(0);
+  const prevVideoUrlRef = useRef<string>("");
 
   useEffect(() => {
     if (videoUrl === "") return;
 
-    console.log("Got new video url", videoUrl);
-
-    const setupLoadingSpinner = () => {
-      const plyrContainer = videoRef.current?.parentElement?.parentElement;
-      if (overlayRef.current) plyrContainer?.append(overlayRef.current);
-      if (spinnerRef.current) plyrContainer?.append(spinnerRef.current);
+    console.log(`Got new video url: ${videoUrl}, old video url: ${prevVideoUrlRef.current}`);
+    if (prevVideoUrlRef.current === videoUrl) {
+      console.log("Same video URL, skipping initialization");
+      return;
     }
+    prevVideoUrlRef.current = videoUrl;
 
     if (!videoRef.current) {
       console.log("VideoRef is null, do not creating Plyr instance");
@@ -159,7 +159,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
     videoRef.current.load();
 
     // setup the loading spinner and fullscreen info overlay
-    setupLoadingSpinner();
+    const plyrContainer = videoRef.current?.parentElement?.parentElement;
+    if (overlayRef.current) plyrContainer?.append(overlayRef.current);
+    if (spinnerRef.current) plyrContainer?.append(spinnerRef.current);
   }, [videoUrl, version]);
 
   const muteAndUnmuteAfterDelay = (delay = 1000) => {
