@@ -141,13 +141,13 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({}) => {
       delay(resumePlay, 1000);
     });
     // Setup inline progress bar
-    plyrInstance.current.on("timeupdate", () => {
-      if (videoRef.current) {
-        const currentTime = videoRef.current.currentTime;
-        const duration = videoRef.current.duration;
-        setProgress(currentTime / duration);
-      }
-    });
+    // plyrInstance.current.on("timeupdate", () => {
+    //   if (videoRef.current) {
+    //     const currentTime = videoRef.current.currentTime;
+    //     const duration = videoRef.current.duration;
+    //     setProgress(currentTime / duration);
+    //   }
+    // });
     if (overlayRef.current) overlayRef.current.style.display = "block";
 
     // For a new video, show the spinner and reset resume timer to 15s,
