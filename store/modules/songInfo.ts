@@ -26,22 +26,23 @@ const initialState: SongInfo = {
 // State保存到 localStorage
 function saveToLocalStorage(data: SongInfo) {
   const jsonData = JSON.stringify(data)
-  localStorage.setItem(SONG_INFO_KEY, jsonData)
+  // localStorage.setItem(SONG_INFO_KEY, jsonData)
 }
 
 // 从 localStorage 解压缩State
 function loadFromLocalStorage(): SongInfo | null {
-  const localSongInfo: string | null = localStorage.getItem(SONG_INFO_KEY)
-  if (!localSongInfo) return null
-  try {
-    const saveState: SongInfo = JSON.parse(localSongInfo)
-    const allSongEntries = getAllSongEntries(saveState)
-    const newState = getNewState(saveState, allSongEntries)
-    return newState
-  } catch (error) {
-    console.log("loadFromLocalStorage error", error)
-    return null
-  }
+  return null
+  // const localSongInfo: string | null = localStorage.getItem(SONG_INFO_KEY)
+  // if (!localSongInfo) return null
+  // try {
+  //   const saveState: SongInfo = JSON.parse(localSongInfo)
+  //   const allSongEntries = getAllSongEntries(saveState)
+  //   const newState = getNewState(saveState, allSongEntries)
+  //   return newState
+  // } catch (error) {
+  //   console.log("loadFromLocalStorage error", error)
+  //   return null
+  // }
 }
 
 const SongInfoSlice = createSlice({
@@ -52,17 +53,6 @@ const SongInfoSlice = createSlice({
       console.log(action.payload, "setSortBy")
       state.sortBy = action.payload
       // saveToLocalStorage(state) // 更新本地存储
-    },
-    getLocalSongInfo: (state: SongInfo) => {
-      const decompressedData = loadFromLocalStorage()
-      if (!decompressedData) return
-      if (decompressedData?.version !== SONG_INFO_VERSION) {
-        console.log("Local song info version mismatch, dropping")
-        return
-      }
-      console.log("Loaded song info from local storage")
-      console.log(decompressedData)
-      Object.assign(state, decompressedData)
     },
   },
   extraReducers: (builder) => {
@@ -171,5 +161,5 @@ export const selectSongInfo = createSelector(
 )
 
 // 导出 actions 和 reducer
-export const { getLocalSongInfo, setSortBy } = SongInfoSlice.actions
+export const { setSortBy } = SongInfoSlice.actions
 export default SongInfoSlice.reducer

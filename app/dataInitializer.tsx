@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { fetchWannaInfoMultidataAction, getLocalSongInfo } from "@/store/modules/songInfo";
+import { fetchWannaInfoMultidataAction } from "@/store/modules/songInfo";
 import { getLocalCustomListStore } from "@/store/modules/customPlaylist";
 import { initCollection } from "@/store/modules/collection";
 import { AppDispatch } from "@/store";
@@ -39,11 +39,11 @@ export function DataInitializer() {
   }
   // 初始化
   useEffect(() => {
-    dispatch(getLocalSongInfo())
+    // dispatch(getLocalSongInfo())
+    dispatch(fetchWannaInfoMultidataAction())
     dispatch(getLocalCustomListStore())
     dispatch(initCollection())
     dispatch(initPlayOptions())
-    dispatch(fetchWannaInfoMultidataAction())
 
     channel.postMessage({ action: "requestPlayList" } as PlayListMessage)
 
