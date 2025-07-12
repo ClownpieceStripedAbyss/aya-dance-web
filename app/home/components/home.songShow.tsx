@@ -52,10 +52,12 @@ export default function SongShow({
 
   const dispatch = useDispatch();
 
-  // 获取收藏
+  // Favorite songs
   const collection = useSelector(selectCollection);
 
-  // 获取目标歌曲列表
+  // Videos in the currently selected group, without filtering but respecting sorting
+  const [genericAllVideos, setGenericAllVideos] = useState<GenericVideo[]>([]);
+  // Currently displaying videos, filtered by searchKeyword out of `genericAllVideos`
   const [genericVideos, setGenericVideos] = useState<GenericVideo[]>([]);
 
   // For custom playlist
@@ -105,13 +107,14 @@ export default function SongShow({
   const switchEditMode = (edit: boolean) => {
     if (edit) {
       // initialize edit mode
-      console.log("initialize edit mode", genericVideos.map(x => x.id));
-      setStagedVideos(genericVideos.map(x => ({ video: x, delete: false }) as EditingVideo));
+      console.log("initialize edit mode, ids = " + genericAllVideos.map(x => x.id).join(", "));
+      setStagedVideos(genericAllVideos.map(x => ({ video: x, delete: false }) as EditingVideo));
     } else {
-      console.log("exit edit mode", stagedVideos.map(x => x.video.id));
+      let danceIds = stagedVideos.filter(x => !x.delete).map(x => x.video.id);
+      console.log("exit edit mode, ids = ", danceIds.join(", "));
       dispatch(editSongsInCustomList({
         customListName: selectedKey,
-        danceIds: stagedVideos.filter(x => !x.delete).map(x => x.video.id)
+        danceIds: danceIds
       } as EditSongsInCustomList));
       setStagedVideos([]);
     }
@@ -121,10 +124,12 @@ export default function SongShow({
   // General routine for filtering and sorting on the selected key
   useMemo(() => {
     const targetEntries = findSongEntries(songTypes, selectedKey, isCustomPlaylist, collection, customList);
-    const searchEntries = videosQuery(targetEntries, searchKeyword);
-    const sortedEntries = isCustomPlaylist ? searchEntries : videoSort(searchEntries, SortBy);
+    const sortedTargetEntries = isCustomPlaylist ? targetEntries : videoSort(targetEntries, SortBy);
 
-    setGenericVideos(sortedEntries || []);
+    const sortedSearchEntries = videosQuery(sortedTargetEntries, searchKeyword);
+
+    setGenericAllVideos(sortedTargetEntries);
+    setGenericVideos(sortedSearchEntries || []);
   }, [SortBy, searchKeyword, selectedKey, songTypes, collection, customList.updatedAt]);
 
   return (
