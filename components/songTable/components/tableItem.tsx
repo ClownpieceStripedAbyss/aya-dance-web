@@ -40,7 +40,7 @@ export default function TableItem({
   const videoThumbnailUrl = (video: GenericVideo): string => {
     if (!video) return ""
 
-    return `https://aya.kiva.moe/images/${video.id}.jpg`
+    return `https://aya.kiva.moe/images/small${video.id}.jpg`
   }
   // 获取收藏
   const collection = useSelector(selectCollection)
